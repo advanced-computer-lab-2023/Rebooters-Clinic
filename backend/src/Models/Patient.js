@@ -1,6 +1,40 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const healthPackageSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  discount: {
+    type: Number,
+    required: true,
+  },
+});
 
+const FamilyMemberSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  nationalId: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: Number,
+    required: true,
+  },
+  gender: {
+    type: String,
+    required: true,
+    enum: ['Male', 'Female', 'Other'],
+  },
+  relation: {
+    type: String,
+    required: true,
+    enum: ['Wife', 'Husband', 'Child'],
+  },
+});
 const PatientSchema = new Schema({
   username: {
     type: String,
@@ -38,7 +72,11 @@ const PatientSchema = new Schema({
     mobile_number: String
     },
   selectedDoctors: [String],
-
+  healthPackage: { // Add patient's health package
+    type: healthPackageSchema,
+    default: null,
+  },
+  familyMembers: [FamilyMemberSchema],
 
  
   

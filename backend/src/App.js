@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
-const {createPatient,selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions} = require("./Routes/patientController");
+const {createPatient,selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor} = require("./Routes/patientController");
 const MongoURI = 'mongodb+srv://rawanfarouq576:Confirm31_@mernapp.wjwy5y5.mongodb.net/' ;
 
 
@@ -43,6 +43,12 @@ app.get("/doctor", selectDoctorByName);
 app.get("/doctorDetails", ViewselectDoctorDetails);
 app.post("/addPrescription",createPrescription);  
 app.get("/viewPrescription", viewAllPrescriptions);
+app.post("/addFamilyMember", addFamilyMember);
+//app.post("/filterAppointmentsByStatus", filterAppointmentsByStatus);
+//app.post("/filterAppointmentsByDate", filterAppointmentsByDate);
+app.get("/viewDoctors", viewDoctors);
+app.post("/findDoctor", findDoctor);
+app.post("/filterDoctor", filterDoctor);
 
 
 

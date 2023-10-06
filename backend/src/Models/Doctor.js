@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
+const AvailableSlotSchema = new Schema({
+  date: {
+    type: Date,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
+  },
+});
 const doctorSchema = new Schema({
   username: {
     type: String,
@@ -38,7 +47,8 @@ const doctorSchema = new Schema({
   educationalBackground: {
     type: String,
     required: true,
-  }
+  },
+  availableSlots: [AvailableSlotSchema],
 }, { timestamps: true });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);
