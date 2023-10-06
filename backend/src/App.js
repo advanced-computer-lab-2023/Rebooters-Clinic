@@ -3,14 +3,15 @@ const express = require("express");
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
-const {createUser,getUsers, updateUser, deleteUser} = require("./Routes/userController");
-const MongoURI = 'mongodb+srv://admin:admin@cluster0.8ayf1xv.mongodb.net/?retryWrites=true&w=majority' ;
+const {createPatient,selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions} = require("./Routes/patientController");
+const MongoURI = 'mongodb+srv://rawanfarouq576:Confirm31_@mernapp.wjwy5y5.mongodb.net/' ;
+
 
 
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
-const user = require('./Models/User');
+const patient = require('./Models/Patient');
 // #Importing the userController
 
 
@@ -32,16 +33,17 @@ app.get("/home", (req, res) => {
     res.status(200).send("You have everything installed!");
   });
 
+ 
+
 // #Routing to userController here
 
 app.use(express.json())
-app.post("/addUser",createUser);
-app.get("/users", getUsers);
-app.put("/updateUser", updateUser);
-app.delete("/deleteUser", deleteUser);
+app.post("/addPatient",createPatient);
+app.get("/doctor", selectDoctorByName);
+app.get("/doctorDetails", ViewselectDoctorDetails);
+app.post("/addPrescription",createPrescription);  
+app.get("/viewPrescription", viewAllPrescriptions);
 
 
-/*
-                                                    End of your code
-*/
+
 
