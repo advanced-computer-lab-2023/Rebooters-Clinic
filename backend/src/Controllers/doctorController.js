@@ -4,7 +4,7 @@ const Appointment = require('../Models/appointmentModel');
 const { default: mongoose } = require('mongoose');
 const doctorUsername = 'dummydoctor'; //HARD CODING DOCTOR USERNAME
 
-const dummyDoctor = new Doctor({
+/*const dummyDoctor = new Doctor({
   username: 'dummydoctor',
   password: 'dummydoctorpassword',
   name: 'Dummy Doctor',
@@ -41,7 +41,7 @@ const dummyAppointment = new Appointment({
   price: 150.0, 
 });
 
-dummyAppointment.save()
+dummyAppointment.save()*/
 
 
 const viewProfile = async (req, res) => {
