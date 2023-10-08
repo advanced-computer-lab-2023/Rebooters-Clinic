@@ -10,7 +10,7 @@ const AvailableSlotSchema = new Schema({
     required: true,
   },
 });
-const doctorSchema = new Schema({
+const newDoctorRequestSchema = new Schema({
   username: {
     type: String,
     required: true,
@@ -38,7 +38,7 @@ const doctorSchema = new Schema({
   },
   speciality: {
     type: String,
-    required: true,
+    //required: true,
   },
   affiliation: {
     type: String,
@@ -49,7 +49,13 @@ const doctorSchema = new Schema({
     required: true,
   },
   availableSlots: [AvailableSlotSchema],
+
+  status: {
+    type: String,
+    enum: ['accepted', 'rejected', 'pending'], // Allowed values
+    default: 'pending', // Default value
+  }
 }, { timestamps: true });
 
-const Doctor = mongoose.model('Doctor', doctorSchema);
-module.exports = Doctor;
+const NewDoctorRequest = mongoose.model('NewDoctorRequest', newDoctorRequestSchema);
+module.exports = NewDoctorRequest;

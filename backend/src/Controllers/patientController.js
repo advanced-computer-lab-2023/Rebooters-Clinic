@@ -1,21 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const Patient = require('../Models/Patient'); // Import the Patient model
-const Doctor = require('../Models/Doctor');
-const Prescription = require('../Models/Prescription');
-const Appointment = require('../Models/Appointment.js');
+const Patient = require('../Models/patientModel'); // Import the Patient model
+const Doctor = require('../Models/doctorModel');
+const Prescription = require('../Models/prescriptionModel');
+const Appointment = require('../Models/appointmentModel');
 
-const createPatient = async (req, res) => {
-  try {
-    const {username,name,email,password,dateOfBirth,gender,mobile_number,emergency_contact} = req.body; 
-    const newPatient = new Patient({username,name,email,password,dateOfBirth,gender,mobile_number,emergency_contact});
-    await newPatient.save();
-    res.status(201).json(newPatient);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'An error occurred while creating the patient.' });
-  }
-};
+
 
 const selectDoctorByName = async (req, res) => {
   try {
@@ -97,7 +87,7 @@ const ViewselectDoctorDetails = async (req, res) => {
 };
 
 const createPrescription = async (req, res) => {
-  try {
+  try { 
     const { patientName, doctorName, medication, dosage, instructions } = req.body;
     const date = new Date();
 
@@ -312,5 +302,5 @@ const filterDoctor = async (req, res) => {
 
 
 module.exports = {
-  createPatient, selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor
+  selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor
 };

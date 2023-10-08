@@ -3,16 +3,15 @@ const express = require("express");
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
-const {createPatient,selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor} = require("./Routes/patientController");
-const MongoURI = 'mongodb+srv://rawanfarouq576:Confirm31_@mernapp.wjwy5y5.mongodb.net/' ;
+const MongoURI = 'mongodb+srv://bissosamir:bissozozo@cluster0.3vkavpd.mongodb.net/' ;
 
 
 
 //App variables
 const app = express();
 const port = process.env.PORT || "8000";
-const patient = require('./Models/Patient');
-// #Importing the userController
+
+
 
 
 // configurations
@@ -29,26 +28,24 @@ mongoose.connect(MongoURI)
 /*
                                                     Start of your code
 */
-app.get("/home", (req, res) => {
-    res.status(200).send("You have everything installed!");
+app.get("/", (req, res) => {
+    res.status(200).send("Welcome to el7a2ni");
   });
 
- 
 
-// #Routing to userController here
 
 app.use(express.json())
-app.post("/addPatient",createPatient);
-app.get("/doctor", selectDoctorByName);
-app.get("/doctorDetails", ViewselectDoctorDetails);
-app.post("/addPrescription",createPrescription);  
-app.get("/viewPrescription", viewAllPrescriptions);
-app.post("/addFamilyMember", addFamilyMember);
-//app.post("/filterAppointmentsByStatus", filterAppointmentsByStatus);
-//app.post("/filterAppointmentsByDate", filterAppointmentsByDate);
-app.get("/viewDoctors", viewDoctors);
-app.post("/findDoctor", findDoctor);
-app.post("/filterDoctor", filterDoctor);
+
+
+
+const guestRoutes = require('./Routes/guest');
+app.use('/api/guest', guestRoutes);
+
+const patientRoutes = require('./Routes/patient');
+app.use('/api/patient' , patientRoutes);
+
+const doctorRoutes = require('./Routes/doctor');
+app.use('/api/doctor', doctorRoutes );
 
 
 
