@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
-const MongoURI = 'mongodb+srv://bissosamir:bissozozo@cluster0.3vkavpd.mongodb.net/' ;
+const MongoURI = 'mongodb+srv://anthonyuiskander:Babaoba7@cluster0.052zrmb.mongodb.net/' ;
 
 
 
@@ -46,7 +46,9 @@ app.use('/api/patient' , patientRoutes);
 
 const doctorRoutes = require('./Routes/doctor');
 app.use('/api/doctor', doctorRoutes );
-
+ 
+const administratorRoutes = require('./Routes/administrator')
+app.use('/api/administrator',administratorRoutes);
 
 
 
