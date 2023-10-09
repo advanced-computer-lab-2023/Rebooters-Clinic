@@ -153,34 +153,66 @@ const addFamilyMember = async (req, res) => {
   }
 };
 
-// const filterAppointmentsByDate = async (req, res) => {
-//   try {
-//     const patientUsername = req.body.username;
-//     const currentDateTime = new Date();
-//     const upcomingAppointments = await Appointment.find({ patient: patientUsername });
-//     const filteredAppointments = upcomingAppointments.filter(appointment => {
-//       const appointmentDateTime = new Date(appointment.datetime);
-//       return appointmentDateTime >= currentDateTime;
-//   });
-//     res.status(200).json(filteredAppointments);
-//   } catch (error) {
-//     res.status(500).json({ error: 'An error occurred while filtering patients' });
-//   }
-// };
+const filterAppointmentsByDate = async (req, res) => {
+  try {
+    const { patientName, startDate, endDate } = req.body;
 
-// const filterAppointmentsByStatus = async (req, res) => {
-//   try {
-//     const patientUsername = req.body.username;
-//     const { status } = req.body;
-//     const upcomingAppointments = await Appointment.find({ patient: patientUsername });
-//     const filteredAppointments = upcomingAppointments.filter(appointment => {
-//       return appointment.status == status;
-//   });
-//     res.status(200).json(filteredAppointments);
-//   } catch (error) {
-//     res.status(500).json({ error: 'An error occurred while filtering patients' });
-//   }
-// };
+    // Find the patient by name
+    const patient = await Patient.findOne({ name: patientName });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+
+    // Find all appointments for the patient between the specified dates
+    const appointments = await Appointment.find({
+      patient: patientName,
+      datetime: {
+        $gte: new Date(startDate), // Greater than or equal to the start date
+        $lte: new Date(endDate),   // Less than or equal to the end date
+      },
+    });
+
+    if (appointments.length === 0) {
+      return res.json({ message: 'No appointments found between the specified dates.' });
+    }
+
+    res.json(appointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while filtering appointments by date.' });
+  }
+};
+
+
+const filterAppointmentsByStatus = async (req, res) => {
+  try {
+    const { patientName, appointmentStatus } = req.body;
+
+    // Find the patient by name
+    const patient = await Patient.findOne({ name: patientName });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+
+    // Find all appointments for the patient with the specified status
+    const appointments = await Appointment.find({
+      patient: patientName,
+      status: appointmentStatus,
+    });
+
+    if (appointments.length === 0) {
+      return res.json({ message: 'No appointments found with the specified status.' });
+    }
+
+    res.json(appointments);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while filtering appointments by status.' });
+  }
+};
+
 
 const viewDoctors = async (req, res) => {
   try {
@@ -302,5 +334,5 @@ const filterDoctor = async (req, res) => {
 
 
 module.exports = {
-  selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor
+  selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus
 };
