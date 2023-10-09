@@ -1,7 +1,7 @@
 const express = require('express') //require or import express
 const {selectDoctorByName,ViewselectDoctorDetails,
     createPrescription,viewAllPrescriptions, addFamilyMember, 
-    viewDoctors, findDoctor, filterDoctor} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
+    viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router    
 
@@ -20,6 +20,10 @@ router.get('/viewDoctors', viewDoctors);
 router.get('/findDoctor' , findDoctor);
 
 router.get('/filterDoctor' , filterDoctor);
+
+router.post('/filterAppointmentsByDate', filterAppointmentsByDate);
+
+router.post('/filterAppointmentsByStatus', filterAppointmentsByStatus);
 
 module.exports = router //we need to export that router at the end so that server.js can access it
 
