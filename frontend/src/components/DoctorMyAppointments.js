@@ -11,6 +11,9 @@ const DoctorMyAppointments = () => {
   const [customStatus, setCustomStatus] = useState("");
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
   const [sortByField, setSortByField] = useState("datetime"); // Default to sorting by appointment datetime
+  const [filterByDateRange, setFilterByDateRange] = useState([]);
+  const [startDate, setStartDate] = useState(''); // Input for start date
+  const [endDate, setEndDate] = useState('');     // Input for end date
 
   useEffect(() => {
     fetchAppointments();
@@ -29,6 +32,7 @@ const DoctorMyAppointments = () => {
         setAppointmentsData(json);
         setFilterByDateData([]);
         setFilterByStatusData([]);
+        setFilterByDateRange([]);
       } else {
         setError("An error occurred while fetching appointments");
       }
@@ -51,6 +55,7 @@ const DoctorMyAppointments = () => {
         setAppointmentsData([]);
         setFilterByDateData([]);
         setFilterByStatusData(json);
+        setFilterByDateRange([]);
         setCustomStatus(""); // Clear the custom status input field
       } else {
         setError("An error occurred while filtering appointments by status");
@@ -62,7 +67,7 @@ const DoctorMyAppointments = () => {
 
   const filterAppointmentsByDate = async () => {
     try {
-      const response = await fetch("/api/doctor/doctor-patients/date-filter", {
+      const response = await fetch("/api/doctor/doctor-patients/upcoming-date-filter", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -72,12 +77,36 @@ const DoctorMyAppointments = () => {
       if (response.ok) {
         setFilterByDateData(json);
         setAppointmentsData([]);
-        setFilterByStatusData(json);
+        setFilterByStatusData([]);
+        setFilterByDateRange([]);
       } else {
-        setError("An error occurred while filtering appointments by date");
+        setError("An error occurred while filtering appointments by upcoming date");
       }
     } catch (error) {
       setError("An error occurred while filtering appointments by date");
+    }
+  };
+
+  const filterAppointmentsByDateRange = async () => {
+    try {
+      const response = await fetch("/api/doctor/doctor-patients/date-range-filter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ startDate, endDate }),
+      });
+      const json = await response.json();
+      if (response.ok) {
+        setFilterByDateRange(json);
+        setFilterByDateData([]);
+        setAppointmentsData([]);
+        setFilterByStatusData([]);
+      } else {
+        setError("An error occurred while filtering appointments by date range");
+      }
+    } catch (error) {
+      setError("An error occurred while filtering appointments by date range");
     }
   };
 
@@ -132,6 +161,17 @@ const DoctorMyAppointments = () => {
   return (
     <div className="container">
       <h2>My Appointments:</h2>
+      <div>
+        <label>Start Date:</label>
+        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+      </div>
+      <div>
+        <label>End Date:</label>
+        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+      </div>
+      <button className="btn btn-primary" onClick={filterAppointmentsByDateRange}>
+        Filter by Date Range
+      </button>
       <input
         type="text"
         className="form-control"
@@ -205,6 +245,19 @@ const DoctorMyAppointments = () => {
                   <td>{new Date(appointment.datetime).toLocaleString()}</td>
                   <td>{appointment.status}</td>
                 </tr>
+            ))
+            : filterByDateRange.length > 0
+            ? filterByDateRange.map((appointment) => (
+              <tr
+              key={appointment._id}
+              onClick={() => handleRowClick(appointment)}
+              style={{ cursor: "pointer" }}
+            >
+              <td>{appointment._id}</td>
+              <td>{appointment.patient}</td>
+              <td>{new Date(appointment.datetime).toLocaleString()}</td>
+              <td>{appointment.status}</td>
+            </tr>
               ))
             : appointmentsData.map((appointment) => (
                 <tr
@@ -246,6 +299,8 @@ const DoctorMyAppointments = () => {
               {selectedPatientProfile.emergency_contact}
               <hr></hr>
               <h5>Patient Health Record:</h5>
+              <hr></hr>
+              <h5>Patient Prescriptions:</h5>
             </p>
             <button className="btn btn-primary" onClick={handleCloseCard}>
               Close

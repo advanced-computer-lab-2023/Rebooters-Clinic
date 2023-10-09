@@ -126,7 +126,7 @@ const viewMyAppointments = async (req, res) => {
   }
 };
   
-const filterByDate = async (req, res) => {
+const filterByUpcomingDate = async (req, res) => {
     try {
         //const doctorUsername = req.body.username;
       const currentDateTime = new Date();
@@ -152,7 +152,7 @@ const filterByStatus = async (req, res) => {
       const { status } = req.body;
       const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
       const filteredAppointments = upcomingAppointments.filter(appointment => {
-        return appointment.status == status;
+        return appointment.status.toLowerCase() === status.toLowerCase();
     });
       res.status(200).json(filteredAppointments);
     } catch (error) {
@@ -178,8 +178,39 @@ const selectPatient = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while selecting patients' });
   }
 };
-  
+
+const filterByDateRange = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+    const doctor = await Doctor.findOne({ doctorUsername });
+    const startDateTime = new Date(startDate);
+    const endDateTime = new Date(endDate);
+    startDateTime.setHours(0, 0, 0, 0);
+    endDateTime.setHours(23, 59, 59, 999);
+    if (startDateTime > endDateTime) {
+      return res.status(400).json({ error: 'Invalid date range' });
+    }
+    const appointmentsInRange = await Appointment.find({
+      doctor: doctorUsername,
+      datetime: {
+        $gte: startDateTime,
+        $lte: endDateTime,
+      },
+    });
+
+    appointmentsInRange.sort((a, b) => {
+      const dateA = new Date(a.datetime);
+      const dateB = new Date(b.datetime);
+      return dateA - dateB;
+    });
+
+    res.status(200).json(appointmentsInRange);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while filtering appointments' });
+  }
+};
+
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
-    viewAllPatients, searchPatientByName, filterByDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername  };
+    viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange  };
