@@ -1,11 +1,17 @@
 const express = require('express') //require or import express
-const {selectDoctorByName,ViewselectDoctorDetails, viewRegisteredFamilyMembers,
+const {deleteHealthPackage, editHealthPackage, addHealthPackage, selectDoctorByName,ViewselectDoctorDetails, viewRegisteredFamilyMembers,
     createPrescription,viewAllPrescriptions, addFamilyMember, 
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, viewFamilyMembers} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router    
 
 router.get('/selectDoctorByName' , selectDoctorByName);
+
+router.delete('/deleteHealthPackage' , deleteHealthPackage);
+
+router.post('/editHealthPackage' , editHealthPackage);
+
+router.post('/addHealthPackage' , addHealthPackage);
 
 router.get('/ViewselectDoctorDetails' , ViewselectDoctorDetails );
 
