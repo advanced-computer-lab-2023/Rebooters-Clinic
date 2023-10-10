@@ -85,6 +85,70 @@ const viewPatientInformation = async (req, res) => {
       }
 }
 
+const addHealthPackage = async (req,res)=>{
+  try {
+    const {patientUsername , packageName} = req.body;
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+  const price = 0;
+  const discountOnMedicine = 0;
+  const discountOnSession = 0;
+  const discountOnSubscription = 0;
+  if(packageName=="silver"){ //make this a lowercase
+    price = 3600;
+    discountOnSession = 0.4;
+    discountOnMedicine = 0.2;
+    discountOnSubscription = 0.1;
+  }  
+if(packageName=="Platinum"){
+    price = 6000;
+    discountOnSession = 0.6;
+    discountOnMedicine = 0.3;
+    discountOnSubscription = 0.15;
+}
+if(packageName=="Gold"){
+  price = 9000;
+  discountOnSession = 0.8;
+  discountOnMedicine = 0.4;
+  discountOnSubscription = 0.2;
+}
+
+const familyMembers = patient.familyMembers;
+familyMembers.forEach((familyMember) => {
+  if(familyMember.healthPackage){
+    familyMember.healthPackage.price = price - (price*discountOnSubscription);
+  }
+});
+
+
+
+
+  // Create a new HealthPackage object
+  const healthPackage = {
+    packageName,
+    price,
+
+  };
+
+    // Add the family member to the patient's familyMembers array
+    patient.familyMembers.push(familyMember);
+
+    // Save the updated patient document
+    const updatedPatient = await patient.save();
+
+    res.status(201).json(updatedPatient);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add family member' });
+  }
+};
+
+  
+
+
+
     
 module.exports = {  
   addAdministrator,

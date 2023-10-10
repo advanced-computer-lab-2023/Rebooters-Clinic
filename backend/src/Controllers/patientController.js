@@ -1,10 +1,36 @@
 const express = require('express');
-const router = express.Router();
 const Patient = require('../Models/patientModel'); // Import the Patient model
 const Doctor = require('../Models/doctorModel');
 const Prescription = require('../Models/prescriptionModel');
 const Appointment = require('../Models/appointmentModel');
 
+//i put these here also instead of creating a model of familyMember
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const FamilyMemberSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  nationalId: {
+    type: String,
+    required: true,
+  },
+  age: {
+    type: Number,
+    required: true,
+  },
+  gender: {
+    type: String,
+    required: true,
+    enum: ['Male', 'Female', 'Other'],
+  },
+  relation: {
+    type: String,
+    required: true,
+    enum: ['Wife', 'Husband', 'Child'],
+  },
+});
 
 
 const selectDoctorByName = async (req, res) => {
@@ -123,24 +149,27 @@ const viewAllPrescriptions = async (req, res) => {
 };
 const addFamilyMember = async (req, res) => {
   try {
-    // Extract relevant data from the request body
-    const { patientNationalId, name, nationalId, age, gender, relation } = req.body;
-
-    // Find the patient by their national ID
-    const patient = await Patient.findOne({ national_id: patientNationalId });
-
+    const patientUsername = req.body.username;
+    const patient = await Patient.findOne({ username: patientUsername });
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found' });
     }
 
-    // Create a new family member object
-    const familyMember = {
-      name,
-      nationalId,
-      age,
-      gender,
-      relation,
-    };
+  const name = req.body.name;
+  const nationalId = req.body.nationalId;
+  const age = req.body.age;
+  const gender = req.body.gender;
+  const relation = req.body.relation;  
+
+  // Create a new FamilyMember object
+  const familyMember = {
+    name,
+    nationalId,
+    age,
+    gender,
+    relation,
+  };
+
     // Add the family member to the patient's familyMembers array
     patient.familyMembers.push(familyMember);
 
@@ -153,12 +182,26 @@ const addFamilyMember = async (req, res) => {
   }
 };
 
+const viewRegisteredFamilyMembers = async (req, res) => {
+  try {
+    const patientUsername = req.body.username;
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+    const familyMembers = patient.familyMembers;
+    res.status(200).json(familyMembers);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching registered family members' });
+  }
+};
+
 const filterAppointmentsByDate = async (req, res) => {
   try {
-    const { patientName, startDate, endDate } = req.body;
+    const { patientUsername, startDate, endDate } = req.body;
 
     // Find the patient by name
-    const patient = await Patient.findOne({ name: patientName });
+    const patient = await Patient.findOne({ username: patientUsername });
 
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found.' });
@@ -166,7 +209,7 @@ const filterAppointmentsByDate = async (req, res) => {
 
     // Find all appointments for the patient between the specified dates
     const appointments = await Appointment.find({
-      patient: patientName,
+      patient: patientUsername,
       datetime: {
         $gte: new Date(startDate), // Greater than or equal to the start date
         $lte: new Date(endDate),   // Less than or equal to the end date
@@ -187,10 +230,10 @@ const filterAppointmentsByDate = async (req, res) => {
 
 const filterAppointmentsByStatus = async (req, res) => {
   try {
-    const { patientName, appointmentStatus } = req.body;
+    const { patientUsername, appointmentStatus } = req.body;
 
     // Find the patient by name
-    const patient = await Patient.findOne({ name: patientName });
+    const patient = await Patient.findOne({ username: patientUsername });
 
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found.' });
@@ -198,8 +241,8 @@ const filterAppointmentsByStatus = async (req, res) => {
 
     // Find all appointments for the patient with the specified status
     const appointments = await Appointment.find({
-      patient: patientName,
-      status: appointmentStatus,
+      patient: patientUsername,
+      $expr: { $eq: [{ $toLower: '$status' }, appointmentStatus.toLowerCase()] },
     });
 
     if (appointments.length === 0) {
@@ -235,7 +278,7 @@ const viewDoctors = async (req, res) => {
 
       if (patient.healthPackage) {
         // Apply the discount from the patient's health package
-        sessionPrice = (doctor.hourlyRate + doctor.hourlyRate * 0.1) - (patient.healthPackage.discount);
+        sessionPrice = (doctor.hourlyRate + doctor.hourlyRate * 0.1) - (patient.healthPackage.discountOnSession);
       } else {
         // If no health package, calculate session price with clinic's markup only
         sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
@@ -333,6 +376,8 @@ const filterDoctor = async (req, res) => {
 };
 
 
+
+
 module.exports = {
-  selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus
+  viewRegisteredFamilyMembers, selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus
 };

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 
-const MongoURI = 'mongodb+srv://anthonyuiskander:Babaoba7@cluster0.052zrmb.mongodb.net/' ;
+const MongoURI = 'mongodb+srv://bissosamir:bissozozo@cluster0.3vkavpd.mongodb.net/' ;
 
 
 

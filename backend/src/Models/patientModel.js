@@ -1,15 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const healthPackageSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  discount: {
-    type: Number,
-    required: true,
-  },
-});
+
+
 
 const FamilyMemberSchema = new Schema({
   name: {
@@ -35,6 +27,39 @@ const FamilyMemberSchema = new Schema({
     enum: ['Wife', 'Husband', 'Child'],
   },
 });
+
+
+
+const healthPackageSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    enum: ['Gold', 'Silver', 'Platinum'],
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  discountOnSession: {
+    type: Number,
+    required: true,
+  },
+  discountOnMedicine: {
+    type: Number,
+    required: true,
+  },
+  discountOnSubscription: {
+    type: Number,
+    required : true,
+  },
+
+
+
+
+
+});
+
+
 const PatientSchema = new Schema({
   username: {
     type: String,
@@ -72,6 +97,7 @@ const PatientSchema = new Schema({
     mobile_number: String
     },
   selectedDoctors: [String],
+
   healthPackage: { // Add patient's health package
     type: healthPackageSchema,
     default: null,
