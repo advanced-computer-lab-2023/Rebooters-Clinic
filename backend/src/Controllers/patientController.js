@@ -33,7 +33,7 @@ const FamilyMemberSchema = new Schema({
 });
 
 
-const selectDoctorByName = async (req, res) => {
+/*const selectDoctorByName = async (req, res) => {
   try {
     const { patientName, doctorName } = req.body;
 
@@ -76,8 +76,44 @@ const selectDoctorByName = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while selecting the doctor.' });
   }
 };
+*/
 
-const ViewselectDoctorDetails = async (req, res) => {
+const createPatient = async (req, res) => {
+  try {
+    const {
+      username,
+      name,
+      email,
+      password,
+      dateOfBirth,  // Assuming dateOfBirth is sent as a string in "YYYY-MM-DD" format
+      gender,
+      mobile_number,
+      emergency_contact
+    } = req.body;
+
+    // Parse the dateOfBirth string into a JavaScript Date object
+    const parsedDateOfBirth = new Date(dateOfBirth);
+
+    const newPatient = new Patient({
+      username,
+      name,
+      email,
+      password,
+      dateOfBirth: parsedDateOfBirth,  // Use the parsed date
+      gender,
+      mobile_number,
+      emergency_contact
+    });
+
+    await newPatient.save();
+    res.status(201).json(newPatient);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while creating the patient.' });
+  }
+};
+
+/*const ViewselectDoctorDetails = async (req, res) => {
   try {
     const { patientName, doctorName } = req.body;
 
@@ -109,16 +145,17 @@ const ViewselectDoctorDetails = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while fetching doctor details.' });
   }
-};
-
+};*/
 
 const createPrescription = async (req, res) => {
-  try { 
-    const { patientName, doctorName, medication, dosage, instructions } = req.body;
-    const date = new Date();
+  try {
+    const { patientName, doctorName, medication, dosage, instructions, prescriptionDate, filled } = req.body;
 
-    // Create a new prescription
-    const prescription = new Prescription({ patientName, doctorName, medication, dosage, instructions, date });
+    // Parse the prescriptionDate string into a JavaScript Date object
+    const parsedPrescriptionDate = new Date(prescriptionDate);
+
+    // Create a new prescription with the "filled" status
+    const prescription = new Prescription({ patientName, doctorName, medication, dosage, instructions, date: parsedPrescriptionDate, filled });
 
     // Save the prescription to the database
     await prescription.save();
@@ -129,7 +166,6 @@ const createPrescription = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while creating the prescription.' });
   }
 };
-
 const viewAllPrescriptions = async (req, res) => {
   try {
     const { patientName } = req.body;
@@ -554,8 +590,96 @@ const filterDoctor = async (req, res) => {
 };
 
 
+const filterPrescriptions = async (req, res) => {
+  try {
+    const { date, doctorName, filled } = req.body; // Get date, doctorName, and filled status from the request body
+
+    // Check if at least one filter parameter is provided
+    if (!date && !doctorName && filled === undefined) {
+      return res.status(400).json({ error: 'At least one filter parameter (date, doctorName, filled) is required.' });
+    }
+
+    // Create an empty query object
+    const query = {};
+
+    if (date) {
+      // Parse the date string into a JavaScript Date object
+      const parsedDate = new Date(date);
+
+      if (isNaN(parsedDate.getTime())) {
+        return res.status(400).json({ error: 'Invalid date format.' });
+      }
+
+      // Calculate the start and end of the day for the provided date
+      const startDate = new Date(parsedDate);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(parsedDate);
+      endDate.setHours(23, 59, 59, 999);
+
+      // Add date criteria to the query
+      query.date = {
+        $gte: startDate,
+        $lte: endDate,
+      };
+    }
+
+    if (doctorName) {
+      // Add doctorName criteria to the query
+      query.doctorName = doctorName;
+    }
+
+    if (filled !== undefined) {
+      // Add filled criteria to the query
+      query.filled = filled;
+    }
+
+    // Use the query to filter prescriptions
+    const filteredPrescriptions = await Prescription.find(query);
+
+    if (filteredPrescriptions.length === 0) {
+      return res.status(404).json({ message: 'No matching prescriptions found.' });
+    }
+
+    // Return the list of matching prescriptions
+    res.status(200).json(filteredPrescriptions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while filtering prescriptions.' });
+  }
+};
+
+// Define a function to select a doctor from the results of findDoctor and filterDoctor
+const selectDoctor = async (req, res) => {
+  try {
+    const { findDoctorResults, filterDoctorResults } = req.body; // Assuming you pass the results as an object in the request body
+
+    // Combine the results of both functions into a single list of doctors
+    const combinedDoctors = [...findDoctorResults, ...filterDoctorResults];
+
+    // Check if the combined list is empty
+    if (combinedDoctors.length === 0) {
+      return res.status(404).json({ message: 'No doctors to select from.' });
+    }
+
+    // You can implement your selection logic here based on your criteria
+    // For example, if you want to select the doctor with the most available slots:
+    const selectedDoctor = combinedDoctors.reduce((prevDoctor, currentDoctor) => {
+      if (currentDoctor.availableSlots.length > prevDoctor.availableSlots.length) {
+        return currentDoctor;
+      }
+      return prevDoctor;
+    });
+
+    // Return the selected doctor
+    res.status(200).json(selectedDoctor);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while selecting a doctor.' });
+  }
+};
 
 
 module.exports = {
-  deleteHealthPackage, editHealthPackage, addHealthPackage, viewRegisteredFamilyMembers, selectDoctorByName,ViewselectDoctorDetails,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus
+  createPatient,deleteHealthPackage, editHealthPackage, addHealthPackage, viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
+filterPrescriptions,selectDoctor
 };

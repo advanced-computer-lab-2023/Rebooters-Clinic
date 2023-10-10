@@ -7,7 +7,16 @@ const PrescriptionSchema = new Schema({
   medication: String,
   dosage: String,
   instructions: String,
-  date: Date,
+
+  filled: {
+    type: Boolean,
+    default: false, 
+  },
+
+  date: {
+    type: String,
+    required: true,
+  },
 });
 
 const Prescription = mongoose.model('Prescription', PrescriptionSchema);
