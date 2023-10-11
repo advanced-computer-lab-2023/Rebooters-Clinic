@@ -251,8 +251,8 @@ const filterAppointmentsByDate = async (req, res) => {
     const appointments = await Appointment.find({
       patient: patientUsername,
       datetime: {
-        $gte: new Date(startDate), // Greater than or equal to the start date
-        $lte: new Date(endDate),   // Less than or equal to the end date
+        $gte: new Date(startDate).setHours(0, 0, 0, 0), // Greater than or equal to the start date
+        $lte: new Date(endDate).setHours(23, 59, 59, 999),   // Less than or equal to the end date
       },
     });
 
@@ -688,8 +688,17 @@ const selectDoctor = async (req, res) => {
   }
 };
 
+const viewMyAppointments = async (req, res) => {
+  try {
+    const { patientUsername} = req.body;
+    const myAppointments = await Appointment.find({ patient: patientUsername });
+    res.status(200).json(myAppointments);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred' });
+  }
+};
 
 module.exports = {
   createPatient,deleteHealthPackage, editHealthPackage, addHealthPackage, viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
-filterPrescriptions,selectDoctor
+filterPrescriptions,selectDoctor, viewMyAppointments
 };

@@ -4,6 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorSelection from "../components/DoctorSelection"
 import Prescription from "../components/Prescription";
 import AddFamilyMember from "../components/AddFamilyMember";
+import PatientAppointments from "../components/PatientAppointments";
+import ViewDoctors from "../components/ViewDoctors";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -36,6 +38,12 @@ const PatientHome = () => {
       </div>
       <div className="mt-4">
         <AddFamilyMember />
+      </div>
+      <div className="mt-4">
+        <PatientAppointments />
+      </div>
+      <div className="mt-4">
+        <ViewDoctors />
       </div>
     </div>
     

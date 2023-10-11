@@ -229,7 +229,10 @@ const DoctorMyAppointments = () => {
                 >
                   <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
-                  <td>{new Date(appointment.datetime).toLocaleString()}</td>
+                  <td>
+                    {new Date(appointment.datetime).toLocaleDateString()}{" "}
+                    {new Date(appointment.datetime).toLocaleTimeString()}
+                  </td>
                   <td>{appointment.status}</td>
                 </tr>
               ))
@@ -242,7 +245,10 @@ const DoctorMyAppointments = () => {
                 >
                   <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
-                  <td>{new Date(appointment.datetime).toLocaleString()}</td>
+                  <td>
+                    {new Date(appointment.datetime).toLocaleDateString()}{" "}
+                    {new Date(appointment.datetime).toLocaleTimeString()}
+                  </td>
                   <td>{appointment.status}</td>
                 </tr>
             ))
@@ -255,7 +261,10 @@ const DoctorMyAppointments = () => {
             >
               <td>{appointment._id}</td>
               <td>{appointment.patient}</td>
-              <td>{new Date(appointment.datetime).toLocaleString()}</td>
+              <td>
+                    {new Date(appointment.datetime).toLocaleDateString()}{" "}
+                    {new Date(appointment.datetime).toLocaleTimeString()}
+                  </td>
               <td>{appointment.status}</td>
             </tr>
               ))
@@ -267,7 +276,10 @@ const DoctorMyAppointments = () => {
                 >
                   <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
-                  <td>{new Date(appointment.datetime).toLocaleString()}</td>
+                  <td>
+                    {new Date(appointment.datetime).toLocaleDateString()}{" "}
+                    {new Date(appointment.datetime).toLocaleTimeString()}
+                  </td>
                   <td>{appointment.status}</td>
                 </tr>
               ))}
