@@ -170,8 +170,11 @@ const viewAllPrescriptions = async (req, res) => {
   try {
     const { patientName } = req.body;
 
-    // Find all prescriptions for the specified patient
-    const prescriptions = await Prescription.find({ patientName });
+    // Convert the patientName to lowercase
+    const lowercasePatientName = patientName.toLowerCase();
+
+    // Find all prescriptions for the specified patient (case-insensitive)
+    const prescriptions = await Prescription.find({ patientName: { $regex: new RegExp(lowercasePatientName, 'i') } });
 
     if (prescriptions.length === 0) {
       return res.json({ message: 'No prescriptions found for the patient.' });
@@ -521,11 +524,11 @@ const findDoctor = async (req, res) => {
     const query = {};
 
     if (speciality) {
-      query.speciality = { $regex: new RegExp(speciality, 'i') };
+      query.speciality = { $regex: new RegExp(speciality, 'i') }; // 'i' flag makes it case-insensitive
     }
 
     if (name) {
-      query.name = { $regex: new RegExp(name, 'i') };
+      query.name = { $regex: new RegExp(name, 'i') }; // 'i' flag makes it case-insensitive
     }
 
     // Check if at least one search parameter is provided
@@ -553,6 +556,10 @@ const filterDoctor = async (req, res) => {
   try {
     const { speciality, date, time } = req.body; // Get speciality, date, and time from the request body
 
+    if (!speciality && !date && !time) {
+      return res.status(400).json({ error: 'Please provide at least one search parameter (speciality, date, or time).' });
+    }
+
     // Check if both time and date are required
     if (time && !date) {
       return res.status(400).json({ error: 'Date is required when specifying a time.' });
@@ -562,14 +569,14 @@ const filterDoctor = async (req, res) => {
     const query = {};
 
     if (speciality) {
-      query.speciality = speciality;
+      query.speciality = { $regex: new RegExp(speciality, 'i') }; // 'i' flag makes it case-insensitive
     }
 
     if (date && time) {
       query.availableSlots = {
         $elemMatch: {
           date: new Date(date),
-          time,
+          time: time.toLowerCase(), // Convert time to lowercase
         },
       };
     }
@@ -588,6 +595,8 @@ const filterDoctor = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while filtering doctors.' });
   }
 };
+
+
 
 
 const filterPrescriptions = async (req, res) => {
@@ -624,8 +633,8 @@ const filterPrescriptions = async (req, res) => {
     }
 
     if (doctorName) {
-      // Add doctorName criteria to the query
-      query.doctorName = doctorName;
+      // Use a case-insensitive regex to match doctorName
+      query.doctorName = { $regex: new RegExp(`^${doctorName}$`, 'i') };
     }
 
     if (filled !== undefined) {
@@ -647,6 +656,7 @@ const filterPrescriptions = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while filtering prescriptions.' });
   }
 };
+
 
 // Define a function to select a doctor from the results of findDoctor and filterDoctor
 const selectDoctor = async (req, res) => {

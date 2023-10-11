@@ -8,6 +8,7 @@ const DoctorSelection = () => {
     date: "",
     time: "",
   });
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleSearchCriteriaChange = (e) => {
     setSearchCriteria({
@@ -17,6 +18,16 @@ const DoctorSelection = () => {
   };
 
   const handleSearchDoctors = async (searchType) => {
+    // Check if all input fields are empty
+    if (
+      searchCriteria.speciality === "" &&
+      searchCriteria.date === "" &&
+      searchCriteria.time === ""
+    ) {
+      setErrorMessage("Please fill in at least one search criteria.");
+      return;
+    }
+
     try {
       let endpoint = "";
       if (searchType === "filterDoctor") {
@@ -41,7 +52,10 @@ const DoctorSelection = () => {
       const data = await response.json();
 
       // Update the selected doctors with the new results, keeping the previous results
-      setSelectedDoctors([...selectedDoctors, ...data]);
+      setSelectedDoctors([...data]);
+
+      // Clear the error message
+      setErrorMessage(null);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -55,6 +69,11 @@ const DoctorSelection = () => {
   const handleCloseDoctorDetails = () => {
     // Clear the selected doctor's details
     setDoctorDetails(null);
+  };
+
+  const errorStyle = {
+    color: "red",
+    fontWeight: "bold",
   };
 
   return (
@@ -85,6 +104,8 @@ const DoctorSelection = () => {
         <button onClick={() => handleSearchDoctors("filterDoctor")}>Search (Filter)</button>
         <button onClick={() => handleSearchDoctors("findDoctor")}>Search (Find)</button>
       </div>
+
+      {errorMessage && <p style={errorStyle}>{errorMessage}</p>}
 
       {selectedDoctors.length > 0 && !doctorDetails && (
         <div>
