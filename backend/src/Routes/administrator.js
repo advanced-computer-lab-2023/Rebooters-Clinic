@@ -2,20 +2,15 @@ const express = require('express') //require or import express
 const {addAdministrator,
     removeUserFromSystem,
     viewDoctorApplication,
-    viewPharmacistInformation,
-    viewPatientInformation,deleteHealthPackage, editHealthPackage, addHealthPackage} = require('../Controllers/AdminController') //we're destructuring so we need curly braces
+    deleteHealthPackage, editHealthPackage, addHealthPackage} = require('../Controllers/AdminController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
 router.post('/addAdministrator' , addAdministrator);
 
-router.delete('/removeUserFromSystem/:id' , removeUserFromSystem);
+router.delete('/removeUserFromSystem' , removeUserFromSystem);
 
 router.get('/viewDoctorApplication' , viewDoctorApplication);
-
-router.get('/viewPharmacistInformation' , viewPharmacistInformation);
-
-router.get('/viewPatientInformation' , viewPatientInformation);
 
 router.delete('/deleteHealthPackage' , deleteHealthPackage);
 
