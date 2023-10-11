@@ -1,5 +1,5 @@
 const express = require('express') //require or import express
-const {createPatient,deleteHealthPackage, editHealthPackage, addHealthPackage, viewRegisteredFamilyMembers,
+const {createPatient, viewRegisteredFamilyMembers,
     createPrescription,viewAllPrescriptions, addFamilyMember, selectDoctor,filterPrescriptions,
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, viewMyAppointments} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
@@ -9,11 +9,7 @@ router.post('/addPatient',createPatient);
 
 //router.get('/selectDoctorByName' , selectDoctorByName);
 
-router.delete('/deleteHealthPackage' , deleteHealthPackage);
 
-router.post('/editHealthPackage' , editHealthPackage);
-
-router.post('/addHealthPackage' , addHealthPackage);
 
 //router.get('/ViewselectDoctorDetails' , ViewselectDoctorDetails );
 

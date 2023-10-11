@@ -85,67 +85,184 @@ const viewPatientInformation = async (req, res) => {
       }
 }
 
+  
 const addHealthPackage = async (req,res)=>{
   try {
-    const {patientUsername , packageName} = req.body;
+    const {patientUsername, packageName} = req.body;
+
+    // Find the patient by name
     const patient = await Patient.findOne({ username: patientUsername });
-    if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' });
+  
+
+    if(!packageName || (packageName.toLowerCase()!="gold" && packageName.toLowerCase()!="silver" && packageName.toLowerCase()!="platinum")){
+      return res.status(404).json({ error: 'Package name not found or wrong package name.' });
     }
 
-  const price = 0;
-  const discountOnMedicine = 0;
-  const discountOnSession = 0;
-  const discountOnSubscription = 0;
-  if(packageName=="silver"){ //make this a lowercase
-    price = 3600;
-    discountOnSession = 0.4;
-    discountOnMedicine = 0.2;
-    discountOnSubscription = 0.1;
-  }  
-if(packageName=="Platinum"){
-    price = 6000;
-    discountOnSession = 0.6;
-    discountOnMedicine = 0.3;
-    discountOnSubscription = 0.15;
-}
-if(packageName=="Gold"){
-  price = 9000;
-  discountOnSession = 0.8;
-  discountOnMedicine = 0.4;
-  discountOnSubscription = 0.2;
-}
-
-const familyMembers = patient.familyMembers;
-familyMembers.forEach((familyMember) => {
-  if(familyMember.healthPackage){
-    familyMember.healthPackage.price = price - (price*discountOnSubscription);
-  }
-});
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+    
+    let price = 0;
+    let discountOnSession = 0;
+    let discountOnMedicine = 0;
+    let discountOnSubscription = 0;
+    
+    const healthPackage ={
+      name: packageName,
+      price,
+      discountOnSession,
+      discountOnMedicine,
+      discountOnSubscription
+    }
 
 
 
+    
+    if(healthPackage.name.toLowerCase() == 'silver'){
+      healthPackage.price=3600;
+      healthPackage.discountOnMedicine=0.4;
+      healthPackage.discountOnSession=0.2;
+      healthPackage.discountOnSubscription=0.1;
+    }
+    if(healthPackage.name.toLowerCase() == 'gold'){//make this case insensitive
+      healthPackage.price=6000;
+      healthPackage.discountOnMedicine=0.6;
+      healthPackage.discountOnSession=0.3;
+      healthPackage.discountOnSubscription=0.15;
+    }
+    if(healthPackage.name.toLowerCase() == 'platinum'){//make this case insensitive
+      healthPackage.price=9000;
+      healthPackage.discountOnMedicine=0.8;
+      healthPackage.discountOnSession=0.4;
+      healthPackage.discountOnSubscription=0.2;
+    }
+    if (!patient.healthPackage){
+    patient.healthPackage = healthPackage;
+    await patient.save();}
+    else {
+    return res.status(404).json({ error: 'Patient already has health package.' });}
 
-  // Create a new HealthPackage object
-  const healthPackage = {
-    packageName,
-    price,
+    /*
+    const relatives = patient.familyMembers;
+    if(relatives){
+    for (const relative of relatives) {
+      // Check if the relative is not empty (assuming each relative has name, nationalId, and gender properties)
+      if (relative.id) {
+        // Use Mongoose to search for a patient with matching credentials
+        const foundPatient = await Patient.findOne({Iid : relative.id});
+    
+        if (foundPatient && foundPatient.healthPackage) {
+          foundPatient.healthPackage.price = foundPatient.healthPackage.price -(foundPatient.healthPackage.price * patient.healthPackage.discountOnSubscription);
+        }
+        res.json(foundPatient);
+      }
+    }
+  }*/
 
-  };
 
-    // Add the family member to the patient's familyMembers array
-    patient.familyMembers.push(familyMember);
-
-    // Save the updated patient document
-    const updatedPatient = await patient.save();
-
-    res.status(201).json(updatedPatient);
+    res.json(patient);
+    
   } catch (error) {
-    res.status(500).json({ error: 'Failed to add family member' });
+    console.error(error);
+    res.status(500).json({ error: 'Could not add health package' });
   }
-};
-
   
+}
+
+const editHealthPackage = async (req,res)=>{
+  try {
+    const {patientUsername, packageName} = req.body;
+
+    // Find the patient by name
+    const patient = await Patient.findOne({ username: patientUsername });
+  
+
+    if(!packageName || (packageName.toLowerCase()!="gold" && packageName.toLowerCase()!="silver" && packageName.toLowerCase()!="platinum")){
+      return res.status(404).json({ error: 'Package name not found or wrong package name.' });
+    }
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+
+    if(!patient.healthPackage){
+      return res.status(404).json({ error: 'This patient does not have a health package.' });
+    }
+    
+    let price = 0;
+    let discountOnSession = 0;
+    let discountOnMedicine = 0;
+    let discountOnSubscription = 0;
+    
+    const healthPackage ={
+      name: packageName,
+      price,
+      discountOnSession,
+      discountOnMedicine,
+      discountOnSubscription
+    }
+
+
+
+    
+    if(healthPackage.name.toLowerCase() == 'silver'){//make this case insensitive
+      healthPackage.price=3600;
+      healthPackage.discountOnMedicine=0.4;
+      healthPackage.discountOnSession=0.2;
+      healthPackage.discountOnSubscription=0.1;
+    }
+    if(healthPackage.name.toLowerCase() == 'gold'){//make this case insensitive
+      healthPackage.price=6000;
+      healthPackage.discountOnMedicine=0.6;
+      healthPackage.discountOnSession=0.3;
+      healthPackage.discountOnSubscription=0.15;
+    }
+    if(healthPackage.name.toLowerCase() == 'platinum'){//make this case insensitive
+      healthPackage.price=9000;
+      healthPackage.discountOnMedicine=0.8;
+      healthPackage.discountOnSession=0.4;
+      healthPackage.discountOnSubscription=0.2;
+    }
+
+    patient.healthPackage = healthPackage;
+    await patient.save();
+
+    res.json(patient);
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Could not edit health package' });
+  }
+  
+}
+
+const deleteHealthPackage = async (req,res)=>{
+  try {
+    const {patientUsername} = req.body;
+
+    // Find the patient by name
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+
+    if(!patient.healthPackage){
+      return res.status(404).json({ error: 'This patient does not have a health package.' });
+    }
+    
+
+    patient.healthPackage = null;
+    await patient.save();
+
+    res.json(patient);
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Could not delete health package' });
+  }
+  
+}
 
 
 
@@ -156,5 +273,8 @@ module.exports = {
   viewDoctorApplication,
   viewPharmacistInformation,
   viewPatientInformation,
+  addHealthPackage,
+  editHealthPackage,
+  deleteHealthPackage,
  
  }; 

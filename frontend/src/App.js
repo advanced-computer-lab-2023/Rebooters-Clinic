@@ -5,6 +5,7 @@ import DoctorHome from "./pages/DoctorHome";
 import PatientHome from "./pages/PatientHome";  
 import Prescription from "./components/Prescription";
 import nextPage from "./pages/nextPage";
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -16,6 +17,8 @@ function App() {
           <Route path="/doctor-home" element={<DoctorHome />} />
           <Route path="/patient-home" element={<PatientHome />} />
           <Route path="/nextPage" element={<nextPage />} />
+          <Route path="/admin" element={<Admin />} />
+
         </Routes>
       </BrowserRouter>
     </div>
