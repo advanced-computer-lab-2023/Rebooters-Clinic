@@ -209,8 +209,15 @@ const filterByDateRange = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while filtering appointments' });
   }
 };
-
+const viewAllDoctors = async (req, res) => {
+  try {
+      const doctors = await DoctorRe.find({});
+    res.status(200).json(doctors);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching doctors' });
+  }
+};
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange  };
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors  };

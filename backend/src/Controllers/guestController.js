@@ -18,8 +18,8 @@ const createPatient = async (req, res) => {
 
 const createNewDoctorRequest =  async (req, res) => {
   try {
-    const {username,name,email,password,dateOfBirth,hourlyRate,affiliation,educationalBackground} = req.body; 
-    const newDoctorRequest = new NewDoctorRequest({username,name,email,password,dateOfBirth,hourlyRate,affiliation,educationalBackground});
+    const {username,name,email,password,dateOfBirth,hourlyRate,speciality,affiliation,educationalBackground} = req.body; 
+    const newDoctorRequest = new NewDoctorRequest({username,name,email,password,dateOfBirth,hourlyRate,speciality,affiliation,educationalBackground});
     await newDoctorRequest.save();
     res.status(201).json(newDoctorRequest);
   } catch (error) {
