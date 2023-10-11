@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"; // Import Link for navigation
 import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorSelection from "../components/DoctorSelection"
 import Prescription from "../components/Prescription";
+import AddFamilyMember from "../components/AddFamilyMember";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -32,6 +33,9 @@ const PatientHome = () => {
       </div>
       <div className="mt-4">
         <Prescription />
+      </div>
+      <div className="mt-4">
+        <AddFamilyMember />
       </div>
     </div>
     
