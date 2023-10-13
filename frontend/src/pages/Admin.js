@@ -10,9 +10,18 @@ function Admin() {
   const [password, setPassword] = useState('');
   const [userToRemove, setUserToRemove] = useState('');
   const [newDoctorRequestData, setNewDoctorRequestData] = useState([]);
+  const [submissionStatus, setSubmissionStatus] = useState(null); 
+  const [message, setMessage] = useState("");
 
 
   const addAdministrator = async () => {
+    if (
+      !adminUsername || !password
+    ) {
+      setSubmissionStatus("error");
+      setMessage("Please fill in all required fields.");
+      return;
+    }
     try {
       const response = await fetch(`/api/administrator/addAdministrator`, {
         method: 'POST',
@@ -28,12 +37,21 @@ function Admin() {
       console.log('Administrator added successfully');
       setAdminUsername('');
       setPassword('');
+      setSubmissionStatus("success");
+      setMessage("Administrator added successfully");
     } catch (error) {
       console.error(error);
     }
   };
 
   const removeUserFromSystem = async () => {
+    if (
+      !userToRemove 
+    ) {
+      setSubmissionStatus("error");
+      setMessage("Please fill in all required fields.");
+      return;
+    }
     try {
       const response = await fetch(`/api/administrator/removeUserFromSystem`, {
         method: 'DELETE',
@@ -45,8 +63,10 @@ function Admin() {
       if (!response.ok) {
         throw new Error('Failed to remove pharmacist/patient');
       }
-      console.log('Pharmacist/patient removed successfully');
+      console.log('Doctor/Patient/Admin removed successfully');
       setUserToRemove('');
+      setSubmissionStatus("success");
+      setMessage("Doctor/Patient/Admin removed successfully");
     } catch (error) {
       console.error(error);
     }
@@ -74,7 +94,13 @@ function Admin() {
 
   return (
     <div className="container mt-4">
-      <h1 className="mb-4">Administrator and Pharmacist Management</h1>
+      <h1 className="mb-4">Administrator Dashboard</h1>
+      {submissionStatus === "success" && (
+          <div className="alert alert-success">{message}</div>
+        )}
+        {submissionStatus === "error" && (
+          <div className="alert alert-danger">{message}</div>
+        )}
       <div className="mb-3">
         <h2>Add Administrator</h2>
         <input

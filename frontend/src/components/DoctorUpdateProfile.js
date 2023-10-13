@@ -6,6 +6,7 @@ const DoctorUpdateProfile = () => {
     email: "",
     hourlyRate: "",
     affiliation: "",
+    doctorUsername: "",
   });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -23,10 +24,10 @@ const DoctorUpdateProfile = () => {
     if (!formData.email || !formData.hourlyRate || !formData.affiliation) {
         setError("Please fill in all fields.");
         setMessage("");
-        return; // Prevent form submission
+        return;
       }
     try {
-      const response = await fetch("/api/doctor/doctor-profile", {
+      const response = await fetch("/api/doctor/doctor-update-profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +38,12 @@ const DoctorUpdateProfile = () => {
       if (response.ok) {
         setMessage("Profile updated successfully");
         setError("");
-        window.location.reload();
+        setFormData({
+          email: "",
+          hourlyRate: "",
+          affiliation: "",
+          doctorUsername: "",
+        })
       } else {
         const errorData = await response.json();
         setError(errorData.error);
@@ -55,6 +61,19 @@ const DoctorUpdateProfile = () => {
       {message && <p className="text-success">{message}</p>}
       {error && <p className="text-danger">{error}</p>}
       <form onSubmit={handleSubmit}>
+      <div className="mb-3">
+          <label htmlFor="doctorUsername" className="form-label">
+            Doctor Username:
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="doctorUsername"
+            name="doctorUsername"
+            value={formData.doctorUsername}
+            onChange={handleChange}
+          />
+        </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
             Email:

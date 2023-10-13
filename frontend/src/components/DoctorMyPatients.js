@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const DoctorMyPatients = () => {
+const DoctorMyPatients = ({ doctorUsername }) => {
   const [patientsData, setPatientsData] = useState([]);
   const [error, setError] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
+  const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =useState([]);
 
   useEffect(() => {
-    const viewPatients = async () => {
-      const response = await fetch("/api/doctor/doctor-mypatients");
-      const json = await response.json();
-      if (response.ok) {
-        setPatientsData(json);
-      }
-    };
+    // Call the viewPatients function when the component mounts
     viewPatients();
   }, []);
+
+  const viewPatients = async () => {
+    const response = await fetch("/api/doctor/doctor-mypatients", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ doctorUsername: doctorUsername }),
+    });
+    const json = await response.json();
+    if (response.ok) {
+      setPatientsData(json);
+    }
+  };
 
   const handleRowClick = async (patient) => {
     try {
@@ -25,24 +34,44 @@ const DoctorMyPatients = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ patientUsername: patient.username }),
+        body: JSON.stringify({
+          patientUsername: patient.username,
+          patientName: patient.name,
+        }),
       });
       const json = await response.json();
       if (response.ok && json.length > 0) {
-        setSelectedPatient(patient);
+        setSelectedPatient(json.patient);
         setSelectedPatientProfile(json[0]);
       } else {
         setError("An error occurred while fetching patient profile");
       }
+
+      const response2 = await fetch(
+        "/api/doctor/doctor-patients/get-prescriptions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ patientName: patient.name }),
+        }
+      );
+      const json2 = await response2.json();
+      if (response2.ok && json.length > 0) {
+        setSelectedPatientPrescriptions(json2);
+      } else {
+        setError("An error occurred while fetching patient prescriptions");
+      }
     } catch (error) {
-      setError("An error occurred while fetching patient profile");
+      setError("An error occurred while fetching patient prescriptions");
     }
   };
 
-  
   const handleCloseCard = () => {
     setSelectedPatient(null);
     setSelectedPatientProfile(null);
+    setSelectedPatientPrescriptions([]);
   };
   return (
     <div>
@@ -83,7 +112,7 @@ const DoctorMyPatients = () => {
       ) : (
         <p>Loading...</p>
       )}
-            {selectedPatientProfile && (
+      {selectedPatientProfile && (
         <div className="card mt-3">
           <div className="card-body">
             <h5 className="card-title">Patient Profile</h5>
@@ -110,6 +139,29 @@ const DoctorMyPatients = () => {
               <h5>Patient Health Record:</h5>
               <hr></hr>
               <h5>Patient Prescriptions:</h5>
+              {selectedPatientPrescriptions.map((prescription) => (
+                <div key={prescription._id}>
+                  <h6>Prescription Date: {prescription.date}</h6>
+                  <p>
+                    <strong>Medication:</strong> {prescription.medication}
+                  </p>
+                  <p>
+                    <strong>Dosage:</strong> {prescription.dosage}
+                  </p>
+                  <p>
+                    <strong>Instructions:</strong> {prescription.instructions}
+                  </p>
+                  <p>
+                    <strong>Doctor: </strong>
+                    {prescription.doctorName}
+                  </p>
+                  {prescription.filled ? (
+                    <p>Status: Filled</p>
+                  ) : (
+                    <p>Status: Not Filled</p>
+                  )}
+                </div>
+              ))}
             </p>
             <button className="btn btn-primary" onClick={handleCloseCard}>
               Close
@@ -117,7 +169,6 @@ const DoctorMyPatients = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

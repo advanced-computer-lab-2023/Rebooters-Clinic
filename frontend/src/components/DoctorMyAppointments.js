@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const DoctorMyAppointments = () => {
+const DoctorMyAppointments = ({doctorUsername}) => {
   const [appointmentsData, setAppointmentsData] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
+  const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =useState([]);
   const [error, setError] = useState("");
   const [filterByStatusData, setFilterByStatusData] = useState([]);
   const [filterByDateData, setFilterByDateData] = useState([]);
@@ -26,6 +27,7 @@ const DoctorMyAppointments = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ doctorUsername: doctorUsername}),
       });
       const json = await response.json();
       if (response.ok) {
@@ -48,7 +50,7 @@ const DoctorMyAppointments = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status , doctorUsername: doctorUsername}),
       });
       const json = await response.json();
       if (response.ok) {
@@ -72,6 +74,7 @@ const DoctorMyAppointments = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({ doctorUsername: doctorUsername}),
       });
       const json = await response.json();
       if (response.ok) {
@@ -94,7 +97,7 @@ const DoctorMyAppointments = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ startDate, endDate }),
+        body: JSON.stringify({ startDate, endDate , doctorUsername: doctorUsername}),
       });
       const json = await response.json();
       if (response.ok) {
@@ -111,6 +114,7 @@ const DoctorMyAppointments = () => {
   };
 
   const handleRowClick = async (appointment) => {
+    setSelectedPatientPrescriptions([]);
     try {
       const response = await fetch("/api/doctor/doctor-patients-username", {
         method: "POST",
@@ -125,6 +129,20 @@ const DoctorMyAppointments = () => {
         setSelectedPatientProfile(json[0]);
       } else {
         setError("An error occurred while fetching patient profile");
+      }
+      const response2 = await fetch(
+        "/api/doctor/doctor-patients/get-prescriptions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ patientName: json[0].name }),
+        }
+      );
+      const json2 = await response2.json();
+      if (response2.ok && json2.length > 0) {
+        setSelectedPatientPrescriptions(json2);
       }
     } catch (error) {
       setError("An error occurred while fetching patient profile");
@@ -149,6 +167,7 @@ const DoctorMyAppointments = () => {
   const handleCloseCard = () => {
     setSelectedAppointment(null);
     setSelectedPatientProfile(null);
+    setSelectedPatientPrescriptions([]);
   };
 
   const sortedAppointments = [...appointmentsData].sort((a, b) => {
@@ -313,6 +332,30 @@ const DoctorMyAppointments = () => {
               <h5>Patient Health Record:</h5>
               <hr></hr>
               <h5>Patient Prescriptions:</h5>
+              {selectedPatientPrescriptions.length > 0 && selectedPatientPrescriptions.map((prescription) => (
+                <div key={prescription._id}>
+                  <h6>Prescription Date: {prescription.date}</h6>
+                  <p>
+                    <strong>Medication:</strong> {prescription.medication}
+                  </p>
+                  <p>
+                    <strong>Dosage:</strong> {prescription.dosage}
+                  </p>
+                  <p>
+                    <strong>Instructions:</strong> {prescription.instructions}
+                  </p>
+                  <p>
+                    <strong>Doctor: </strong>
+                    {prescription.doctorName}
+                  </p>
+                  {prescription.filled ? (
+                    <p>Status: Filled</p>
+                  ) : (
+                    <p>Status: Not Filled</p>
+                  )}
+                </div>
+              ))}
+              
             </p>
             <button className="btn btn-primary" onClick={handleCloseCard}>
               Close

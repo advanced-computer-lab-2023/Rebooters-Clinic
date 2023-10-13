@@ -1,8 +1,9 @@
 const Doctor = require('../Models/doctorModel');
 const Patient = require('../Models/patientModel');
 const Appointment = require('../Models/appointmentModel'); 
+const Prescription = require('../Models/prescriptionModel'); 
 const { default: mongoose } = require('mongoose');
-const doctorUsername = 'dummydoctor'; //HARD CODING DOCTOR USERNAME
+//const doctorUsername = 'dummydoctor'; //HARD CODING DOCTOR USERNAME
 
 /*const dummyDoctor = new Doctor({
   username: 'dummydoctor',
@@ -46,12 +47,11 @@ dummyAppointment.save()*/
 
 const viewProfile = async (req, res) => {
     try {
-        //const doctorUsername = req.body.username;
+        const {doctorUsername} = req.body;
         const doctor = await Doctor.findOne({ username : doctorUsername });
         if (!doctor) {
             return res.status(404).json({ error: 'Doctor not found' });
           }
-      //res.render("profile", { data: profileData }); 
       res.status(200).json(doctor);
     } catch (error) {
       res.status(500).json({ error: 'An error occurred while fetching profile data' });
@@ -60,7 +60,7 @@ const viewProfile = async (req, res) => {
   
 const updateProfile = async (req, res) => {
     try {
-      //const doctorUsername = req.body.username;
+      const {doctorUsername} = req.body;
       const { email, hourlyRate, affiliation } = req.body;
       await Doctor.findOneAndUpdate(
         { username: doctorUsername }, {
@@ -76,7 +76,7 @@ const updateProfile = async (req, res) => {
   
 const viewMyPatients = async (req, res) => {
     try {
-        //const doctorUsername = req.body.username;
+      const {doctorUsername} = req.body;
       const appointments  = await Appointment.find({ doctor: doctorUsername });
       const patientUsernames = appointments.map((appointment) => appointment.patient);
       const patients = await Patient.find({ username: { $in: patientUsernames } });
@@ -109,7 +109,23 @@ const searchPatientByUsername = async (req, res) => {
   try {
       const { patientUsername } = req.body;
       const patient = await Patient.find({username : patientUsername}); 
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found or no prescriptions found' });
+      }
     res.status(200).json(patient);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while searching for patients' });
+  }
+};
+
+const searchPatientPrescriptionsByName = async (req, res) => {
+  try {
+      const { patientName } = req.body;
+      const prescriptions = await Prescription.find({patientName : patientName}); 
+      if (!prescriptions) {
+        return res.status(404).json({ error: 'Patient not found or no prescriptions found' });
+      }
+    res.status(200).json(prescriptions);
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while searching for patients' });
   }
@@ -117,7 +133,7 @@ const searchPatientByUsername = async (req, res) => {
 
 const viewMyAppointments = async (req, res) => {
   try {
-      //const doctorUsername = req.body.username;
+    const {doctorUsername} = req.body;
     const currentDateTime = new Date();
     const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
     res.status(200).json(upcomingAppointments);
@@ -128,7 +144,7 @@ const viewMyAppointments = async (req, res) => {
   
 const filterByUpcomingDate = async (req, res) => {
     try {
-        //const doctorUsername = req.body.username;
+      const {doctorUsername} = req.body;
       const currentDateTime = new Date();
       const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
       const filteredAppointments = upcomingAppointments.filter(appointment => {
@@ -148,7 +164,7 @@ const filterByUpcomingDate = async (req, res) => {
 
 const filterByStatus = async (req, res) => {
     try {
-      //const doctorUsername = req.body.username;
+      const {doctorUsername} = req.body;
       const { status } = req.body;
       const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
       const filteredAppointments = upcomingAppointments.filter(appointment => {
@@ -163,7 +179,7 @@ const filterByStatus = async (req, res) => {
 
 const selectPatient = async (req, res) => {
   try {
-    //const doctorUsername = req.body.username;
+    const {doctorUsername} = req.body;
     const { patientUsernames } = req.body;
     const doctor = await Doctor.findOne({ doctorUsername });
 
@@ -181,7 +197,7 @@ const selectPatient = async (req, res) => {
 
 const filterByDateRange = async (req, res) => {
   try {
-    const { startDate, endDate } = req.body;
+    const { startDate, endDate, doctorUsername } = req.body;
     const doctor = await Doctor.findOne({ doctorUsername });
     const startDateTime = new Date(startDate);
     const endDateTime = new Date(endDate);
@@ -211,7 +227,7 @@ const filterByDateRange = async (req, res) => {
 };
 const viewAllDoctors = async (req, res) => {
   try {
-      const doctors = await DoctorRe.find({});
+      const doctors = await Doctor.find({});
     res.status(200).json(doctors);
   } catch (error) {
     res.status(500).json({ error: 'An error occurred while fetching doctors' });
@@ -220,4 +236,4 @@ const viewAllDoctors = async (req, res) => {
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors  };
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName  };
