@@ -31,3 +31,9 @@ header a {
   padding: 20px;
   margin: 0 auto;
 }
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
+}

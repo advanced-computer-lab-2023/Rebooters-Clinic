@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddHealthPackage from "../components/AddHealthPackage";
+import EditHealthPackage from "../components/EditHealthPackage";
+import DeleteHealthPackage from "../components/DeleteHealthPackage";
+import ViewAllPatients from "../components/ViewAllPatients";
 
 function Admin() {
   const [adminUsername, setAdminUsername] = useState('');
@@ -147,6 +150,16 @@ function Admin() {
       <div className="mt-4">
           <AddHealthPackage />
         </div>
+        <div className="mt-4">
+          <EditHealthPackage />
+        </div>  
+        <div className="mt-4">
+          <DeleteHealthPackage />
+        </div>
+        <div className="mt-4">
+          <ViewAllPatients />
+        </div>
+
     </div>
   );
 }

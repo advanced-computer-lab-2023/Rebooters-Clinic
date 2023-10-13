@@ -4,19 +4,20 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 
-function AddHealthPackage() {
+function EditHealthPackage() {
   const [patientUsername, setPatientUsername] = useState("");
   const [packageName, setPackageName] = useState("");
   const [patientInfo, setPatientInfo] = useState(null);
-  const [error, setError] = useState("");
-
-  const handleAddHealthPackage = async () => {
-    if (!patientUsername || !packageName) {
-      setError("Please fill in all fields");
-      return;
-    }
+  const [error,setError]= useState("");
+ 
+ 
+  const handleEditHealthPackage = async () => {
+   if (!patientUsername||!packageName){
+    setError("please fill in all feilds");
+    return;
+   }
     try {
-      const response = await fetch("/api/administrator/addHealthPackage", {
+      const response = await fetch("/api/administrator/editHealthPackage", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -31,16 +32,16 @@ function AddHealthPackage() {
       }
 
       const data = await response.json();
-
+      
       setPatientInfo(data);
     } catch (error) {
       console.error(error);
     }
   };
-
+ 
   return (
     <Container>
-      <h1>Add Health Package</h1>
+      <h1>Edit Health Package</h1>
       <Form>
         <Form.Group>
           <Form.Label>Patient Username:</Form.Label>
@@ -58,8 +59,8 @@ function AddHealthPackage() {
             onChange={(e) => setPackageName(e.target.value)}
           />
         </Form.Group>
-        <Button variant="primary" onClick={handleAddHealthPackage}>
-          Add Health Package
+        <Button variant="primary" onClick={handleEditHealthPackage}>
+          Edit Health Package
         </Button>
         {error && <p className="error-message">{error}</p>}
       </Form>
@@ -96,6 +97,7 @@ function AddHealthPackage() {
       )}
     </Container>
   );
+
 }
 
-export default AddHealthPackage;
+export default EditHealthPackage;

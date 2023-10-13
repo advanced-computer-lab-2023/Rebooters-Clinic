@@ -57,7 +57,16 @@ const viewDoctorApplication = async (req, res) => {
       }
 };
 
-  
+const viewAllPatients = async (req, res) => {
+  try {
+    const allPatients = await Patient.find();
+    res.status(200).json(allPatients);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching patients' });
+  }
+};
+
 const addHealthPackage = async (req,res)=>{
   try {
     const {patientUsername, packageName} = req.body;
@@ -246,5 +255,6 @@ module.exports = {
   addHealthPackage,
   editHealthPackage,
   deleteHealthPackage,
+  viewAllPatients
  
  }; 
