@@ -8,10 +8,12 @@ const DoctorRegistrationRequest = () => {
     password: "",
     dateOfBirth: "",
     hourlyRate: "",
-    speciality:"",
+    speciality: "",
     affiliation: "",
     educationalBackground: "",
   });
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +24,18 @@ const DoctorRegistrationRequest = () => {
   };
 
   const handleAddDoctorRequest = async () => {
+    // Check if any required fields are empty
+    if (
+      !newDoctorRequest.username ||
+      !newDoctorRequest.name ||
+      !newDoctorRequest.email ||
+      !newDoctorRequest.password ||
+      !newDoctorRequest.dateOfBirth
+    ) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
+
     try {
       const response = await fetch("/api/guest/createNewDoctorRequest", {
         method: "POST",
@@ -32,10 +46,10 @@ const DoctorRegistrationRequest = () => {
       });
 
       if (response.ok) {
-        console.log("Doctor registration request added successfully!");
-        // You can add further logic here if needed
+        setErrorMessage("Created a new request");
       } else {
-        console.error("Error adding doctor registration request.");
+        const errorData = await response.json();
+        setErrorMessage(errorData.error);
       }
     } catch (error) {
       console.error("An error occurred while adding the doctor request:", error);
@@ -45,7 +59,10 @@ const DoctorRegistrationRequest = () => {
   return (
     <div className="card mt-4">
       <div className="card-body">
-        <h2>Register as a Doctor</h2>
+        <h2>Request to register as a Doctor</h2>
+        {errorMessage && (
+          <div className="alert alert-danger">{errorMessage}</div>
+        )}
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
             Username:
@@ -71,6 +88,7 @@ const DoctorRegistrationRequest = () => {
             value={newDoctorRequest.name}
             onChange={handleInputChange}
           />
+        </div>
         </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
@@ -162,9 +180,8 @@ const DoctorRegistrationRequest = () => {
             value={newDoctorRequest.educationalBackground}
             onChange={handleInputChange}
           />
-        </div>
         <button className="btn btn-primary" onClick={handleAddDoctorRequest}>
-          send request as a Doctor
+          Send request as a Doctor
         </button>
       </div>
     </div>

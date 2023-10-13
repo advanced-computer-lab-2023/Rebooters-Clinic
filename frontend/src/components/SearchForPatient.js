@@ -18,7 +18,6 @@ const SearchForPatient = () => {
     setSearchResults(json);
   };
 
-
   return (
     <div>
       <form onSubmit={handleSearch}>
@@ -30,21 +29,28 @@ const SearchForPatient = () => {
           value={name}
           className="form-control"
         />
-        <button onClick={handleSearch} className="btn btn-primary" >Search</button>
+        <button onClick={handleSearch} className="btn btn-primary">
+          Search
+        </button>
       </form>
       {searchResults.length > 0 && (
-        <div >
+        <div>
           <h4>Search Results</h4>
           <ul>
             {searchResults.map((result) => (
-              <li key={result.id}>
+              <li key={result._id}>
                 <p>ID: {result._id}</p>
                 <p>Name: {result.name}</p>
                 <p>Email: {result.email}</p>
                 <p>Date of Birth: {new Date(result.dateOfBirth).toLocaleDateString()}</p>
                 <p>Gender: {result.gender}</p>
                 <p>Mobile Number: {result.mobile_number}</p>
-                <p>Emergency Contact: {result.emergency_contact}</p>
+                <p>
+                  Emergency Contact:{" "}
+                  {`${result.emergency_contact.firstName} ${
+                    result.emergency_contact.middleName
+                  } ${result.emergency_contact.lastName} (${result.emergency_contact.mobile_number})`}
+                </p>
               </li>
             ))}
           </ul>

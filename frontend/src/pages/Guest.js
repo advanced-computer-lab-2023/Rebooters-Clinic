@@ -1,13 +1,19 @@
 //import React from 'react';
+import DoctorRegistrationRequest from "../components/DoctorRegistrationRequest";
+import AddPatient from "../components/AddPatient";
+
 
 const Guest = () => {
   return (
     <div>
-      <h1>Welcome to Registration Page</h1>
-      <button>Register as Patient</button>
-      <button>Request to Register as Dr.</button>
+<div className="mt-4">
+        <DoctorRegistrationRequest />
     </div>
-  );
-}
+    <div className="mt-4">
+    <AddPatient />
+</div>
+</div>
+
+);}
 
 export default Guest;

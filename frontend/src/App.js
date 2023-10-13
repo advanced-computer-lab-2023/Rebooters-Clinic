@@ -3,9 +3,8 @@ import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
 import DoctorHome from "./pages/DoctorHome";
 import PatientHome from "./pages/PatientHome";  
-import Prescription from "./components/Prescription";
-import nextPage from "./pages/nextPage";
 import Admin from "./pages/Admin";
+import Guest from "./pages/Guest";
 
 function App() {
   return (
@@ -13,10 +12,10 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/"/>
+          <Route path="/guest" element={<Guest />} />
           <Route path="/doctor-home" element={<DoctorHome />} />
           <Route path="/patient-home" element={<PatientHome />} />
-          <Route path="/nextPage" element={<nextPage />} />
           <Route path="/admin" element={<Admin />} />
 
         </Routes>

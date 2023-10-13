@@ -42,7 +42,10 @@ function ViewAllPatients() {
               patients.map((patient) => (
                 <Card key={patient._id} className="mb-3">
                   <Card.Body>
-                    <Card.Title>{patient.username}</Card.Title>
+                    <Card.Title>{patient.name}</Card.Title>
+                    <Card.Text>
+                      <strong>Username:</strong> {patient.username}
+                    </Card.Text>
                     <Card.Text>
                       <strong>Email:</strong> {patient.email}
                     </Card.Text>

@@ -17,6 +17,8 @@ const AddPatient = () => {
     },
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -38,7 +40,20 @@ const AddPatient = () => {
     }
   };
 
+
   const handleAddPatient = async () => {
+    if (
+      !newPatient.username ||
+      !newPatient.name ||
+      !newPatient.email ||
+      !newPatient.password ||
+      !newPatient.dateOfBirth ||
+      !newPatient.gender ||
+      !newPatient.mobile_number
+    ) {
+      setErrorMessage("Please fill in all required fields.");
+      return;
+    }
     try {
       const response = await fetch("/api/patient/addPatient", {
         method: "POST",
@@ -49,10 +64,10 @@ const AddPatient = () => {
       });
 
       if (response.ok) {
-        console.log("Patient added successfully!");
-        // You can add further logic here if needed
+        setErrorMessage("Patient added successfully!");
       } else {
-        console.error("Error adding patient to the database.");
+        const errorData = await response.json();
+        setErrorMessage(errorData.error);
       }
     } catch (error) {
       console.error("An error occurred while adding the patient:", error);
@@ -63,6 +78,9 @@ const AddPatient = () => {
     <div className="card mt-4">
       <div className="card-body">
         <h2>Add New Patient</h2>
+        {errorMessage && (
+          <div className="alert alert-danger">{errorMessage}</div>
+        )}
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
             Username:
