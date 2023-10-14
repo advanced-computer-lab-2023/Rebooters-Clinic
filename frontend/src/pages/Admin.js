@@ -60,14 +60,23 @@ function Admin() {
         },
         body: JSON.stringify({ username: userToRemove }),
       });
+      const data = await response.json();
       if (!response.ok) {
         throw new Error('Failed to remove pharmacist/patient');
       }
-      console.log('Doctor/Patient/Admin removed successfully');
-      setUserToRemove('');
-      setSubmissionStatus("success");
-      setMessage("Doctor/Patient/Admin removed successfully");
+      if (response.status === 200) {
+        console.log('Doctor/Patient/Admin removed successfully');
+        setUserToRemove('');
+        setSubmissionStatus("success");
+        setMessage("Doctor/Patient/Admin removed successfully");
+      } else {
+        console.log(data);
+        setSubmissionStatus("error");
+        setMessage('Failed to remove pharmacist/patient');
+      }
     } catch (error) {
+      setSubmissionStatus("error");
+      setMessage('Failed to remove pharmacist/patient');
       console.error(error);
     }
   };

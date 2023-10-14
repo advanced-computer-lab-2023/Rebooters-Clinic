@@ -12,7 +12,7 @@ router.post("/doctor-patients", viewAllPatients);
 
 router.get("/viewAllDoctors",viewAllDoctors);
 
-router.post("/doctor-patients", searchPatientByName);
+router.post("/doctor-patients-name", searchPatientByName);
 router.post("/doctor-patients-username", searchPatientByUsername); 
 router.post("/doctor-patients/upcoming-date-filter", filterByUpcomingDate);
 router.post("/doctor-patients/status-filter", filterByStatus);

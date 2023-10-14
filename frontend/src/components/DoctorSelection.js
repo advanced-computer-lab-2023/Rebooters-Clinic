@@ -5,8 +5,8 @@ const DoctorSelection = () => {
   const [doctorDetails, setDoctorDetails] = useState(null);
   const [searchCriteria, setSearchCriteria] = useState({
     speciality: "",
+    name: "",
     date: "",
-    time: "",
   });
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -21,8 +21,8 @@ const DoctorSelection = () => {
     // Check if all input fields are empty
     if (
       searchCriteria.speciality === "" &&
-      searchCriteria.date === "" &&
-      searchCriteria.time === ""
+      searchCriteria.name === "" &&
+      searchCriteria.date === "" 
     ) {
       setErrorMessage("Please fill in at least one search criteria.");
       return;
@@ -79,7 +79,7 @@ const DoctorSelection = () => {
   return (
     <div>
       <div>
-        <h4>Search for a doctor:</h4>
+        <h4>Search/filter Doctor(s):</h4>
         <input
           type="text"
           placeholder="Speciality"
@@ -87,22 +87,23 @@ const DoctorSelection = () => {
           value={searchCriteria.speciality}
           onChange={handleSearchCriteriaChange}
         />
-        <input
+          <input
           type="text"
+          placeholder="Name"
+          name="name"
+          value={searchCriteria.name}
+          onChange={handleSearchCriteriaChange}
+        />
+        <button onClick={() => handleSearchDoctors("findDoctor")}>Search (By Speciality or/and Name)</button>
+        <br></br>
+        <input
+          type="datetime-local"
           placeholder="Date"
           name="date"
           value={searchCriteria.date}
           onChange={handleSearchCriteriaChange}
         />
-        <input
-          type="text"
-          placeholder="Time"
-          name="time"
-          value={searchCriteria.time}
-          onChange={handleSearchCriteriaChange}
-        />
-        <button onClick={() => handleSearchDoctors("filterDoctor")}>Search (Filter)</button>
-        <button onClick={() => handleSearchDoctors("findDoctor")}>Search (Find)</button>
+        <button onClick={() => handleSearchDoctors("filterDoctor")}>Search (Filter by Speciality and/or availability)</button>
       </div>
 
       {errorMessage && <p style={errorStyle}>{errorMessage}</p>}

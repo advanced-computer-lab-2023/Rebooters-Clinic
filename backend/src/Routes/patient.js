@@ -25,7 +25,7 @@ router.post('/findDoctor' , findDoctor);
 
 router.post('/filterDoctor' , filterDoctor);
 
-router.get('/viewRegisteredFamilyMembers' , viewRegisteredFamilyMembers);
+router.post('/viewRegisteredFamilyMembers' , viewRegisteredFamilyMembers);
 
 router.post('/filterAppointmentsByDate', filterAppointmentsByDate);
 

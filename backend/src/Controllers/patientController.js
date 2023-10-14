@@ -380,47 +380,45 @@ const findDoctor = async (req, res) => {
 // Define a function to filter doctors by speciality and available slots
 const filterDoctor = async (req, res) => {
   try {
-    const { speciality, date, time } = req.body; // Get speciality, date, and time from the request body
+    const { speciality, date } = req.body; // Get speciality, date, and time from the request body
 
-    if (!speciality && !date && !time) {
+    if (!speciality && !date ) {
       return res.status(400).json({ error: 'Please provide at least one search parameter (speciality, date, or time).' });
     }
 
-    // Check if both time and date are required
-    if (time && !date) {
-      return res.status(400).json({ error: 'Date is required when specifying a time.' });
+    if (speciality && !date) {
+      filteredDoctors = await Doctor.find({ speciality: { $regex: new RegExp(speciality, 'i') } });
+      return res.status(200).json(filteredDoctors);
+    }
+    else if (!speciality && date) {
+      const combinedDateTime = new Date(`${date}` + ":00.000+00:00");
+      const appointments = await Appointment.find({ datetime: combinedDateTime });
+      const doctorsWithAppointments = appointments.map((appointment) => appointment.doctor);
+      filteredDoctors = await Doctor.find({ username: { $nin: doctorsWithAppointments } });
+      return res.status(200).json(filteredDoctors)
     }
 
-    // Build a query based on provided parameters
-    const query = {};
-
-    if (speciality) {
-      query.speciality = { $regex: new RegExp(speciality, 'i') }; // 'i' flag makes it case-insensitive
+    else if (speciality && date) {
+      const combinedDateTime = new Date(`${date}` + ":00.000+00:00");
+      const appointments = await Appointment.find({ datetime: combinedDateTime });
+      const doctorsWithAppointments = appointments.map((appointment) => appointment.doctor);
+      filteredDoctors = await Doctor.find({
+        speciality: { $regex: new RegExp(speciality, 'i') },
+        username: { $nin: doctorsWithAppointments },
+      });
+      return res.status(200).json(filteredDoctors);
+    }
+    else {
+      return res.status(400).json({ error: 'Please provide at least one search parameter (speciality or date).' });
     }
 
-    if (date && time) {
-      query.availableSlots = {
-        $elemMatch: {
-          date: new Date(date),
-          time: time.toLowerCase(), // Convert time to lowercase
-        },
-      };
-    }
-
-    // Use the query to filter doctors
-    const filteredDoctors = await Doctor.find(query);
-
-    if (filteredDoctors.length === 0) {
-      return res.status(404).json({ message: 'No matching doctors found.' });
-    }
-
-    // Return the list of matching doctors
-    res.status(200).json(filteredDoctors);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while filtering doctors.' });
   }
 };
+
+
 
 
 

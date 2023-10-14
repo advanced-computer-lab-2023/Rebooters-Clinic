@@ -36,7 +36,9 @@ const removeUserFromSystem = async (req, res) => {
        // return res.status(404).json({ message: 'User not found' });
       //}
     //}
-    
+    if (!removedDoctor && !removedPatient && !removedAdmin) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     res.status(200).json({ message: 'User removed successfully' });
   } catch (error) {

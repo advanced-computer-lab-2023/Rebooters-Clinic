@@ -7,7 +7,7 @@ const SearchForPatient = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    const response = await fetch("/api/doctor/doctor-patients", {
+    const response = await fetch("/api/doctor/doctor-patients-name", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
