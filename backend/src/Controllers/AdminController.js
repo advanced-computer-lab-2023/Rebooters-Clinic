@@ -248,6 +248,46 @@ const deleteHealthPackage = async (req,res)=>{
 }
 
 
+const approveDoctorRequest = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const request = await NewDoctorRequest.findOne({ username: username });
+
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    request.status = 'accepted';
+    await request.save();
+
+    res.status(200).json({ message: 'Request accepted' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while approving the request' });
+  }
+};
+
+const rejectDoctorRequest = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const request = await NewDoctorRequest.findOne({ username: username });
+
+    if (!request) {
+      return res.status(404).json({ error: 'Request not found' });
+    }
+
+    request.status = 'rejected';
+    await request.save();
+
+    res.status(200).json({ message: 'Request rejected' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while rejecting the request' });
+  }
+};
+
+
+
 
     
 module.exports = {  
@@ -257,6 +297,8 @@ module.exports = {
   addHealthPackage,
   editHealthPackage,
   deleteHealthPackage,
-  viewAllPatients
+  viewAllPatients,
+  approveDoctorRequest,
+  rejectDoctorRequest
  
  }; 
