@@ -17,7 +17,8 @@ const appointmentSchema = new Schema({
   status: {
     type: String,
     required: true,
-    enum: ['Scheduled', 'Cancelled', 'Done'], 
+    enum: ['Upcoming', 'Completed', 'Cancelled', 'Rescheduled'], 
+    default: 'Upcoming',
   },
   price: {
     type: Number, 

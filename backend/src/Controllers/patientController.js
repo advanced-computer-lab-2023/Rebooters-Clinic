@@ -522,7 +522,86 @@ const viewMyAppointments = async (req, res) => {
   }
 };
 
+const viewWallet = async (req, res) => {
+  try {
+    const { patientUsername } = req.body;
+    const patient = await Patient.findOne({ username : patientUsername });
+    if (!patient) {
+      res.status(404).json({ error: 'Patient not found' });
+      return;
+    }
+    const wallet = patient.wallet;
+    res.status(200).json({ wallet });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching the wallet' });
+  }
+};
+
+const filterByPastDate = async (req, res) => {
+  try {
+    const { patientUsername } = req.body;
+    const currentDateTime = new Date();
+    const pastAppointments = await Appointment.find({ patient: patientUsername });
+
+    const filteredAppointments = pastAppointments.filter((appointment) => {
+      const appointmentDateTime = new Date(appointment.datetime);
+      return appointmentDateTime < currentDateTime; 
+    });
+
+    filteredAppointments.sort((a, b) => {
+      const dateA = new Date(a.datetime);
+      const dateB = new Date(b.datetime);
+      return dateB - dateA; 
+    });
+
+    res.status(200).json(filteredAppointments);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while filtering past appointments' });
+  }
+};
+
+const filterByUpcomingDate = async (req, res) => {
+  try {
+    const {patientUsername} = req.body;
+    const currentDateTime = new Date();
+    const upcomingAppointments = await Appointment.find({ patient: patientUsername });
+    const filteredAppointments = upcomingAppointments.filter(appointment => {
+      const appointmentDateTime = new Date(appointment.datetime);
+      return appointmentDateTime >= currentDateTime;
+  });
+  filteredAppointments.sort((a, b) => {
+    const dateA = new Date(a.datetime);
+    const dateB = new Date(b.datetime);
+    return dateA - dateB;
+  }); 
+    res.status(200).json(filteredAppointments);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while filtering patients' });
+  }
+};
+
+const viewHealthRecords = async (req, res) => {
+  try {
+    const { patientUsername } = req.body;
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      res.status(404).json({ error: 'Patient not found' });
+      return;
+    }
+
+    const healthRecords = patient.healthRecords; 
+    if (!healthRecords || healthRecords.length === 0) {
+      res.status(404).json({ error: 'No health records found for the patient' });
+      return;
+    }
+    res.status(200).json({ healthRecords });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching health records' });
+  }
+};
+
+
 module.exports = {
   createPatient, viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
-filterPrescriptions,selectDoctor, viewMyAppointments
+filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords
 };

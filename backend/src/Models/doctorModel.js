@@ -53,6 +53,10 @@ const doctorSchema = new Schema({
     required: false,
   },
   availableSlots: [AvailableSlotSchema],
+  wallet: {
+    type: Number,
+    default: 0.0,
+  },
 
 }, { timestamps: true });
 

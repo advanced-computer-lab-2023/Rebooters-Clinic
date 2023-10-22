@@ -233,7 +233,66 @@ const viewAllDoctors = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching doctors' });
   }
 };
+
+const viewWallet = async (req, res) => {
+  try {
+    const {doctorUsername} = req.body;
+    const doctor = await Doctor.findOne({ username : doctorUsername });
+    if (!doctor) {
+      res.status(404).json({ error: 'Doctor not found' });
+      return;
+    }
+    const wallet = doctor.wallet;
+    res.status(200).json({ wallet });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching the wallet' });
+  }
+};
+
+const filterByPastDate = async (req, res) => {
+  try {
+    const { doctorUsername } = req.body;
+    const currentDateTime = new Date();
+    const pastAppointments = await Appointment.find({ doctor: doctorUsername });
+
+    const filteredAppointments = pastAppointments.filter((appointment) => {
+      const appointmentDateTime = new Date(appointment.datetime);
+      return appointmentDateTime < currentDateTime; // Filter past appointments
+    });
+
+    filteredAppointments.sort((a, b) => {
+      const dateA = new Date(a.datetime);
+      const dateB = new Date(b.datetime);
+      return dateB - dateA; // Sort in descending order (most recent past appointments first)
+    });
+
+    res.status(200).json(filteredAppointments);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while filtering past appointments' });
+  }
+};
+
+const viewHealthRecords = async (req, res) => {
+  try {
+    const { patientUsername } = req.body;
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      res.status(404).json({ error: 'Patient not found' });
+      return;
+    }
+
+    const healthRecords = patient.healthRecords; 
+    if (!healthRecords || healthRecords.length === 0) {
+      res.status(404).json({ error: 'No health records found for the patient' });
+      return;
+    }
+    res.status(200).json({ healthRecords });
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while fetching health records' });
+  }
+};
+
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName  };
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , viewWallet, filterByPastDate, viewHealthRecords };

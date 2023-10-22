@@ -1,7 +1,7 @@
 const express = require('express') //require or import express
 const {viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , searchPatientPrescriptionsByName} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
@@ -21,5 +21,10 @@ router.post("/doctor-myappointments", viewMyAppointments);
 router.post("/doctor-patients/date-range-filter", filterByDateRange);
 
 router.post("/doctor-patients/get-prescriptions", searchPatientPrescriptionsByName);
+
+router.post("/view-wallet", viewWallet);
+router.post("/past-appointments", filterByPastDate);
+router.post("/get-health-records", viewHealthRecords);
+
 
 module.exports = router;

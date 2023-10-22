@@ -53,10 +53,32 @@ const healthPackageSchema = new Schema({
     required : true,
   },
 
+});
 
 
 
-
+const healthRecordSchema = new Schema({
+  doctor: {
+    type: String,
+    ref: 'Doctor',
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  diagnosis: {
+    type: String,
+    required: true,
+  },
+  treatment: {
+    type: String,
+    required: true,
+  },
+  notes: {
+    type: String,
+  },
+  attachments: [String],   //TODO: pdf upload ??
 });
 
 
@@ -103,8 +125,13 @@ const PatientSchema = new Schema({
     default: null,
   },
   familyMembers: [FamilyMemberSchema],
+  wallet: {
+    type: Number,
+    default: 0.0,
+  },
 
- 
+  healthRecords: [healthRecordSchema],
+  
   
   
  
