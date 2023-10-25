@@ -1,7 +1,7 @@
 const express = require('express') //require or import express
 const {viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , viewContract ,acceptContract , addAvailableSlots , scheduleAppointment , addHealthRecord} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
@@ -26,5 +26,11 @@ router.post("/view-wallet", viewWallet);
 router.post("/past-appointments", filterByPastDate);
 router.post("/get-health-records", viewHealthRecords);
 
+// change to get ba3den
+router.post("/viewContract",viewContract);
+router.post("/acceptContract", acceptContract);
+router.post("/addAvailableSlots", addAvailableSlots);
+router.post("/scheduleAppointment", scheduleAppointment);
+router.post("/addHealthRecord", addHealthRecord);
 
 module.exports = router;

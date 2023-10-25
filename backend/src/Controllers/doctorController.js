@@ -2,47 +2,65 @@ const Doctor = require('../Models/doctorModel');
 const Patient = require('../Models/patientModel');
 const Appointment = require('../Models/appointmentModel'); 
 const Prescription = require('../Models/prescriptionModel'); 
+const Contract = require('../Models/contractModel');
+const DoctorRequest = require('../Models/newDoctorRequestModel');
+
+
 const { default: mongoose } = require('mongoose');
 //const doctorUsername = 'dummydoctor'; //HARD CODING DOCTOR USERNAME
 
-/*const dummyDoctor = new Doctor({
-  username: 'dummydoctor',
-  password: 'dummydoctorpassword',
-  name: 'Dummy Doctor',
-  email: 'dummydoctor@example.com',
-  dateOfBirth: new Date('1990-01-01'), // Assuming the date of birth is stored as a Date
-  hourlyRate: 100.0, // Example hourly rate
-  affiliation: 'Hospital ABC',
-  speciality: 'Cardiology',
-  educationalBackground: 'Medical School XYZ graduate',
-  selectedPatients: []
-});
+// const dummyDoctor = new Doctor({
+//   username: 'dummydoctor',
+//   password: 'dummydoctorpassword',
+//   name: 'Dummy Doctor',
+//   email: 'dummydoctor@example.com',
+//   dateOfBirth: new Date('1990-01-01'), // Assuming the date of birth is stored as a Date
+//   hourlyRate: 100.0, // Example hourly rate
+//   affiliation: 'Hospital ABC',
+//   speciality: 'Cardiology',
+//   educationalBackground: 'Medical School XYZ graduate',
+//   selectedPatients: []
+// });
 
-dummyDoctor.save(); 
+// dummyDoctor.save(); 
 
-const dummyPatient = new Patient({
-  username: 'dummypatient2',
-  national_id: '123123123123',
-  name: 'Dummy Patient',
-  email: 'dummypatient@example.com',
-  password: 'dummypatientpassword',
-  dateOfBirth: new Date('1995-03-15'),
-  gender: 'Female', 
-  mobile_number: '123-456-7890',
-  emergency_contact: '987-654-3210',
-});
+// const dummyPatient = new Patient({
+//   username: 'dummypatient2',
+//   national_id: '123123123123',
+//   name: 'Dummy Patient',
+//   email: 'dummypatient@example.com',
+//   password: 'dummypatientpassword',
+//   dateOfBirth: new Date('1995-03-15'),
+//   gender: 'Female', 
+//   mobile_number: '123-456-7890',
+//   emergency_contact: '987-654-3210',
+// });
 
-dummyPatient.save(); 
+// dummyPatient.save(); 
 
-const dummyAppointment = new Appointment({
-  doctor: 'dummydoctor', 
-  patient: 'dummypatient', 
-  datetime: new Date('2024-10-25T14:00:00'), 
-  status: 'Scheduled', 
-  price: 150.0, 
-});
+// const dummyAppointment = new Appointment({
+//   doctor: 'dummydoctor', 
+//   patient: 'dummypatient', 
+//   datetime: new Date('2024-10-25T14:00:00'), 
+//   status: 'Scheduled', 
+//   price: 150.0, 
+// });
 
-dummyAppointment.save()*/
+// dummyAppointment.save();
+
+
+// Create a new Contract instance
+// const newContract = new Contract({
+//   doctorName: 'John Doe',
+//   employerName: 'Medical Group ABC',
+//   startDate: new Date('2023-01-15'),
+//   endDate: new Date('2023-12-31'),
+//   salary: 120000, // Salary in your desired currency
+//   accepted: false,
+// });
+
+// Save the new contract to the database
+// newContract.save();
 
 
 const viewProfile = async (req, res) => {
@@ -292,7 +310,169 @@ const viewHealthRecords = async (req, res) => {
   }
 };
 
+//  16.1:
+const viewContract = async (req, res) => {
+  try {
+    const { doctorUsername } = req.body;
+
+    // Find the contract for the doctor
+    const contract = await Contract.findOne({ doctorName : doctorUsername });
+
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found.' });
+    }
+
+    res.status(200).json({ contract });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while accepting the contract.' });
+  }
+};
+
+
+
+//  16.2:
+const acceptContract = async (req, res) => {
+  try {
+    const { doctorUsername } = req.body;
+
+    // Find the contract for the doctor
+    const contract = await Contract.findOne({ doctorName : doctorUsername });
+
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found.' });
+    }
+
+    // Check if the contract is already accepted
+    if (contract.accepted) {
+      return res.status(400).json({ error: 'Contract is already accepted.' });
+    }
+
+    // Update the contract status to 'accepted'
+    contract.accepted = true;
+    await contract.save();
+
+    res.status(200).json({ message: 'Contract accepted successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while accepting the contract.' });
+  }
+};
+
+
+
+// 17: Function to add available time slots for appointments
+const addAvailableSlots = async (req, res) => {
+  try {
+    const { doctorUsername, availableSlots } = req.body;
+
+    // Find the doctor by username
+    const DoctorRequest = await DoctorRequest.findOne({ doctorUsername : doctorUsername });
+    const Contract = await Contract.findOne({ doctorName : doctorName });
+    const doctor = await Doctor.findOne({ doctorUsername : doctorUsername });
+
+    if (DoctorRequest.status !== "accepted" ) {
+      return res.status(404).json({ error: 'Doctor not accepted by Admin.' });
+    }
+
+    if (!Contract.accepted) {
+      return res.status(404).json({ error: 'Doctor did not accept the contract.' });
+    }
+
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found.' });
+    }
+
+    // Append the new available time slots to the doctor's existing slots
+    doctor.availableSlots.push(...availableSlots);
+
+    // Save the updated doctor document
+    await doctor.save();
+
+    res.status(200).json({ message: 'Available time slots added successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while adding available time slots.' });
+  }
+};
+
+//  51:
+const scheduleAppointment = async (req, res) => {
+  try {
+    const { doctorUsername, patientUsername, dateTime } = req.body;
+
+    // Find the patient by their username
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+
+    // Create a new appointment for the follow-up or regular appointment
+    const appointment = new Appointment({
+      doctor: doctorUsername,
+      patient: patientUsername,
+      datetime: new Date(dateTime),
+      status: 'Upcoming',
+      price: 0, // You may calculate or set the price as needed
+    });
+
+    // Save the appointment to the database
+    await appointment.save();
+
+    res.status(201).json(appointment);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while scheduling the appointment.' });
+  }
+};
+
+//  60: 
+const addHealthRecord = async (req, res) => {
+  try {
+    // attachements ba3den ?
+    const { patientUsername, doctorUsername, diagnosis, treatment, notes } = req.body;
+
+    // Find the patient by their username
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+
+    // Find the doctor by their username
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found.' });
+    }
+
+    // Create a new health record
+    const healthRecord = {
+      doctor: doctorUsername,
+      date: new Date(),
+      diagnosis,
+      treatment,
+      notes,
+  //  attachments: attachments || [],
+    };
+
+    // Add the health record to the patient's healthRecords array
+    patient.healthRecords.push(healthRecord);
+
+    // Save the updated patient document
+    await patient.save();
+
+    res.status(201).json({ message: 'Health record added successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while adding a health record.' });
+  }
+};
+
+
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , viewWallet, filterByPastDate, viewHealthRecords };
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,addAvailableSlots, scheduleAppointment, addHealthRecord };
