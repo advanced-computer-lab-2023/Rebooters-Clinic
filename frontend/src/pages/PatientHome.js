@@ -7,6 +7,8 @@ import AddFamilyMember from "../components/AddFamilyMember";
 import PatientAppointments from "../components/PatientAppointments";
 import ViewDoctors from "../components/ViewDoctors";
 import ViewFamilyMembers from "../components/ViewFamilyMembers";
+import PatientWallet from "../components/PatientWallet";
+import PatientHealthRecords from "../components/PatientHealthRecords";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -48,6 +50,12 @@ const PatientHome = () => {
       </div>
       <div className="mt-4">
         <ViewFamilyMembers />
+      </div>
+      <div className="mt-4">
+        <PatientWallet/>
+      </div>
+      <div className="mt-4">
+        <PatientHealthRecords/>
       </div>
     </div>
     

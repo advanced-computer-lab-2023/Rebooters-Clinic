@@ -6,6 +6,7 @@ const DoctorMyAppointments = ({doctorUsername}) => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
   const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =useState([]);
+  const [selectedPatientRecords, setSelectedPatientRecords] =useState([]);
   const [error, setError] = useState("");
   const [filterByStatusData, setFilterByStatusData] = useState([]);
   const [filterByDateData, setFilterByDateData] = useState([]);
@@ -90,6 +91,29 @@ const DoctorMyAppointments = ({doctorUsername}) => {
     }
   };
 
+  const filterAppointmentsByPastDate = async () => {
+    try {
+      const response = await fetch("/api/doctor/past-appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ doctorUsername: doctorUsername}),
+      });
+      const json = await response.json();
+      if (response.ok) {
+        setFilterByDateData(json);
+        setAppointmentsData([]);
+        setFilterByStatusData([]);
+        setFilterByDateRange([]);
+      } else {
+        setError("An error occurred while filtering appointments by past date");
+      }
+    } catch (error) {
+      setError("An error occurred while filtering appointments by date");
+    }
+  };
+
   const filterAppointmentsByDateRange = async () => {
     try {
       const response = await fetch("/api/doctor/doctor-patients/date-range-filter", {
@@ -115,6 +139,7 @@ const DoctorMyAppointments = ({doctorUsername}) => {
 
   const handleRowClick = async (appointment) => {
     setSelectedPatientPrescriptions([]);
+    setSelectedPatientRecords([]);
     try {
       const response = await fetch("/api/doctor/doctor-patients-username", {
         method: "POST",
@@ -144,9 +169,23 @@ const DoctorMyAppointments = ({doctorUsername}) => {
       if (response2.ok && json2.length > 0) {
         setSelectedPatientPrescriptions(json2);
       }
-    } catch (error) {
-      setError("An error occurred while fetching patient profile");
+
+    const response3 = await fetch("/api/doctor/get-health-records",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ patientUsername: appointment.patient }),
+      }
+    );
+    const json3 = await response3.json();
+    if (response3.ok) {
+      setSelectedPatientRecords(json3.healthRecords);
     }
+  } catch (error) {
+    setError("An error occurred while fetching patient profile");
+  }
   };
 
   const handleSort = (field) => {
@@ -168,6 +207,7 @@ const DoctorMyAppointments = ({doctorUsername}) => {
     setSelectedAppointment(null);
     setSelectedPatientProfile(null);
     setSelectedPatientPrescriptions([]);
+    setSelectedPatientRecords([]);
   };
 
   const sortedAppointments = [...appointmentsData].sort((a, b) => {
@@ -206,6 +246,9 @@ const DoctorMyAppointments = ({doctorUsername}) => {
       </button>
       <button className="btn btn-primary" onClick={filterAppointmentsByDate}>
         Filter by Upcoming Date
+      </button>
+      <button className="btn btn-primary" onClick={filterAppointmentsByPastDate}>
+        Filter by Past Date
       </button>
       <button className="btn btn-primary" onClick={fetchAppointments}>
         Remove Filters
@@ -330,6 +373,23 @@ const DoctorMyAppointments = ({doctorUsername}) => {
               {selectedPatientProfile.emergency_contact}
               <hr></hr>
               <h5>Patient Health Record:</h5>
+              {selectedPatientRecords.length > 0 && selectedPatientRecords.map((record) => (
+                <div>
+                  <h6>Record Date: {record.date}</h6>
+                  <p>
+                    <strong>Doctor:</strong> {record.doctor}
+                  </p>
+                  <p>
+                    <strong>diagnosis:</strong> {record.diagnosis}
+                  </p>
+                  <p>
+                    <strong>Treatment:</strong> {record.treatment}
+                  </p>
+                  <p>
+                    <strong>Notes:</strong> {record.notes}
+                  </p>
+                </div>
+              ))}
               <hr></hr>
               <h5>Patient Prescriptions:</h5>
               {selectedPatientPrescriptions.length > 0 && selectedPatientPrescriptions.map((prescription) => (
@@ -355,6 +415,7 @@ const DoctorMyAppointments = ({doctorUsername}) => {
                   )}
                 </div>
               ))}
+
               
             </p>
             <button className="btn btn-primary" onClick={handleCloseCard}>

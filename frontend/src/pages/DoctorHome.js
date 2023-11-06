@@ -4,6 +4,7 @@ import SearchForPatient from "../components/SearchForPatient";
 //import DoctorPatients from "../components/DoctorPatients";
 import DoctorUpdateProfile from "../components/DoctorUpdateProfile";
 import DoctorMyAppointments from "../components/DoctorMyAppointments";
+import DoctorWallet from "../components/DoctorWallet";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const DoctorHome = () => {
@@ -109,6 +110,9 @@ const DoctorHome = () => {
           </div>
           <div className="card mt-4">
             <SearchForPatient />
+          </div>
+          <div className="card mt-4">
+            <DoctorWallet doctorUsername={doctorUsername}/>
           </div>
         </>
       )}

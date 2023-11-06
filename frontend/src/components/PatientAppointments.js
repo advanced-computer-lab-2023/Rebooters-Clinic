@@ -8,8 +8,10 @@ const PatientAppointments = () => {
   const [filterByStatusData, setFilterByStatusData] = useState([]);
   const [customStatus, setCustomStatus] = useState("");
   const [filterByDateRange, setFilterByDateRange] = useState([]);
-  const [startDate, setStartDate] = useState(""); // Input for start date
-  const [endDate, setEndDate] = useState(""); // Input for end date
+  const [filterByUpcomingDate, setFilterByUpcomingDate] = useState([]);
+  const [filterByPastDate, setFilterByPastDate] = useState([]);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const handlePatientUsernameChange = (e) => {
     setPatientUsername(e.target.value);
@@ -31,9 +33,11 @@ const PatientAppointments = () => {
       });
       const json = await response.json();
       if (response.ok) {
+        setFilterByUpcomingDate([]);
+        setFilterByPastDate([]);
+        setFilterByDateRange([]);
         setAppointmentsData(json);
         setFilterByStatusData([]);
-        setFilterByDateRange([]);
       } else {
         setError("An error occurred while fetching appointments");
       }
@@ -53,10 +57,12 @@ const PatientAppointments = () => {
       });
       const json = await response.json();
       if (response.ok) {
+        setFilterByUpcomingDate([]);
+        setFilterByPastDate([]);
+        setFilterByDateRange([]);
         setAppointmentsData([]);
         setFilterByStatusData(json);
-        setFilterByDateRange([]);
-        setCustomStatus(""); // Clear the custom status input field
+        setCustomStatus("");
       } else {
         setError("An error occurred while filtering appointments by status");
       }
@@ -76,6 +82,8 @@ const PatientAppointments = () => {
       });
       const json = await response.json();
       if (response.ok) {
+        setFilterByUpcomingDate([]);
+        setFilterByPastDate([]);
         setFilterByDateRange(json);
         setAppointmentsData([]);
         setFilterByStatusData([]);
@@ -86,6 +94,56 @@ const PatientAppointments = () => {
       }
     } catch (error) {
       setError("An error occurred while filtering appointments by date range");
+    }
+  };
+
+  const filterAppointmentsByUpcomingDate = async () => {
+    try {
+      const response = await fetch("/api/patient/upcoming-appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ patientUsername: patientUsername }),
+      });
+      const json = await response.json();
+      if (response.ok) {
+        setFilterByUpcomingDate(json);
+        setFilterByPastDate([]);
+        setFilterByDateRange([]);
+        setAppointmentsData([]);
+        setFilterByStatusData([]);
+      } else {
+        setError(
+          "An error occurred while filtering appointments by upcoming date"
+        );
+      }
+    } catch (error) {
+      setError("An error occurred while filtering appointments by date");
+    }
+  };
+
+  const filterAppointmentsByPastDate = async () => {
+    try {
+      const response = await fetch("/api/patient/past-appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ patientUsername: patientUsername }),
+      });
+      const json = await response.json();
+      if (response.ok) {
+        setFilterByUpcomingDate([]);
+        setFilterByPastDate(json);
+        setFilterByDateRange([]);
+        setAppointmentsData([]);
+        setFilterByStatusData([]);
+      } else {
+        setError("An error occurred while filtering appointments by past date");
+      }
+    } catch (error) {
+      setError("An error occurred while filtering appointments by date");
     }
   };
 
@@ -134,6 +192,18 @@ const PatientAppointments = () => {
       />
       <button
         className="btn btn-primary"
+        onClick= {filterAppointmentsByUpcomingDate}
+      >
+        Filter by Upcoming Date
+      </button>
+      <button
+        className="btn btn-primary"
+        onClick={filterAppointmentsByPastDate}
+      >
+        Filter by Past Date
+      </button>
+      <button
+        className="btn btn-primary"
         onClick={() => filterAppointmentsByStatus(customStatus)}
       >
         Filter by Status
@@ -166,6 +236,30 @@ const PatientAppointments = () => {
               ))
             : filterByDateRange.length > 0
             ? filterByDateRange.map((appointment) => (
+                <tr>
+                  <td>{appointment._id}</td>
+                  <td>{appointment.doctor}</td>
+                  <td>
+                    {new Date(appointment.datetime).toLocaleDateString()}{" "}
+                    {new Date(appointment.datetime).toLocaleTimeString()}
+                  </td>
+                  <td>{appointment.status}</td>
+                </tr>
+              ))
+            : filterByUpcomingDate.length > 0
+            ? filterByUpcomingDate.map((appointment) => (
+                <tr>
+                  <td>{appointment._id}</td>
+                  <td>{appointment.doctor}</td>
+                  <td>
+                    {new Date(appointment.datetime).toLocaleDateString()}{" "}
+                    {new Date(appointment.datetime).toLocaleTimeString()}
+                  </td>
+                  <td>{appointment.status}</td>
+                </tr>
+              ))
+            : filterByPastDate.length > 0
+            ? filterByPastDate.map((appointment) => (
                 <tr>
                   <td>{appointment._id}</td>
                   <td>{appointment.doctor}</td>
