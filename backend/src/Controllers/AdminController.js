@@ -119,28 +119,35 @@ const addHealthPackage = async (req,res)=>{
       healthPackage.discountOnSession=0.4;
       healthPackage.discountOnSubscription=0.2;
     }
+    let discount =0;
+    if (patient.familyMembers && patient.familyMembers.length > 0) {
+      for (let i = 0; i < patient.familyMembers.length; i++) {
+        const familyMemberUsername = patient.familyMembers[i].username
+        if(familyMemberUsername){
+          const familyMember = await Patient.findOne({username: familyMemberUsername})
+          const healthPackageDiscountOnSubscription = familyMember.healthPackage.discountOnSubscription;
+          if(healthPackageDiscountOnSubscription > discount){discount = healthPackageDiscountOnSubscription}
+        }
+      }
+    }
+
+    healthPackage.price -= healthPackage.price * discount;
+    patient.statusOfHealthPackage = 'Subscribed'
+    patient.healthPackageCreatedAt = new Date()
+
+    
+
+
+
     if (!patient.healthPackage){
     patient.healthPackage = healthPackage;
-    await patient.save();}
+    await patient.save();
+    
+  
+  }
     else {
     return res.status(404).json({ error: 'Patient already has health package.' });}
 
-    /*
-    const relatives = patient.familyMembers;
-    if(relatives){
-    for (const relative of relatives) {
-      // Check if the relative is not empty (assuming each relative has name, nationalId, and gender properties)
-      if (relative.id) {
-        // Use Mongoose to search for a patient with matching credentials
-        const foundPatient = await Patient.findOne({Iid : relative.id});
-    
-        if (foundPatient && foundPatient.healthPackage) {
-          foundPatient.healthPackage.price = foundPatient.healthPackage.price -(foundPatient.healthPackage.price * patient.healthPackage.discountOnSubscription);
-        }
-        res.json(foundPatient);
-      }
-    }
-  }*/
 
 
     res.json(patient);
@@ -235,7 +242,9 @@ const deleteHealthPackage = async (req,res)=>{
     }
     
 
-    patient.healthPackage = null;
+    patient.healthPackage = null
+    patient.statusOfHealthPackage = 'Cancelled'
+    patient.healthPackageCreatedAt = new Date() //here we are setting the createdAt date to be the end date
     await patient.save();
 
     res.json(patient);

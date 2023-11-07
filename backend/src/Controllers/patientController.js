@@ -7,31 +7,9 @@ const Appointment = require('../Models/appointmentModel');
 //i put these here also instead of creating a model of familyMember
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const FamilyMemberSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  nationalId: {
-    type: String,
-    required: true,
-  },
-  age: {
-    type: Number,
-    required: true,
-  },
-  gender: {
-    type: String,
-    required: true,
-    enum: ['Male', 'Female', 'Other'],
-  },
-  relation: {
-    type: String,
-    required: true,
-    enum: ['Wife', 'Husband', 'Child'],
-  },
-});
 
+
+const { differenceInMonths, differenceInDays } = require('date-fns');
 
 /*const selectDoctorByName = async (req, res) => {
   try {
@@ -78,7 +56,7 @@ const FamilyMemberSchema = new Schema({
 };
 */
 
-const createPatient = async (req, res) => {
+const createNotFoundPatient = async (req, res) => {
   try {
     const {
       username,
@@ -88,7 +66,8 @@ const createPatient = async (req, res) => {
       dateOfBirth,  // Assuming dateOfBirth is sent as a string in "YYYY-MM-DD" format
       gender,
       mobile_number,
-      emergency_contact
+      emergency_contact,
+
     } = req.body;
 
     // Parse the dateOfBirth string into a JavaScript Date object
@@ -112,6 +91,64 @@ const createPatient = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while creating the patient.' });
   }
 };
+
+
+const addFamilyMember =  async (req, res) => {
+  const { currentUsername, familyMemberUsername, relation } = req.body;
+
+  try {
+    // Check if the current patient's username is valid
+    const currentPatient = await Patient.findOne({ username: currentUsername });
+    if (!currentPatient) {
+      return res.status(404).json({ message: 'Current patient not found' });
+    }
+
+    // Search the database to ensure that the family member's username exists
+    const familyMember = await Patient.findOne({ username: familyMemberUsername });
+    if (!familyMember) {
+      // Redirect the user to the addPatient method (you need to implement this route)
+      return res.status(404).json({ message: 'Family member is not registered as a patient. Please register them.' });
+    }
+
+    // If the family member's username is found, add an item to the array of familyMembers
+    currentPatient.familyMembers.push({
+      username: familyMemberUsername,
+      relation,
+    });
+    if(relation=='Husband'){
+      familyMember.familyMembers.push({
+          username: currentUsername,
+          relation: 'Wife'
+      })
+    }
+    if(relation=='Wife'){
+      familyMember.familyMembers.push({
+          username: currentUsername,
+          relation: 'Husband'
+      })
+    }
+    if(relation=='Parent'){
+      familyMember.familyMembers.push({
+          username: currentUsername,
+          relation: 'Child'
+      })
+    }
+    if(relation=='Child'){
+      familyMember.familyMembers.push({
+          username: currentUsername,
+          relation: 'Parent'
+      })
+    }
+
+    // Save the updated current patient document
+    await familyMember.save();
+    await currentPatient.save();
+
+    res.status(200).json({ message: 'Family member added successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred', error: error.message });
+  }
+}
 
 /*const ViewselectDoctorDetails = async (req, res) => {
   try {
@@ -166,6 +203,8 @@ const createPrescription = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while creating the prescription.' });
   }
 };
+
+
 const viewAllPrescriptions = async (req, res) => {
   try {
     const { patientName } = req.body;
@@ -184,41 +223,6 @@ const viewAllPrescriptions = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while fetching prescriptions.' });
-  }
-};
-const addFamilyMember = async (req, res) => {
-  try {
-    const patientUsername = req.body.username;
-    const patient = await Patient.findOne({ username: patientUsername });
-    if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' });
-    }
-
-  const name = req.body.name;
-  const nationalId = req.body.nationalId;
-  const age = req.body.age;
-  const gender = req.body.gender;
-  const relation = req.body.relation;  
-  
-
-  // Create a new FamilyMember object
-  const familyMember = {
-    name,
-    nationalId,
-    age,
-    gender,
-    relation,
-  };
-
-    // Add the family member to the patient's familyMembers array
-    patient.familyMembers.push(familyMember);
-
-    // Save the updated patient document
-    const updatedPatient = await patient.save();
-
-    res.status(201).json(updatedPatient);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to add family member' });
   }
 };
 
@@ -600,8 +604,207 @@ const viewHealthRecords = async (req, res) => {
   }
 };
 
+const viewHealthPackageOptions = async (req, res) => {
+  const healthPackage =[
+    {
+      name: 'Gold',
+      price: 6000,
+      discountOnSubscription: 0.15,
+      discountOnSession:0.3,
+      discountOnMedicine:0.6
+    },
+    {
+      name: 'Silver',
+      price: 3600,
+      discountOnSubscription: 0.1,
+      discountOnMedicine : 0.4,
+      discountOnSession:0.2
+    },
+    {
+      name: 'platinum',
+      price: 9000,
+      discountOnSubscription: 0.2,
+      discountOnMedicine : 0.8,
+      discountOnSession:0.4
+    }
+  ];
+  res.json(healthPackage);
+ 
+};
+const viewHealthPackage = async (req, res) => {
+  try {
+    const { patientUsername } = req.body;
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found' });
+    }
+
+      
+    
+
+    // Initialize response object
+    const response = {
+      statusOfHealthPackage: patient.statusOfHealthPackage,
+    };
+
+    if (patient.statusOfHealthPackage === 'Subscribed') {
+      // Calculate the current date
+      const currentDate = new Date();
+
+      // Calculate the renewal date by adding 1 year to the MongoDB-generated 'createdAt' date
+      const renewalDate = new Date(patient.healthPackageCreatedAt);
+      renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+
+      // Calculate the remaining time in months and days
+      const monthsRemaining = differenceInMonths(renewalDate, currentDate);
+      renewalDate.setMonth(renewalDate.getMonth() - monthsRemaining); // Subtract months from the renewalDate
+      const daysRemaining = differenceInDays(renewalDate, currentDate);
+
+      // Create a human-readable string for remaining time
+      response.timeShown = `${monthsRemaining} months and ${daysRemaining} days`;
+    }
+
+    if (patient.statusOfHealthPackage === 'Cancelled') {
+      response.timeShown = `Cancelled at ${patient.healthPackageCreatedAt}`;
+    }
+
+    if (patient.healthPackage) {
+      response.healthPackage = patient.healthPackage;
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({ error: 'Error occurred while viewing the health package' });
+  }
+};
+
+const subscribeToHealthPackage = async (req,res)=>{
+  try {
+    const {patientUsername, packageName} = req.body;
+
+    // Find the patient by name
+    const patient = await Patient.findOne({ username: patientUsername });
+  
+
+    if(!packageName || (packageName.toLowerCase()!="gold" && packageName.toLowerCase()!="silver" && packageName.toLowerCase()!="platinum")){
+      return res.status(404).json({ error: 'Package name not found or wrong package name.' });
+    }
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+    
+    let price = 0;
+    let discountOnSession = 0;
+    let discountOnMedicine = 0;
+    let discountOnSubscription = 0;
+    
+    const healthPackage ={
+      name: packageName,
+      price,
+      discountOnSession,
+      discountOnMedicine,
+      discountOnSubscription
+    }
+
+
+
+    
+    if(healthPackage.name.toLowerCase() == 'silver'){
+      healthPackage.price=3600;
+      healthPackage.discountOnMedicine=0.4;
+      healthPackage.discountOnSession=0.2;
+      healthPackage.discountOnSubscription=0.1;
+    }
+    if(healthPackage.name.toLowerCase() == 'gold'){//make this case insensitive
+      healthPackage.price=6000;
+      healthPackage.discountOnMedicine=0.6;
+      healthPackage.discountOnSession=0.3;
+      healthPackage.discountOnSubscription=0.15;
+    }
+    if(healthPackage.name.toLowerCase() == 'platinum'){//make this case insensitive
+      healthPackage.price=9000;
+      healthPackage.discountOnMedicine=0.8;
+      healthPackage.discountOnSession=0.4;
+      healthPackage.discountOnSubscription=0.2;
+    }
+    let discount =0;
+    if (patient.familyMembers && patient.familyMembers.length > 0) {
+      for (let i = 0; i < patient.familyMembers.length; i++) {
+        const familyMemberUsername = patient.familyMembers[i].username
+        if(familyMemberUsername){
+          const familyMember = await Patient.findOne({username: familyMemberUsername})
+          if(familyMember.healthPackage.status=='Subscribed'){
+          const healthPackageDiscountOnSubscription = familyMember.healthPackage.discountOnSubscription;
+          if(healthPackageDiscountOnSubscription > discount){discount = healthPackageDiscountOnSubscription}
+          }
+        }
+      }
+    }
+
+    healthPackage.price -= healthPackage.price * discount;
+    patient.statusOfHealthPackage = 'Subscribed'
+    patient.healthPackageCreatedAt = new Date()
+  
+
+
+
+    if (!patient.healthPackage){
+    patient.healthPackage = healthPackage;
+    await patient.save();
+    
+  
+  }
+    else {
+    return res.status(404).json({ error: 'Patient already has health package.' });}
+
+
+
+    res.json(patient);
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Could not add health package' });
+  }
+  
+}
+
+const unsubscribeToHealthPackage = async (req,res)=>{
+  try {
+    const {patientUsername} = req.body;
+
+    // Find the patient by name
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: 'Patient not found.' });
+    }
+
+    if(!patient.healthPackage){
+      return res.status(404).json({ error: 'This patient is unsubscribed to a health package.' });
+    }
+    
+
+    patient.healthPackage = null
+    patient.statusOfHealthPackage = 'Cancelled'
+    patient.healthPackageCreatedAt = new Date() //here we are setting the createdAt date to be the end date
+    await patient.save();
+
+    res.json(patient);
+    
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Could not delete health package' });
+  }
+  
+}
 
 module.exports = {
-  createPatient, viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember, viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
-filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords
+  unsubscribeToHealthPackage,
+  subscribeToHealthPackage, viewHealthPackageOptions,viewHealthPackage, createNotFoundPatient, 
+  viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember,
+   viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
+  filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , 
+  filterByUpcomingDate , viewHealthRecords
 };

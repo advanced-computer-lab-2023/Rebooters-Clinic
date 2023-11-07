@@ -4,27 +4,14 @@ const Schema = mongoose.Schema;
 
 
 const FamilyMemberSchema = new Schema({
-  name: {
+  username: {
     type: String,
     required: true,
-  },
-  nationalId: {
-    type: String,
-    required: true,
-  },
-  age: {
-    type: Number,
-    required: true,
-  },
-  gender: {
-    type: String,
-    required: true,
-    enum: ['Male', 'Female', 'Other'],
   },
   relation: {
     type: String,
     required: true,
-    enum: ['Wife', 'Husband', 'Child'],
+    enum: ['Wife', 'Husband', 'Child', 'Parent'],
   },
 });
 
@@ -51,8 +38,8 @@ const healthPackageSchema = new Schema({
   discountOnSubscription: {
     type: Number,
     required : true,
-  },
-
+  }
+    
 });
 
 
@@ -125,12 +112,22 @@ const PatientSchema = new Schema({
     default: null,
   },
   familyMembers: [FamilyMemberSchema],
+
   wallet: {
     type: Number,
     default: 0.0,
   },
 
   healthRecords: [healthRecordSchema],
+
+  statusOfHealthPackage: {
+    type: String,
+    enum: ['Subscribed', 'Unsubscribed', 'Cancelled'],
+    default: 'Unsubscribed'
+  },
+  healthPackageCreatedAt: {
+    type: Date 
+  }
   
   
   
