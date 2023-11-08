@@ -3,6 +3,7 @@ const Patient = require('../Models/patientModel'); // Import the Patient model
 const Doctor = require('../Models/doctorModel');
 const Prescription = require('../Models/prescriptionModel');
 const Appointment = require('../Models/appointmentModel');
+const {logout, changePassword} = require('./authController');
 
 //i put these here also instead of creating a model of familyMember
 const mongoose = require('mongoose');
@@ -806,5 +807,5 @@ module.exports = {
   viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember,
    viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
   filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , 
-  filterByUpcomingDate , viewHealthRecords
+  filterByUpcomingDate , viewHealthRecords, logout, changePassword
 };

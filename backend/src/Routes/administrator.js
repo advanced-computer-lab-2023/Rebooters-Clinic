@@ -1,28 +1,37 @@
 const express = require('express') //require or import express
+const { requireAuth } = require('../Middleware/authMiddleware');
 const {addAdministrator,
     removeUserFromSystem,
     viewDoctorApplication,
-    deleteHealthPackage, editHealthPackage, addHealthPackage, viewAllPatients,approveDoctorRequest,rejectDoctorRequest} = require('../Controllers/AdminController') //we're destructuring so we need curly braces
+    deleteHealthPackage, editHealthPackage, addHealthPackage, viewAllPatients,approveDoctorRequest,rejectDoctorRequest, logout, changePassword} = require('../Controllers/AdminController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
-router.post('/addAdministrator' , addAdministrator);
+router.get('/logout', requireAuth, logout);
 
-router.delete('/removeUserFromSystem' , removeUserFromSystem);
+// router.get('/requestPasswordResetOTP', requireAuth, requestPasswordResetOTP);
 
-router.get('/viewDoctorApplication' , viewDoctorApplication);
+// router.post('/resetPasswordWithOTP', requireAuth, resetPasswordWithOTP);
 
-router.delete('/deleteHealthPackage' , deleteHealthPackage);
+router.post('/changePassword', requireAuth, changePassword);
 
-router.post('/editHealthPackage' , editHealthPackage);
+router.post('/addAdministrator' , requireAuth, addAdministrator);
 
-router.post('/addHealthPackage' , addHealthPackage);
+router.delete('/removeUserFromSystem' , requireAuth, removeUserFromSystem);
 
-router.get('/viewAllPatients' , viewAllPatients);
+router.get('/viewDoctorApplication' , requireAuth, viewDoctorApplication);
 
-router.post('/approveDoctorRequest' , approveDoctorRequest);
+router.delete('/deleteHealthPackage' , requireAuth, deleteHealthPackage);
 
-router.post('/rejectDoctorRequest' , rejectDoctorRequest);
+router.post('/editHealthPackage' , requireAuth, editHealthPackage);
+
+router.post('/addHealthPackage' , requireAuth, addHealthPackage);
+
+router.get('/viewAllPatients' , requireAuth, viewAllPatients);
+
+router.post('/approveDoctorRequest' , requireAuth, approveDoctorRequest);
+
+router.post('/rejectDoctorRequest' , requireAuth, rejectDoctorRequest);
 
 
 
