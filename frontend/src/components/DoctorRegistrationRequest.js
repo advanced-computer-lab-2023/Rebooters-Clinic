@@ -47,6 +47,18 @@ const DoctorRegistrationRequest = () => {
 
       if (response.ok) {
         setErrorMessage("Created a new request");
+        // Clear the form on successful request
+        setNewDoctorRequest({
+          username: "",
+          name: "",
+          email: "",
+          password: "",
+          dateOfBirth: "",
+          hourlyRate: "",
+          speciality: "",
+          affiliation: "",
+          educationalBackground: "",
+        });
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error);
@@ -55,6 +67,7 @@ const DoctorRegistrationRequest = () => {
       console.error("An error occurred while adding the doctor request:", error);
     }
   };
+
 
   return (
     <div className="card mt-4">

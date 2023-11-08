@@ -5,8 +5,7 @@ mongoose.set('strictQuery', false);
 require("dotenv").config();
 
 
-const MongoURI = 'mongodb+srv://bissosamir:bissozozo@cluster0.3vkavpd.mongodb.net/';
-
+const MongoURI = 'mongodb+srv://farouqrere:Nourhan31_@cluster0.kjbaaaz.mongodb.net/';
 
 
 

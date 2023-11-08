@@ -12,6 +12,8 @@ function Admin() {
   const [newDoctorRequestData, setNewDoctorRequestData] = useState([]);
   const [submissionStatus, setSubmissionStatus] = useState(null); 
   const [message, setMessage] = useState("");
+  const [showDoctorRequests, setShowDoctorRequests] = useState(false);
+
 
 
   const addAdministrator = async () => {
@@ -89,11 +91,61 @@ function Admin() {
       }
       const data = await response.json();
       setNewDoctorRequestData(data);
+      setShowDoctorRequests(true);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const approveDoctor = async (username) => {
+    try {
+      const response = await fetch("/api/administrator/approveDoctorRequest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
+
+      if (response.ok) {
+        // Refresh doctor requests
+        viewDoctorRequests();
+      } else {
+        console.error("Failed to approve doctor request");
+      }
+    } catch (error) {
+      console.error("An error occurred while approving doctor request:", error);
+    }
+  }; 
+
+  const rejectDoctor = async (username) => {
+    try {
+      const response = await fetch("/api/administrator/rejectDoctorRequest", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
+
+      if (response.ok) {
+        // Refresh doctor requests
+        viewDoctorRequests();
+      } else {
+        console.error("Failed to reject doctor request");
+      }
+    } catch (error) {
+      console.error("An error occurred while rejecting doctor request:", error);
+    }
+  };
+
+  const toggleDoctorRequests = () => {
+    if (!showDoctorRequests) {
+      viewDoctorRequests();
+    } else {
+      setShowDoctorRequests(false);
+    }
+  };
 //   useEffect(() => {
 //     viewAdministrators();
 //     viewPharmacists();
@@ -148,9 +200,10 @@ function Admin() {
       </div>
       <div className="mt-4">
         <h2>New Doctor Requests</h2>
-        <button className="btn btn-primary" onClick={viewDoctorRequests}>
-          View New Doctor Requests
+        <button className="btn btn-primary" onClick={toggleDoctorRequests}>
+          {showDoctorRequests ? "Hide New Doctor Requests" : "View New Doctor Requests"}
         </button>
+        {showDoctorRequests && (
         <table className="table mt-2">
           <thead>
             <tr>
@@ -176,11 +229,26 @@ function Admin() {
                 <td>{request.speciality}</td>
                 <td>{request.affiliation}</td>
                 <td>{request.educationalBackground}</td>
-                <td>{request.status}</td>
+                <td>
+            {request.status === 'pending' ? (
+              <div>
+                <button onClick={() => approveDoctor(request.username)}>
+                  Accept
+                </button>
+                <button onClick={() => rejectDoctor(request.username)}>
+                  Reject
+                </button>
+
+              </div>
+            ) : (
+              'Request Handled'
+            )}
+          </td>
               </tr>
             ))}
           </tbody>
         </table>
+        )}
       </div>
       <div className="mt-4">
           <AddHealthPackage />

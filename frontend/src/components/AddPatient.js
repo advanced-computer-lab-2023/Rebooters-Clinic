@@ -55,7 +55,7 @@ const AddPatient = () => {
       return;
     }
     try {
-      const response = await fetch("/api/patient/addPatient", {
+      const response = await fetch("/api/patient/createNotFoundPatient", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -65,6 +65,22 @@ const AddPatient = () => {
 
       if (response.ok) {
         setErrorMessage("Patient added successfully!");
+        setNewPatient({
+          username: "",
+          name: "",
+          email: "",
+          password: "",
+          dateOfBirth: "",
+          gender: "",
+          mobile_number: "",
+          emergency_contact: {
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            mobile_number: "",
+          },
+        });
+        
       } else {
         const errorData = await response.json();
         setErrorMessage(errorData.error);
