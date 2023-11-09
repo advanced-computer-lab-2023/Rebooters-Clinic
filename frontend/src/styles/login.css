@@ -1,0 +1,36 @@
+.login-card{
+    width: 40%;
+    height: auto;
+    padding-top: 20px;
+    border-radius: 15px;
+    /* background-color: white; */
+    margin-left: auto;
+    margin-right: 100px;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding-bottom: 50px;
+    /* color: #444; */
+}
+.forgot{
+    height: auto;
+    text-align: right;
+    font-size: 14px;
+    color: #6E6E6E;
+    font-weight: 600;
+}
+.center{
+    text-align: center;
+    font-size: 18px;
+    height: auto;
+}
+.login-btn{
+    
+    width: 150px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    align-self: center;
+    font-size: 18px;
+}
+.login-btn:hover{
+    cursor: pointer;
+}

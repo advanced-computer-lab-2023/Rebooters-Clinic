@@ -5,6 +5,7 @@ import DoctorHome from "./pages/DoctorHome";
 import PatientHome from "./pages/PatientHome";  
 import Admin from "./pages/Admin";
 import Guest from "./pages/Guest";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
-          <Route path="/" element={<Home />}/>
+          <Route path="/" element={<Login />} />
           <Route path="/guest" element={<Guest />} />
           <Route path="/doctor-home" element={<DoctorHome />} />
           <Route path="/patient-home" element={<PatientHome />} />

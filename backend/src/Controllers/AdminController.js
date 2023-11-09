@@ -6,6 +6,30 @@ const bcrypt = require('bcrypt');
 const {logout, changePassword, createToken} = require('./authController');
 
 const mongoose = require('mongoose');
+// const randomPassword = 'randompassword123'; // Replace with your random password generation logic
+
+// // Hash the password
+// bcrypt.hash(randomPassword, 10, async (err, hashedPassword) => {
+//     if (err) {
+//         console.error('Error hashing the password:', err);
+//         return;
+//     }
+
+//     try {
+//         // Create a new admin document with the hashed password
+//         const admoun = new Administrator({
+//             username: 'Admin123',
+//             password: hashedPassword
+//         });
+
+//         // Save the new pharmacist to the database
+//         await admoun.save();
+
+//         console.log('Dummy admin created successfully.');
+//     } catch (error) {
+//         console.error('Error creating the dummy admin:', error);
+//     }
+// });
 
 // to test admin authentication use this account on postman to login for the first time: 
 // {
