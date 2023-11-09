@@ -44,6 +44,7 @@ const DoctorUpdateProfile = () => {
           affiliation: "",
           doctorUsername: "",
         })
+        window.location.reload()
       } else {
         const errorData = await response.json();
         setError(errorData.error);
@@ -62,17 +63,6 @@ const DoctorUpdateProfile = () => {
       {error && <p className="text-danger">{error}</p>}
       <form onSubmit={handleSubmit}>
       <div className="mb-3">
-          <label htmlFor="doctorUsername" className="form-label">
-            Doctor Username:
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="doctorUsername"
-            name="doctorUsername"
-            value={formData.doctorUsername}
-            onChange={handleChange}
-          />
         </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">

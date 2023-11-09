@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function DoctorWallet({ doctorUsername }) {
+function DoctorWallet() {
   const [wallet, setWallet] = useState(0); 
 
   const handleViewWallet = async () => {
@@ -10,7 +10,6 @@ function DoctorWallet({ doctorUsername }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ doctorUsername: doctorUsername }),
       });
       const json = await response.json();
       setWallet(json.wallet);

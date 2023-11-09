@@ -5,7 +5,7 @@ mongoose.set('strictQuery', false);
 require("dotenv").config();
 const cookieParser = require('cookie-parser');
 
-const MongoURI = 'mongodb+srv://bissosamir:bissozozo@cluster0.3vkavpd.mongodb.net/';
+const MongoURI = 'mongodb+srv://admin:admin@cluster0.8ayf1xv.mongodb.net/test?retryWrites=true&w=majority';
 
 
 
