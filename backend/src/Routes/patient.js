@@ -1,21 +1,12 @@
 const express = require('express') //require or import express
-<<<<<<< HEAD
-const {viewAvailableDoctorSlots,unsubscribeToHealthPackage, viewHealthPackage, 
-    subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
-    viewRegisteredFamilyMembers, addFamilyMember,
-    createPrescription,viewAllPrescriptions, selectDoctor,filterPrescriptions,
-    viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
-    viewMyAppointments, viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords,
-    makeAppointment} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
-=======
 const { requireAuth } = require('../Middleware/authMiddleware');
 const jwt = require('jsonwebtoken');
-const {unsubscribeToHealthPackage, viewHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
+const {viewAvailableDoctorSlots, unsubscribeToHealthPackage, viewHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
     viewRegisteredFamilyMembers, addFamilyMember,
     createPrescription,viewAllPrescriptions, selectDoctor,filterPrescriptions,
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
-    viewMyAppointments, viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords, logout, changePassword} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
->>>>>>> 4cfb9812b30d354244e9193f21d42952cf2decd1
+    viewMyAppointments, viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords, makeAppointment, logout, changePassword} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
+
 
 const Patient = require('../Models/patientModel'); 
 const router = express.Router() //create a router 
@@ -48,13 +39,9 @@ router.post('/viewDoctors', requireAuth, viewDoctors);
 
 router.post('/findDoctor' , requireAuth, findDoctor);
 
-<<<<<<< HEAD
-router.post('/makeAppointment', makeAppointment)
+router.post('/makeAppointment',requireAuth,  makeAppointment)
 
-router.post('/subscribeToHealthPackage', subscribeToHealthPackage)
-=======
 router.post('/subscribeToHealthPackage', requireAuth, subscribeToHealthPackage)
->>>>>>> 4cfb9812b30d354244e9193f21d42952cf2decd1
 
 router.post('/unsubscribeToHealthPackage', requireAuth, unsubscribeToHealthPackage)
 

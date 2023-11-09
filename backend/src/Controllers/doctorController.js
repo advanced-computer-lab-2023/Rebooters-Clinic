@@ -83,7 +83,8 @@ const { default: mongoose } = require('mongoose');
 
 const viewProfile = async (req, res) => {
     try {
-        const {doctorUsername} = req.body;
+        //const {doctorUsername} = req.body;
+        const doctorUsername = req.cookies.username;
         const doctor = await Doctor.findOne({ username : doctorUsername });
         if (!doctor) {
             return res.status(404).json({ error: 'Doctor not found' });
@@ -96,7 +97,8 @@ const viewProfile = async (req, res) => {
   
 const updateProfile = async (req, res) => {
     try {
-      const {doctorUsername} = req.body;
+      //const {doctorUsername} = req.body;
+      const doctorUsername = req.cookies.username;
       const { email, hourlyRate, affiliation } = req.body;
       await Doctor.findOneAndUpdate(
         { username: doctorUsername }, {
@@ -112,7 +114,8 @@ const updateProfile = async (req, res) => {
   
 const viewMyPatients = async (req, res) => {
     try {
-      const {doctorUsername} = req.body;
+      //const {doctorUsername} = req.body;
+      const doctorUsername = req.cookies.username;
       const appointments  = await Appointment.find({ doctor: doctorUsername });
       const patientUsernames = appointments.map((appointment) => appointment.patient);
       const patients = await Patient.find({ username: { $in: patientUsernames } });
@@ -169,7 +172,8 @@ const searchPatientPrescriptionsByName = async (req, res) => {
 
 const viewMyAppointments = async (req, res) => {
   try {
-    const {doctorUsername} = req.body;
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
     const currentDateTime = new Date();
     const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
     res.status(200).json(upcomingAppointments);
@@ -180,7 +184,8 @@ const viewMyAppointments = async (req, res) => {
   
 const filterByUpcomingDate = async (req, res) => {
     try {
-      const {doctorUsername} = req.body;
+      //const {doctorUsername} = req.body;
+      const doctorUsername = req.cookies.username;
       const currentDateTime = new Date();
       const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
       const filteredAppointments = upcomingAppointments.filter(appointment => {
@@ -200,7 +205,8 @@ const filterByUpcomingDate = async (req, res) => {
 
 const filterByStatus = async (req, res) => {
     try {
-      const {doctorUsername} = req.body;
+      //const {doctorUsername} = req.body;
+      const doctorUsername = req.cookies.username;
       const { status } = req.body;
       const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
       const filteredAppointments = upcomingAppointments.filter(appointment => {
@@ -215,7 +221,8 @@ const filterByStatus = async (req, res) => {
 
 const selectPatient = async (req, res) => {
   try {
-    const {doctorUsername} = req.body;
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
     const { patientUsernames } = req.body;
     const doctor = await Doctor.findOne({ doctorUsername });
 
@@ -233,7 +240,8 @@ const selectPatient = async (req, res) => {
 
 const filterByDateRange = async (req, res) => {
   try {
-    const { startDate, endDate, doctorUsername } = req.body;
+    const doctorUsername = req.cookies.username;
+    const { startDate, endDate } = req.body;
     const doctor = await Doctor.findOne({ doctorUsername });
     const startDateTime = new Date(startDate);
     const endDateTime = new Date(endDate);
@@ -272,7 +280,8 @@ const viewAllDoctors = async (req, res) => {
 
 const viewWallet = async (req, res) => {
   try {
-    const {doctorUsername} = req.body;
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
     const doctor = await Doctor.findOne({ username : doctorUsername });
     if (!doctor) {
       res.status(404).json({ error: 'Doctor not found' });
@@ -287,7 +296,8 @@ const viewWallet = async (req, res) => {
 
 const filterByPastDate = async (req, res) => {
   try {
-    const { doctorUsername } = req.body;
+    //const { doctorUsername } = req.body;
+    const doctorUsername = req.cookies.username;
     const currentDateTime = new Date();
     const pastAppointments = await Appointment.find({ doctor: doctorUsername });
 
@@ -331,7 +341,8 @@ const viewHealthRecords = async (req, res) => {
 //  16.1:
 const viewContract = async (req, res) => {
   try {
-    const { doctorUsername } = req.body;
+    //const { doctorUsername } = req.body;
+    const doctorUsername = req.cookies.username;
 
     // Find the contract for the doctor
     const contract = await Contract.findOne({ doctorName : doctorUsername });
@@ -353,7 +364,8 @@ const viewContract = async (req, res) => {
 //  16.2:
 const acceptContract = async (req, res) => {
   try {
-    const { doctorUsername } = req.body;
+    //const { doctorUsername } = req.body;
+    const doctorUsername = req.cookies.username;
 
     // Find the contract for the doctor
     const contract = await Contract.findOne({ doctorName : doctorUsername });
@@ -383,7 +395,8 @@ const acceptContract = async (req, res) => {
 // 17: Function to add available time slots for appointments
 const addAvailableSlots = async (req, res) => {
   try {
-    const { doctorUsername, availableSlots } = req.body;
+    const doctorUsername = req.cookies.username;
+    const { availableSlots } = req.body;
 
     // Find the doctor by username
     const DoctorRequest = await DoctorRequest.findOne({ doctorUsername : doctorUsername });
@@ -418,7 +431,8 @@ const addAvailableSlots = async (req, res) => {
 //  51:
 const scheduleAppointment = async (req, res) => {
   try {
-    const { doctorUsername, patientUsername, dateTime } = req.body;
+    const doctorUsername = req.cookies.username;
+    const {patientUsername, dateTime } = req.body;
 
     // Find the patient by their username
     const patient = await Patient.findOne({ username: patientUsername });
@@ -450,7 +464,8 @@ const scheduleAppointment = async (req, res) => {
 const addHealthRecord = async (req, res) => {
   try {
     // attachements ba3den ?
-    const { patientUsername, doctorUsername, diagnosis, treatment, notes } = req.body;
+    const doctorUsername = req.cookies.username;
+    const { patientUsername, diagnosis, treatment, notes } = req.body;
 
     // Find the patient by their username
     const patient = await Patient.findOne({ username: patientUsername });
@@ -493,11 +508,9 @@ const addHealthRecord = async (req, res) => {
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-<<<<<<< HEAD
     selectPatient, viewMyAppointments, searchPatientByUsername , 
     filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , 
     viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,
-    addAvailableSlots, scheduleAppointment, addHealthRecord };
-=======
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,addAvailableSlots, scheduleAppointment, addHealthRecord, logout, changePassword };
->>>>>>> 4cfb9812b30d354244e9193f21d42952cf2decd1
+    addAvailableSlots, scheduleAppointment, addHealthRecord ,  logout, changePassword };
+
+

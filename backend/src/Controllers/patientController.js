@@ -881,21 +881,11 @@ const unsubscribeToHealthPackage = async (req,res)=>{
   
 
 
-module.exports = {
-<<<<<<< HEAD
-  unsubscribeToHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,
-  viewHealthPackage, createNotFoundPatient, viewRegisteredFamilyMembers,createPrescription,
-  viewAllPrescriptions, addFamilyMember,viewDoctors, findDoctor, filterDoctor, 
-  filterAppointmentsByDate, filterAppointmentsByStatus, filterPrescriptions,selectDoctor, 
-  viewMyAppointments , viewWallet , filterByPastDate , filterByUpcomingDate , viewAvailableDoctorSlots,
-  viewHealthRecords, makeAppointment
-  
-=======
+module.exports = { 
   unsubscribeToHealthPackage,
   subscribeToHealthPackage, viewHealthPackageOptions,viewHealthPackage, createNotFoundPatient, 
   viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember,
    viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
   filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , 
-  filterByUpcomingDate , viewHealthRecords, logout, changePassword
->>>>>>> 4cfb9812b30d354244e9193f21d42952cf2decd1
+  filterByUpcomingDate , viewAvailableDoctorSlots, viewHealthRecords, makeAppointment , logout, changePassword
 };
