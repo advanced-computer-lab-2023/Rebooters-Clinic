@@ -1,9 +1,11 @@
 const express = require('express') //require or import express
-const {unsubscribeToHealthPackage, viewHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
+const {viewAvailableDoctorSlots,unsubscribeToHealthPackage, viewHealthPackage, 
+    subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
     viewRegisteredFamilyMembers, addFamilyMember,
     createPrescription,viewAllPrescriptions, selectDoctor,filterPrescriptions,
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
-    viewMyAppointments, viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
+    viewMyAppointments, viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords,
+    makeAppointment} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 const Patient = require('../Models/patientModel'); 
 const router = express.Router() //create a router    
@@ -28,6 +30,8 @@ router.post('/viewDoctors', viewDoctors);
 
 router.post('/findDoctor' , findDoctor);
 
+router.post('/makeAppointment', makeAppointment)
+
 router.post('/subscribeToHealthPackage', subscribeToHealthPackage)
 
 router.post('/unsubscribeToHealthPackage', unsubscribeToHealthPackage)
@@ -40,6 +44,7 @@ router.post('/filterAppointmentsByDate', filterAppointmentsByDate);
 
 router.post('/filterAppointmentsByStatus', filterAppointmentsByStatus);
 
+router.get('/viewAvailableDoctorSlots' , viewAvailableDoctorSlots);
 
 router.post('/filterPrescription' , filterPrescriptions); 
 

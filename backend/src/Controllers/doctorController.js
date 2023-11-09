@@ -475,4 +475,7 @@ const addHealthRecord = async (req, res) => {
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,addAvailableSlots, scheduleAppointment, addHealthRecord };
+    selectPatient, viewMyAppointments, searchPatientByUsername , 
+    filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , 
+    viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,
+    addAvailableSlots, scheduleAppointment, addHealthRecord };

@@ -4,6 +4,7 @@ const Doctor = require('../Models/doctorModel');
 const Prescription = require('../Models/prescriptionModel');
 const Appointment = require('../Models/appointmentModel');
 
+
 //i put these here also instead of creating a model of familyMember
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
@@ -797,14 +798,94 @@ const unsubscribeToHealthPackage = async (req,res)=>{
     console.error(error);
     res.status(500).json({ error: 'Could not delete health package' });
   }
-  
 }
 
+  const viewAvailableDoctorSlots = async (req, res) => {
+    try {
+      const { patientUsername, doctorUsername } = req.body;
+  
+      // Find the patient and doctor records by their usernames
+      const patient = await Patient.findOne({ username: patientUsername });
+
+      const doctor = await Doctor.findOne({ username: doctorUsername });
+
+      if (!doctor) {
+        return res.status(404).json({ error: 'Doctor not found.' });
+      }
+ 
+      
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found.' });
+      }
+      
+      // Retrieve the available slots of the selected doctor
+      const allAvailableSlots = doctor.availableSlots;
+      const actualAvailableSlots = allAvailableSlots.filter(slot => slot.reservingPatientUsername === null);
+
+
+  
+      if (actualAvailableSlots.length === 0) {
+        return res.json({ message: 'No available slots for the doctor.' });
+      }
+
+  
+      res.status(200).json(actualAvailableSlots);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching doctor available slots.' });
+    }
+  };
+
+  const makeAppointment = async (req, res) => {
+    try {
+      const { patientUsername, doctorUsername, chosenSlot } = req.body;
+  
+      
+      const patient = await Patient.findOne({ username: patientUsername });
+      const doctor = await Doctor.findOne({ username: doctorUsername });
+  
+      if (!doctor) {
+        return res.status(404).json({ error: 'Doctor not found.' });
+      }
+ 
+      
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found.' });
+      }
+  
+      chosenSlot.reservingPatientUsername = patientUsername
+  
+      const appointment = new Appointment({
+        doctor: doctorUsername,
+        patient: patientUsername,
+        datetime: new Date(chosenSlot.date),
+        status: 'Upcoming',
+        price: doctor.hourlyRate, 
+      });
+
+       // Set the time separately
+    appointment.datetime.setUTCHours(22); // Assuming you want to set the time to 22:00 UTC
+
+
+
+      await doctor.save();
+      await appointment.save();
+  
+      res.status(200).json({ message: 'Appointment made successfully.', appointment });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while making the appointment.' });
+    }
+  };  
+  
+
+
 module.exports = {
-  unsubscribeToHealthPackage,
-  subscribeToHealthPackage, viewHealthPackageOptions,viewHealthPackage, createNotFoundPatient, 
-  viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember,
-   viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
-  filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , 
-  filterByUpcomingDate , viewHealthRecords
+  unsubscribeToHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,
+  viewHealthPackage, createNotFoundPatient, viewRegisteredFamilyMembers,createPrescription,
+  viewAllPrescriptions, addFamilyMember,viewDoctors, findDoctor, filterDoctor, 
+  filterAppointmentsByDate, filterAppointmentsByStatus, filterPrescriptions,selectDoctor, 
+  viewMyAppointments , viewWallet , filterByPastDate , filterByUpcomingDate , viewAvailableDoctorSlots,
+  viewHealthRecords, makeAppointment
+  
 };

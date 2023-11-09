@@ -9,6 +9,10 @@ const AvailableSlotSchema = new Schema({
     type: String,
     required: true,
   },
+  reservingPatientUsername: { //this attribute determines which patient reserved which slot. If null, then this slot is available
+    type: String,
+    default: null
+  }
 });
 const doctorSchema = new Schema({
   username: {

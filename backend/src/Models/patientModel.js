@@ -105,7 +105,7 @@ const PatientSchema = new Schema({
     lastName: String,
     mobile_number: String
     },
-  //selectedDoctors: [String],
+
 
   healthPackage: { // Add patient's health package
     type: healthPackageSchema,
