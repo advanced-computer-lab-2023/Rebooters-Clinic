@@ -31,7 +31,13 @@ const DoctorMyAppointments = () => {
       });
       const json = await response.json();
       if (response.ok) {
-        setAppointmentsData(json);
+        if (Array.isArray(json)) {
+          setAppointmentsData(json);
+        }
+        else {
+          setAppointmentsData([]);
+        }
+
         setFilterByDateData([]);
         setFilterByStatusData([]);
         setFilterByDateRange([]);

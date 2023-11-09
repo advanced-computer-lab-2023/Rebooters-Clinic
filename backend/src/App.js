@@ -1,5 +1,6 @@
 // External variables
 const express = require("express");
+const { requireAuth } = require('./Middleware/authMiddleware');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
@@ -54,4 +55,6 @@ const administratorRoutes = require('./Routes/administrator')
 app.use('/api/administrator',administratorRoutes);
 
 
-
+app.get('/doctor-home', requireAuth);
+app.get('/patient-home', requireAuth);
+app.get('/admin', requireAuth);

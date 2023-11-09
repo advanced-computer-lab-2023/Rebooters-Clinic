@@ -55,7 +55,7 @@ const AddPatient = () => {
       return;
     }
     try {
-      const response = await fetch("/api/patient/createNotFoundPatient", {
+      const response = await fetch("/api/guest/createPatient", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

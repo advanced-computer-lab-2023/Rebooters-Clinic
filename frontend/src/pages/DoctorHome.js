@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DoctorMyPatients from "../components/DoctorMyPatients";
 import SearchForPatient from "../components/SearchForPatient";
 //import DoctorPatients from "../components/DoctorPatients";
@@ -6,12 +7,26 @@ import DoctorUpdateProfile from "../components/DoctorUpdateProfile";
 import DoctorMyAppointments from "../components/DoctorMyAppointments";
 import DoctorWallet from "../components/DoctorWallet";
 import ChangePassword from "../components/ChangePassword";
-import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserType = async () => {
+      try {
+        const response = await fetch("/doctor-home")
+        if (response.status === 401 ||response.status === 403) {
+          navigate("/", { state: { errorMessage: "Access Denied" } });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    checkUserType();
+  }, []);
   const viewProfile = async () => {
     try {
       const response = await fetch("/api/doctor/doctor-profile", {

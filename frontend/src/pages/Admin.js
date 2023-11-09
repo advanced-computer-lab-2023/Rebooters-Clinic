@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddHealthPackage from "../components/AddHealthPackage";
 import EditHealthPackage from "../components/EditHealthPackage";
@@ -13,7 +14,22 @@ function Admin() {
   const [submissionStatus, setSubmissionStatus] = useState(null); 
   const [message, setMessage] = useState("");
   const [showDoctorRequests, setShowDoctorRequests] = useState(false);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    const checkUserType = async () => {
+      try {
+        const response = await fetch("/admin")
+        if (response.status === 401 ||response.status === 403) {
+          navigate("/", { state: { errorMessage: "Access Denied" } });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    checkUserType();
+  }, []);
 
 
   const addAdministrator = async () => {
