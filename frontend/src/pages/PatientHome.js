@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorSelection from "../components/DoctorSelection"
@@ -17,6 +18,22 @@ import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointme
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserType = async () => {
+      try {
+        const response = await fetch("/patient-home")
+        if (response.status === 401 ||response.status === 403 ) {
+          navigate("/", { state: { errorMessage: "Access Denied" } });
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    checkUserType();
+  }, []);
 
   useEffect(() => {
     const viewProfile = async () => {

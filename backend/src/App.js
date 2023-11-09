@@ -1,11 +1,12 @@
 // External variables
 const express = require("express");
+const { requireAuth } = require('./Middleware/authMiddleware');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
 const cookieParser = require('cookie-parser');
 
-const MongoURI = 'mongodb+srv://bissosamir:bissozozo@cluster0.3vkavpd.mongodb.net/';
+const MongoURI = 'mongodb+srv://admin:admin@cluster0.8ayf1xv.mongodb.net/test?retryWrites=true&w=majority';
 
 
 
@@ -54,4 +55,6 @@ const administratorRoutes = require('./Routes/administrator')
 app.use('/api/administrator',administratorRoutes);
 
 
-
+app.get('/doctor-home', requireAuth);
+app.get('/patient-home', requireAuth);
+app.get('/admin', requireAuth);

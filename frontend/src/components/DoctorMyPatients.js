@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const DoctorMyPatients = ({ doctorUsername }) => {
+const DoctorMyPatients = () => {
   const [patientsData, setPatientsData] = useState([]);
   const [error, setError] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -19,7 +19,6 @@ const DoctorMyPatients = ({ doctorUsername }) => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ doctorUsername: doctorUsername }),
     });
     const json = await response.json();
     if (response.ok) {

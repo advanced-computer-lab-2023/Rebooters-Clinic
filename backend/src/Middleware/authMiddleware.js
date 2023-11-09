@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const requireAuth = (req, res, next) => {
   const token = req.cookies.jwt;
   const type = req.cookies.userType;
+  const username = req.cookies.username;
   
   if (!token) {
     return res.status(401).json({ message: "You are not logged in." });
@@ -13,16 +14,13 @@ const requireAuth = (req, res, next) => {
       return res.status(401).json({ message: "Invalid token" });
     }
 
-    if (type === 'patient' && req.originalUrl.startsWith('/api/patient')) {
-      // Allow access to patient routes.
+    if (type === 'patient' && (req.originalUrl.startsWith('/api/patient') || (req.originalUrl.startsWith('/patient-home')))) {
       return next();
     } 
-    else if (type === 'admin' && req.originalUrl.startsWith('/api/admin')) {
-      // Allow access to admin routes.
+    else if (type === 'admin' && (req.originalUrl.startsWith('/api/admin') || (req.originalUrl.startsWith('/admin')))) {
       return next();
     }
-    else if (type === 'doctor' && req.originalUrl.startsWith('/api/doctor')) {
-      // Allow access to doctor routes.
+    else if (type === 'doctor' && (req.originalUrl.startsWith('/api/doctor') || (req.originalUrl.startsWith('/doctor-home')))) {
       return next();
     }
     else {

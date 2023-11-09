@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const DoctorMyAppointments = ({doctorUsername}) => {
+const DoctorMyAppointments = () => {
   const [appointmentsData, setAppointmentsData] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
@@ -27,12 +27,17 @@ const DoctorMyAppointments = ({doctorUsername}) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ doctorUsername: doctorUsername}),
+        },  
       });
       const json = await response.json();
       if (response.ok) {
-        setAppointmentsData(json);
+        if (Array.isArray(json)) {
+          setAppointmentsData(json);
+        }
+        else {
+          setAppointmentsData([]);
+        }
+
         setFilterByDateData([]);
         setFilterByStatusData([]);
         setFilterByDateRange([]);
@@ -51,7 +56,7 @@ const DoctorMyAppointments = ({doctorUsername}) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status , doctorUsername: doctorUsername}),
+        body: JSON.stringify({ status }),
       });
       const json = await response.json();
       if (response.ok) {
@@ -75,7 +80,6 @@ const DoctorMyAppointments = ({doctorUsername}) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ doctorUsername: doctorUsername}),
       });
       const json = await response.json();
       if (response.ok) {
@@ -98,7 +102,6 @@ const DoctorMyAppointments = ({doctorUsername}) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ doctorUsername: doctorUsername}),
       });
       const json = await response.json();
       if (response.ok) {
@@ -121,7 +124,7 @@ const DoctorMyAppointments = ({doctorUsername}) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ startDate, endDate , doctorUsername: doctorUsername}),
+        body: JSON.stringify({ startDate, endDate}),
       });
       const json = await response.json();
       if (response.ok) {
