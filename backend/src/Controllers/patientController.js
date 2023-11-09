@@ -5,6 +5,8 @@ const Prescription = require('../Models/prescriptionModel');
 const Appointment = require('../Models/appointmentModel');
 const bcrypt = require('bcrypt'); //needed only for creating the dummy doctor password
 const {logout, changePassword} = require('./authController');
+const {createToken} = require('./authController');
+const maxAge = 3*24*60*60;
 
 
 //i put these here also instead of creating a model of familyMember
@@ -98,35 +100,16 @@ const { differenceInMonths, differenceInDays } = require('date-fns');
 */
 const createNotFoundPatient = async (req, res) => {
   try {
-    const {
-      username,
-      name,
-      email,
-      password,
-      dateOfBirth,  // Assuming dateOfBirth is sent as a string in "YYYY-MM-DD" format
-      gender,
-      mobile_number,
-      emergency_contact,
-
-    } = req.body;
-
-    // Parse the dateOfBirth string into a JavaScript Date object
+    const {username,name,email,password,dateOfBirth,gender,mobile_number,emergency_contact} = req.body; 
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
     const parsedDateOfBirth = new Date(dateOfBirth);
-
-    const newPatient = new Patient({
-      username,
-      name,
-      email,
-      password,
-      dateOfBirth: parsedDateOfBirth,  // Use the parsed date
-      gender,
-      mobile_number,
-      emergency_contact
-    });
-
+    const newPatient = new Patient({username,name,email,password:hashedPassword,dateOfBirth:parsedDateOfBirth,gender,mobile_number,emergency_contact});
     await newPatient.save();
-    res.status(201).json(newPatient);
-  } catch (error) {
+  
+    
+    res.status(200).json({newPatient});
+    } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while creating the patient.' });
   }
@@ -718,7 +701,7 @@ const viewHealthPackage = async (req, res) => {
 
     res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ error: 'Error occurred while viewing the health package' });
+    res.status(500).json({ error: 'Patient does not have health package' });
   }
 };
 
@@ -780,7 +763,7 @@ const subscribeToHealthPackage = async (req,res)=>{
         const familyMemberUsername = patient.familyMembers[i].username
         if(familyMemberUsername){
           const familyMember = await Patient.findOne({username: familyMemberUsername})
-          if(familyMember.healthPackage.status=='Subscribed'){
+          if(familyMember.healthPackage && familyMember.healthPackage.status=='Subscribed'){
           const healthPackageDiscountOnSubscription = familyMember.healthPackage.discountOnSubscription;
           if(healthPackageDiscountOnSubscription > discount){discount = healthPackageDiscountOnSubscription}
           }
@@ -859,9 +842,7 @@ const unsubscribeToHealthPackage = async (req,res)=>{
       }
  
       
-      if (!patient) {
-        return res.status(404).json({ error: 'Patient not found.' });
-      }
+      
       
       // Retrieve the available slots of the selected doctor
       const allAvailableSlots = doctor.availableSlots;

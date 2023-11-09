@@ -53,7 +53,7 @@ router.post('/filterAppointmentsByDate', requireAuth, filterAppointmentsByDate);
 
 router.post('/filterAppointmentsByStatus', requireAuth, filterAppointmentsByStatus);
 
-router.get('/viewAvailableDoctorSlots' , viewAvailableDoctorSlots);
+router.post('/viewAvailableDoctorSlots' , viewAvailableDoctorSlots);
 
 router.post('/filterPrescription', requireAuth, filterPrescriptions); 
 

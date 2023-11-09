@@ -9,6 +9,11 @@ import ViewDoctors from "../components/ViewDoctors";
 import ViewFamilyMembers from "../components/ViewFamilyMembers";
 import PatientWallet from "../components/PatientWallet";
 import PatientHealthRecords from "../components/PatientHealthRecords";
+import ViewHealthPackageOptions from "../components/ViewHealthPackageOptions";
+import SubscribeToHealthPackage from "../components/SubscribeToHealthPackage";
+import ViewHealthPackage from "../components/ViewHealthPackage";
+import UnsubscribeToHealthPackage from "../components/UnsubscribeToHealthPackage";
+import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointment";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -46,6 +51,9 @@ const PatientHome = () => {
         <PatientAppointments />
       </div>
       <div className="mt-4">
+        <ViewSlotsAndMakeAppointment/>
+      </div>
+      <div className="mt-4">
         <ViewDoctors />
       </div>
       <div className="mt-4">
@@ -56,6 +64,18 @@ const PatientHome = () => {
       </div>
       <div className="mt-4">
         <PatientHealthRecords/>
+      </div>
+      <div className="mt-4">
+        <ViewHealthPackageOptions/>
+      </div>
+      <div className="mt-4">
+        <ViewHealthPackage/>
+      </div>
+      <div className="mt-4">
+        <SubscribeToHealthPackage/>
+      </div>
+      <div className="mt-4">
+        <UnsubscribeToHealthPackage/>
       </div>
     </div>
     
