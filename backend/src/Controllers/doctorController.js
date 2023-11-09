@@ -4,25 +4,43 @@ const Appointment = require('../Models/appointmentModel');
 const Prescription = require('../Models/prescriptionModel'); 
 const Contract = require('../Models/contractModel');
 const DoctorRequest = require('../Models/newDoctorRequestModel');
-
+const bcrypt = require('bcrypt'); //needed only for creating the dummy doctor password
+const {logout, changePassword} = require('./authController');
 
 const { default: mongoose } = require('mongoose');
-//const doctorUsername = 'dummydoctor'; //HARD CODING DOCTOR USERNAME
 
-// const dummyDoctor = new Doctor({
-//   username: 'dummydoctor',
-//   password: 'dummydoctorpassword',
-//   name: 'Dummy Doctor',
-//   email: 'dummydoctor@example.com',
-//   dateOfBirth: new Date('1990-01-01'), // Assuming the date of birth is stored as a Date
-//   hourlyRate: 100.0, // Example hourly rate
-//   affiliation: 'Hospital ABC',
-//   speciality: 'Cardiology',
-//   educationalBackground: 'Medical School XYZ graduate',
-//   selectedPatients: []
+// //dummy doctor but with the password encryption:
+// // Generate a random password 
+// const randomPassword = 'randompassword123'; // Replace with your random password generation logic
+
+// // Hash the password
+// bcrypt.hash(randomPassword, 10, async (err, hashedPassword) => {
+//     if (err) {
+//         console.error('Error hashing the password:', err);
+//         return;
+//     }
+
+//     try {
+//         // Create a new pharmacist document with the hashed password
+//         const newDoctor = new Doctor({
+//             username: 'dumDOC',
+//             name: 'Dummy doctor Name',
+//             email: 'shahd@gmail.com',
+//             password: hashedPassword,
+//             dateOfBirth: new Date('1990-01-01'),
+//             hourlyRate: 25, // Replace with the desired rate
+//             affiliation: 'Dummy Affiliation',
+//             educationalBackground: 'PharmD',
+//         });
+
+//         // Save the new pharmacist to the database
+//         await newDoctor.save();
+
+//         console.log('Dummy doc created successfully.');
+//     } catch (error) {
+//         console.error('Error creating the dummy doc:', error);
+//     }
 // });
-
-// dummyDoctor.save(); 
 
 // const dummyPatient = new Patient({
 //   username: 'dummypatient2',
@@ -475,7 +493,11 @@ const addHealthRecord = async (req, res) => {
   
 module.exports = { viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
+<<<<<<< HEAD
     selectPatient, viewMyAppointments, searchPatientByUsername , 
     filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , 
     viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,
     addAvailableSlots, scheduleAppointment, addHealthRecord };
+=======
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,addAvailableSlots, scheduleAppointment, addHealthRecord, logout, changePassword };
+>>>>>>> 4cfb9812b30d354244e9193f21d42952cf2decd1

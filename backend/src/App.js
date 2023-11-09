@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 require("dotenv").config();
-
+const cookieParser = require('cookie-parser');
 
 const MongoURI = 'mongodb+srv://bissosamir:bissozozo@cluster0.3vkavpd.mongodb.net/';
 
@@ -37,6 +37,7 @@ app.get("/", (req, res) => {
 
 
 app.use(express.json())
+app.use(cookieParser());
 
 
 

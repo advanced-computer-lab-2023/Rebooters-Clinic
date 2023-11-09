@@ -3,6 +3,7 @@ const Patient = require('../Models/patientModel'); // Import the Patient model
 const Doctor = require('../Models/doctorModel');
 const Prescription = require('../Models/prescriptionModel');
 const Appointment = require('../Models/appointmentModel');
+const {logout, changePassword} = require('./authController');
 
 
 //i put these here also instead of creating a model of familyMember
@@ -881,6 +882,7 @@ const unsubscribeToHealthPackage = async (req,res)=>{
 
 
 module.exports = {
+<<<<<<< HEAD
   unsubscribeToHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,
   viewHealthPackage, createNotFoundPatient, viewRegisteredFamilyMembers,createPrescription,
   viewAllPrescriptions, addFamilyMember,viewDoctors, findDoctor, filterDoctor, 
@@ -888,4 +890,12 @@ module.exports = {
   viewMyAppointments , viewWallet , filterByPastDate , filterByUpcomingDate , viewAvailableDoctorSlots,
   viewHealthRecords, makeAppointment
   
+=======
+  unsubscribeToHealthPackage,
+  subscribeToHealthPackage, viewHealthPackageOptions,viewHealthPackage, createNotFoundPatient, 
+  viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember,
+   viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
+  filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , 
+  filterByUpcomingDate , viewHealthRecords, logout, changePassword
+>>>>>>> 4cfb9812b30d354244e9193f21d42952cf2decd1
 };

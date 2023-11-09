@@ -1,7 +1,8 @@
 const express = require('express') //require or import express
-const {createPatient, createNewDoctorRequest} = require('../Controllers/guestController') //we're destructuring so we need curly braces
+const {createPatient, createNewDoctorRequest, login} = require('../Controllers/guestController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
+router.post('/login', login);
 
 router.post('/createPatient' , createPatient);
 
