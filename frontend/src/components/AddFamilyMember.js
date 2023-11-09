@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddPatient from "./AddPatient"; // Import the AddPatient component
+import CreateNotFoundPatient from "./CreateNotFoundPatient";
 
 const AddFamilyMember = () => {
   const [newFamilyMember, setNewFamilyMember] = useState({
@@ -106,7 +106,7 @@ const AddFamilyMember = () => {
         )}
 
         {/* Conditionally render the AddPatient form */}
-        {showAddPatientForm && <AddPatient />}
+        {showAddPatientForm && <CreateNotFoundPatient />}
       </div>
     </div>
   );
