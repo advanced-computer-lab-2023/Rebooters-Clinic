@@ -3,6 +3,7 @@ const Patient = require('../Models/patientModel'); // Import the Patient model
 const Doctor = require('../Models/doctorModel');
 const Prescription = require('../Models/prescriptionModel');
 const Appointment = require('../Models/appointmentModel');
+const bcrypt = require('bcrypt'); //needed only for creating the dummy doctor password
 const {logout, changePassword} = require('./authController');
 
 
@@ -58,6 +59,43 @@ const { differenceInMonths, differenceInDays } = require('date-fns');
 };
 */
 
+/*
+ //dummy patient but with the password encryption:
+ // Generate a random password 
+ const randomPassword = 'randompassword123'; // Replace with your random password generation logic
+
+ // Hash the password
+ bcrypt.hash(randomPassword, 10, async (err, hashedPassword) => {
+     if (err) {
+         console.error('Error hashing the password:', err);
+         return;
+     }
+
+     try {
+         // Create a new patient document with the hashed password
+         const newPatient = new Patient({
+             username: 'dumPAT2',
+             name: 'Dummy dumPAT Name',
+             email: 'shahd@gmail.com',
+             password: hashedPassword,
+             dateOfBirth: new Date('1990-01-01'),
+             "gender" : "Male" , 
+             "mobile_number" : "123-456-7890",
+            "emergency_contact"  : { "firstName" : "dummyEmerg",
+                              "middleName" : "dummyEmerg2",
+                              "lastName" : "dummyEmerg3",
+                              "mobile_number" : "1223549" }
+         });
+
+         // Save the new patient to the database
+         await newPatient.save();
+
+         console.log('Dummy patient created successfully.');
+     } catch (error) {
+         console.error('Error creating the dummy patient:', error);
+     }
+});
+*/
 const createNotFoundPatient = async (req, res) => {
   try {
     const {
@@ -96,7 +134,8 @@ const createNotFoundPatient = async (req, res) => {
 
 
 const addFamilyMember =  async (req, res) => {
-  const { currentUsername, familyMemberUsername, relation } = req.body;
+  const currentUsername = req.cookies.username;
+  const { familyMemberUsername, relation } = req.body;
 
   try {
     // Check if the current patient's username is valid
@@ -230,7 +269,7 @@ const viewAllPrescriptions = async (req, res) => {
 
 const viewRegisteredFamilyMembers = async (req, res) => {
   try {
-    const patientUsername = req.body.username;
+    const patientUsername = req.cookies.username;
     const patient = await Patient.findOne({ username: patientUsername });
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found' });
@@ -244,7 +283,8 @@ const viewRegisteredFamilyMembers = async (req, res) => {
 
 const filterAppointmentsByDate = async (req, res) => {
   try {
-    const { patientUsername, startDate, endDate } = req.body;
+    const patientUsername = req.cookies.username
+    const {startDate, endDate } = req.body;
 
     // Find the patient by name
     const patient = await Patient.findOne({ username: patientUsername });
@@ -279,7 +319,8 @@ const filterAppointmentsByDate = async (req, res) => {
 
 const filterAppointmentsByStatus = async (req, res) => {
   try {
-    const { patientUsername, appointmentStatus } = req.body;
+    const patientUsername = req.cookies.username
+    const { appointmentStatus } = req.body;
 
     // Find the patient by name
     const patient = await Patient.findOne({ username: patientUsername });
@@ -309,7 +350,7 @@ const filterAppointmentsByStatus = async (req, res) => {
 const viewDoctors = async (req, res) => {
   try {
     // Extract the patient's username from the request body
-    const { patientUsername } = req.body;
+    const  patientUsername  = req.cookies.username;
 
     // Find the patient by their username
     const patient = await Patient.findOne({ username: patientUsername });
@@ -520,7 +561,7 @@ const selectDoctor = async (req, res) => {
 
 const viewMyAppointments = async (req, res) => {
   try {
-    const { patientUsername} = req.body;
+    const  patientUsername = req.cookies.username;
     const myAppointments = await Appointment.find({ patient: patientUsername });
     res.status(200).json(myAppointments);
   } catch (error) {
@@ -530,7 +571,7 @@ const viewMyAppointments = async (req, res) => {
 
 const viewWallet = async (req, res) => {
   try {
-    const { patientUsername } = req.body;
+    const  patientUsername = req.cookies.username;
     const patient = await Patient.findOne({ username : patientUsername });
     if (!patient) {
       res.status(404).json({ error: 'Patient not found' });
@@ -545,7 +586,7 @@ const viewWallet = async (req, res) => {
 
 const filterByPastDate = async (req, res) => {
   try {
-    const { patientUsername } = req.body;
+    const  patientUsername = req.cookies.username;
     const currentDateTime = new Date();
     const pastAppointments = await Appointment.find({ patient: patientUsername });
 
@@ -568,7 +609,7 @@ const filterByPastDate = async (req, res) => {
 
 const filterByUpcomingDate = async (req, res) => {
   try {
-    const {patientUsername} = req.body;
+    const  patientUsername = req.cookies.username;
     const currentDateTime = new Date();
     const upcomingAppointments = await Appointment.find({ patient: patientUsername });
     const filteredAppointments = upcomingAppointments.filter(appointment => {
@@ -588,7 +629,7 @@ const filterByUpcomingDate = async (req, res) => {
 
 const viewHealthRecords = async (req, res) => {
   try {
-    const { patientUsername } = req.body;
+    const  patientUsername = req.cookies.username;
     const patient = await Patient.findOne({ username: patientUsername });
     if (!patient) {
       res.status(404).json({ error: 'Patient not found' });
@@ -635,7 +676,7 @@ const viewHealthPackageOptions = async (req, res) => {
 };
 const viewHealthPackage = async (req, res) => {
   try {
-    const { patientUsername } = req.body;
+    const  patientUsername = req.cookies.username;
     const patient = await Patient.findOne({ username: patientUsername });
 
     if (!patient) {
@@ -683,7 +724,9 @@ const viewHealthPackage = async (req, res) => {
 
 const subscribeToHealthPackage = async (req,res)=>{
   try {
-    const {patientUsername, packageName} = req.body;
+
+    const  patientUsername = req.cookies.username;
+    const { packageName} = req.body;
 
     // Find the patient by name
     const patient = await Patient.findOne({ username: patientUsername });
@@ -774,7 +817,7 @@ const subscribeToHealthPackage = async (req,res)=>{
 
 const unsubscribeToHealthPackage = async (req,res)=>{
   try {
-    const {patientUsername} = req.body;
+    const  patientUsername = req.cookies.username;
 
     // Find the patient by name
     const patient = await Patient.findOne({ username: patientUsername });
@@ -803,7 +846,8 @@ const unsubscribeToHealthPackage = async (req,res)=>{
 
   const viewAvailableDoctorSlots = async (req, res) => {
     try {
-      const { patientUsername, doctorUsername } = req.body;
+      const  patientUsername = req.cookies.username;
+      const {  doctorUsername } = req.body;
   
       // Find the patient and doctor records by their usernames
       const patient = await Patient.findOne({ username: patientUsername });
@@ -839,7 +883,8 @@ const unsubscribeToHealthPackage = async (req,res)=>{
 
   const makeAppointment = async (req, res) => {
     try {
-      const { patientUsername, doctorUsername, chosenSlot } = req.body;
+      const  patientUsername = req.cookies.username;
+      const {  doctorUsername, chosenSlot } = req.body;
   
       
       const patient = await Patient.findOne({ username: patientUsername });
