@@ -4,7 +4,7 @@ const {viewProfile, updateProfile, viewMyPatients ,
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
     selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , 
     searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , 
-    viewContract ,acceptContract , addAvailableSlots , scheduleAppointment , addHealthRecord, logout, changePassword } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+    viewContract ,acceptContract , rejectContract , addAvailableSlots , scheduleAppointment , addHealthRecord, logout, changePassword } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
@@ -29,11 +29,11 @@ router.post("/view-wallet", requireAuth, viewWallet);
 router.post("/past-appointments", requireAuth, filterByPastDate);
 router.post("/get-health-records", requireAuth, viewHealthRecords);
 
-// change to get ba3den
-router.post("/viewContract",viewContract);
-router.post("/acceptContract", acceptContract);
-router.post("/addAvailableSlots", addAvailableSlots);
-router.post("/scheduleAppointment", scheduleAppointment);
-router.post("/addHealthRecord", addHealthRecord);
+router.get("/viewContract", requireAuth ,viewContract);
+router.post("/acceptContract", requireAuth ,acceptContract);
+router.post("/rejectContract", requireAuth ,rejectContract);
+router.post("/addAvailableSlots", requireAuth ,addAvailableSlots);
+router.post("/scheduleAppointment", requireAuth ,scheduleAppointment);
+router.post("/addHealthRecord", requireAuth ,addHealthRecord);
 
 module.exports = router;

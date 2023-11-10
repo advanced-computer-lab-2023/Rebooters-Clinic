@@ -86,7 +86,10 @@ const DoctorMyPatients = () => {
               <th>Date of Birth</th>
               <th>Gender</th>
               <th>Mobile Number</th>
-              <th>Emergency Contact</th>
+              <th>Emergency Contact First Name</th>
+              <th>Emergency Contact Middle Name</th>
+              <th>Emergency Contact Last Name</th>
+              <th>Emergency Contact Mobile Phone</th>
             </tr>
           </thead>
           <tbody>
@@ -103,7 +106,10 @@ const DoctorMyPatients = () => {
                 <td>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
                 <td>{patient.gender}</td>
                 <td>{patient.mobile_number}</td>
-                <td>{patient.emergency_contact}</td>
+                <td>{patient.emergency_contact.firstName}</td>
+                <td>{patient.emergency_contact.middleName}</td>
+                <td>{patient.emergency_contact.lastName}</td>
+                <td>{patient.emergency_contact.mobile_number}</td>
               </tr>
             ))}
           </tbody>
@@ -132,8 +138,17 @@ const DoctorMyPatients = () => {
               <strong>Mobile Number:</strong>{" "}
               {selectedPatientProfile.mobile_number}
               <br />
-              <strong>Emergency Contact:</strong>{" "}
-              {selectedPatientProfile.emergency_contact}
+              <strong>Emergency Contact First Name:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.firstName}
+              <br />
+              <strong>Emergency Contact Middle Name:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.middleName}
+              <br />
+              <strong>Emergency Contact Last Name:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.lastName}
+              <br />
+              <strong>Emergency Contact Mobile Phone:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.mobile_number}
               <hr></hr>
               <h5>Patient Health Record:</h5>
               <hr></hr>

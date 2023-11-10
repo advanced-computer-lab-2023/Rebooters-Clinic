@@ -80,6 +80,16 @@ const { default: mongoose } = require('mongoose');
 // Save the new contract to the database
 // newContract.save();
 
+// const sampleContract = new Contract({
+//   doctorName: 'dumDOC',
+//   employerName: 'Healthcare Inc.',
+//   startDate: new Date('2023-11-01'),
+//   endDate: new Date('2024-11-01'),
+//   salary: 120000,
+// });
+
+// sampleContract.save();
+
 
 const viewProfile = async (req, res) => {
     try {
@@ -345,7 +355,7 @@ const viewContract = async (req, res) => {
     const doctorUsername = req.cookies.username;
 
     // Find the contract for the doctor
-    const contract = await Contract.findOne({ doctorName : doctorUsername });
+    const contract = await Contract.find({ doctorName : doctorUsername });
 
     if (!contract) {
       return res.status(404).json({ error: 'Contract not found.' });
@@ -364,23 +374,23 @@ const viewContract = async (req, res) => {
 //  16.2:
 const acceptContract = async (req, res) => {
   try {
-    //const { doctorUsername } = req.body;
+    const { contractID } = req.body;
     const doctorUsername = req.cookies.username;
 
     // Find the contract for the doctor
-    const contract = await Contract.findOne({ doctorName : doctorUsername });
+    const contract = await Contract.findOne({ _id : contractID });
 
     if (!contract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
 
     // Check if the contract is already accepted
-    if (contract.accepted) {
+    if (contract.status === 'accepted') {
       return res.status(400).json({ error: 'Contract is already accepted.' });
     }
 
     // Update the contract status to 'accepted'
-    contract.accepted = true;
+    contract.status = 'accepted';
     await contract.save();
 
     res.status(200).json({ message: 'Contract accepted successfully.' });
@@ -390,33 +400,52 @@ const acceptContract = async (req, res) => {
   }
 };
 
+//  16.2.1:
+const rejectContract = async (req, res) => {
+  try {
+    const { contractID } = req.body;
+
+    const doctorUsername = req.cookies.username;
+
+    // Find the contract for the doctor
+    const contract = await Contract.findOne({ _id : contractID });
+
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found.' });
+    }
+
+    // Check if the contract is already accepted
+    if (contract.status === 'accepted') {
+      return res.status(400).json({ error: 'Contract is already accepted.' });
+    }
+
+    // Update the contract status to 'rejected'
+    contract.status = 'rejected';
+    await contract.save();
+
+    res.status(200).json({ message: 'Contract rejected successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while rejecting the contract.' });
+  }
+};
+
 
 
 // 17: Function to add available time slots for appointments
 const addAvailableSlots = async (req, res) => {
   try {
     const doctorUsername = req.cookies.username;
-    const { availableSlots } = req.body;
+    const { date , time } = req.body;
 
-    // Find the doctor by username
-    const DoctorRequest = await DoctorRequest.findOne({ doctorUsername : doctorUsername });
-    const Contract = await Contract.findOne({ doctorName : doctorName });
-    const doctor = await Doctor.findOne({ doctorUsername : doctorUsername });
-
-    if (DoctorRequest.status !== "accepted" ) {
-      return res.status(404).json({ error: 'Doctor not accepted by Admin.' });
-    }
-
-    if (!Contract.accepted) {
-      return res.status(404).json({ error: 'Doctor did not accept the contract.' });
-    }
-
+    const doctor = await Doctor.findOne({ username: doctorUsername });
     if (!doctor) {
       return res.status(404).json({ error: 'Doctor not found.' });
     }
 
     // Append the new available time slots to the doctor's existing slots
-    doctor.availableSlots.push(...availableSlots);
+    const newSlot = { time, date };
+    doctor.availableSlots.push(newSlot);
 
     // Save the updated doctor document
     await doctor.save();
@@ -427,6 +456,8 @@ const addAvailableSlots = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while adding available time slots.' });
   }
 };
+
+
 
 //  51:
 const scheduleAppointment = async (req, res) => {
@@ -510,7 +541,7 @@ module.exports = { viewProfile, updateProfile, viewMyPatients ,
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
     selectPatient, viewMyAppointments, searchPatientByUsername , 
     filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , 
-    viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,
+    viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract , rejectContract ,
     addAvailableSlots, scheduleAppointment, addHealthRecord ,  logout, changePassword  };
 
 

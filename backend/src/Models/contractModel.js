@@ -23,10 +23,11 @@ const contractSchema = new Schema({
     type: Number,
     required: true,
   },
-  accepted: {
-    type: Boolean,
-    default: false,
-  },
+  status: {
+    type: String,
+    enum: ['accepted', 'rejected', 'N/A'],
+    default: 'N/A',
+  }
 });
 
 // Create the Contract model

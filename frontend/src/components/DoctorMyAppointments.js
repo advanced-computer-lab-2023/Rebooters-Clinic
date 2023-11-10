@@ -372,8 +372,17 @@ const DoctorMyAppointments = () => {
               <strong>Mobile Number:</strong>{" "}
               {selectedPatientProfile.mobile_number}
               <br />
-              <strong>Emergency Contact:</strong>{" "}
-              {selectedPatientProfile.emergency_contact}
+              <strong>Emergency Contact First Name:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.firstName}
+              <br />
+              <strong>Emergency Contact Middle Name:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.middleName}
+              <br />
+              <strong>Emergency Contact Last Name:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.lastName}
+              <br />
+              <strong>Emergency Contact Mobile Phone:</strong>{" "}
+              {selectedPatientProfile.emergency_contact.mobile_number}
               <hr></hr>
               <h5>Patient Health Record:</h5>
               {selectedPatientRecords.length > 0 && selectedPatientRecords.map((record) => (

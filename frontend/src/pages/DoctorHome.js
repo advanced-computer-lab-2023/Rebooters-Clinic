@@ -8,6 +8,10 @@ import DoctorMyAppointments from "../components/DoctorMyAppointments";
 import DoctorWallet from "../components/DoctorWallet";
 import ChangePassword from "../components/ChangePassword";
 import "bootstrap/dist/css/bootstrap.min.css";
+import Contract from "../components/Contract";
+import ScheduleFollowup from "../components/ScheduleFollowup";
+import AddHealthRecord from "../components/AddHealthRecord";
+import TimeSlots from "../components/TimeSlots";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -16,8 +20,8 @@ const DoctorHome = () => {
   useEffect(() => {
     const checkUserType = async () => {
       try {
-        const response = await fetch("/doctor-home")
-        if (response.status === 401 ||response.status === 403) {
+        const response = await fetch("/doctor-home");
+        if (response.status === 401 || response.status === 403) {
           navigate("/", { state: { errorMessage: "Access Denied" } });
         }
       } catch (error) {
@@ -91,28 +95,36 @@ const DoctorHome = () => {
           ) : null}
         </div>
       </div>
-      {doctorData && (
-        <>
-          <div className="card mt-4">
-            <DoctorUpdateProfile />
-          </div>
-          <div className="card mt-4">
-            <ChangePassword userType = "doctor" />
-          </div>
-          <div className="card mt-4">
-            <DoctorMyAppointments />
-          </div>
-          <div className="card mt-4">
-            <DoctorMyPatients />
-          </div>
-          <div className="card mt-4">
-            <SearchForPatient />
-          </div>
-          <div className="card mt-4">
-            <DoctorWallet />
-          </div>
-        </>
-      )}
+      <div className="card mt-4">
+        <DoctorUpdateProfile />
+      </div>
+      <div className="card mt-4">
+        <ChangePassword userType="doctor" />
+      </div>
+      <div className="card mt-4">
+        <DoctorMyAppointments />
+      </div>
+      <div className="card mt-4">
+        <DoctorMyPatients />
+      </div>
+      <div className="card mt-4">
+        <SearchForPatient />
+      </div>
+      <div className="card mt-4">
+        <DoctorWallet />
+      </div>
+      <div className="card mt-4">
+        <Contract />
+      </div>
+      <div className="card mt-4">
+        <ScheduleFollowup />
+      </div>
+      <div className="card mt-4">
+        <AddHealthRecord />
+      </div>
+      <div className="card mt-4">
+        <TimeSlots />
+      </div>
     </div>
   );
 };
