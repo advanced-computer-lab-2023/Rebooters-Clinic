@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Import Link for navigation
 import "bootstrap/dist/css/bootstrap.min.css";
-import DoctorSelection from "../components/DoctorSelection"
+import DoctorSelection from "../components/DoctorSelection";
 import Prescription from "../components/Prescription";
 import AddFamilyMember from "../components/AddFamilyMember";
 import PatientAppointments from "../components/PatientAppointments";
@@ -15,6 +15,7 @@ import SubscribeToHealthPackage from "../components/SubscribeToHealthPackage";
 import ViewHealthPackage from "../components/ViewHealthPackage";
 import UnsubscribeToHealthPackage from "../components/UnsubscribeToHealthPackage";
 import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointment";
+import ChangePassword from "../components/ChangePassword";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -23,8 +24,8 @@ const PatientHome = () => {
   useEffect(() => {
     const checkUserType = async () => {
       try {
-        const response = await fetch("/patient-home")
-        if (response.status === 401 ||response.status === 403 ) {
+        const response = await fetch("/patient-home");
+        if (response.status === 401 || response.status === 403) {
           navigate("/", { state: { errorMessage: "Access Denied" } });
         }
       } catch (error) {
@@ -45,16 +46,39 @@ const PatientHome = () => {
           setPatientData(json);
         }
       } catch (error) {
-        console.error("An error occurred while fetching patient profile:", error);
+        console.error(
+          "An error occurred while fetching patient profile:",
+          error
+        );
       }
     };
 
     viewProfile();
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/patient/logout", {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        navigate("/");
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
   return (
     <div className="container">
-      
+      <button onClick={handleLogout} className="btn btn-danger mt-2">
+        Logout
+      </button>
+      <div className="card mt-4">
+        <ChangePassword userType="patient" />
+      </div>
       <div className="mt-4">
         <DoctorSelection />
       </div>
@@ -68,7 +92,7 @@ const PatientHome = () => {
         <PatientAppointments />
       </div>
       <div className="mt-4">
-        <ViewSlotsAndMakeAppointment/>
+        <ViewSlotsAndMakeAppointment />
       </div>
       <div className="mt-4">
         <ViewDoctors />
@@ -77,25 +101,24 @@ const PatientHome = () => {
         <ViewFamilyMembers />
       </div>
       <div className="mt-4">
-        <PatientWallet/>
+        <PatientWallet />
       </div>
       <div className="mt-4">
-        <PatientHealthRecords/>
+        <PatientHealthRecords />
       </div>
       <div className="mt-4">
-        <ViewHealthPackageOptions/>
+        <ViewHealthPackageOptions />
       </div>
       <div className="mt-4">
-        <ViewHealthPackage/>
+        <ViewHealthPackage />
       </div>
       <div className="mt-4">
-        <SubscribeToHealthPackage/>
+        <SubscribeToHealthPackage />
       </div>
       <div className="mt-4">
-        <UnsubscribeToHealthPackage/>
+        <UnsubscribeToHealthPackage />
       </div>
     </div>
-    
   );
 };
 

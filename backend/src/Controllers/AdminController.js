@@ -41,10 +41,10 @@ const mongoose = require('mongoose');
 // Add another administrator with a set username and password
 const addAdministrator= async (req, res) => {
       try {
-        const { username, password } = req.body;
+        const { username, password, email } = req.body;
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(password, salt);
-        const newAdministrator = new Administrator({ username, password:hashedPassword });
+        const newAdministrator = new Administrator({ email, username, password:hashedPassword });
         const savedAdministrator = await newAdministrator.save();
         const token = createToken(newAdministrator._id);
         res.status(201).json({ username, token, savedAdministrator });      

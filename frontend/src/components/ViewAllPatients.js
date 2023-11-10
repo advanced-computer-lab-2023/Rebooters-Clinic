@@ -60,8 +60,12 @@ function ViewAllPatients() {
                       <strong>Mobile Number:</strong> {patient.mobile_number}
                     </Card.Text>
                     <Card.Text>
-                      <strong>Emergency Contact:</strong>{" "}
-                      {`${patient.emergency_contact.firstName} ${patient.emergency_contact.middleName} ${patient.emergency_contact.lastName} (${patient.emergency_contact.mobile_number})`}
+                      {patient.emergency_contact && (
+                        <React.Fragment>
+                          <strong>Emergency Contact:</strong>{" "}
+                          {`${patient.emergency_contact.firstName} ${patient.emergency_contact.middleName} ${patient.emergency_contact.lastName} (${patient.emergency_contact.mobile_number})`}
+                        </React.Fragment>
+                      )}
                     </Card.Text>
                     <Card.Text>
                       <strong>Health Package:</strong>{" "}
