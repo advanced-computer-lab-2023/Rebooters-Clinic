@@ -5,7 +5,7 @@ const Prescription = require('../Models/prescriptionModel');
 const Contract = require('../Models/contractModel');
 const DoctorRequest = require('../Models/newDoctorRequestModel');
 const bcrypt = require('bcrypt'); //needed only for creating the dummy doctor password
-const {logout, changePassword} = require('./authController');
+const {logout, changePassword } = require('./authController');
 
 const { default: mongoose } = require('mongoose');
 
@@ -511,6 +511,6 @@ module.exports = { viewProfile, updateProfile, viewMyPatients ,
     selectPatient, viewMyAppointments, searchPatientByUsername , 
     filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , 
     viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract ,
-    addAvailableSlots, scheduleAppointment, addHealthRecord ,  logout, changePassword };
+    addAvailableSlots, scheduleAppointment, addHealthRecord ,  logout, changePassword  };
 
 

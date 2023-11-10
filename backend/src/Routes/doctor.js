@@ -2,13 +2,13 @@ const express = require('express') //require or import express
 const { requireAuth } = require('../Middleware/authMiddleware');
 const {viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , viewContract ,acceptContract , addAvailableSlots , scheduleAppointment , addHealthRecord, logout, changePassword} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+    selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , 
+    searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , 
+    viewContract ,acceptContract , addAvailableSlots , scheduleAppointment , addHealthRecord, logout, changePassword } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
 router.get('/logout', requireAuth, logout);
-// router.get('/requestPasswordResetOTP', requireAuth, requestPasswordResetOTP);
-// router.post('/resetPasswordWithOTP', requireAuth, resetPasswordWithOTP);
 router.post('/changePassword', requireAuth, changePassword);
 router.post("/doctor-profile", requireAuth, viewProfile);
 router.post("/doctor-update-profile", requireAuth, updateProfile);

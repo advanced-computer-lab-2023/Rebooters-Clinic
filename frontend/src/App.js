@@ -6,6 +6,8 @@ import PatientHome from "./pages/PatientHome";
 import Admin from "./pages/Admin";
 import Guest from "./pages/Guest";
 import Login from "./pages/Login";
+import OTP from "./pages/OTP";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
           <Route path="/doctor-home" element={<DoctorHome />} />
           <Route path="/patient-home" element={<PatientHome />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/forgotpassword" element={<ForgotPassword />} />
+          <Route path="/otp" element={<OTP />} />
 
         </Routes>
       </BrowserRouter>

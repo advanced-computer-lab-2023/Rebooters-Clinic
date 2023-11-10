@@ -82,6 +82,7 @@ const PatientSchema = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   password: {
     type: String,
@@ -127,8 +128,11 @@ const PatientSchema = new Schema({
   },
   healthPackageCreatedAt: {
     type: Date 
-  }
-  
+  },
+  OTP:{
+    type: String,
+    default: "",
+  },
   
   
  

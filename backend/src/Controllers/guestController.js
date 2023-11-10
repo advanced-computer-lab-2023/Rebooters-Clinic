@@ -6,6 +6,7 @@ const NewDoctorRequest = require('../Models/newDoctorRequestModel');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const {createToken} = require('./authController');
+const {requestPasswordResetOTP, resetPasswordWithOTP } = require('./authController');
 const maxAge = 3 * 24 * 60 * 60;
 
 const login = async(req, res) => {
@@ -81,7 +82,7 @@ const createNewDoctorRequest =  async (req, res) => {
 
 
 module.exports = {
-  createPatient, createNewDoctorRequest, login, createToken
+  createPatient, createNewDoctorRequest, login, createToken , requestPasswordResetOTP , resetPasswordWithOTP
 };
 
   

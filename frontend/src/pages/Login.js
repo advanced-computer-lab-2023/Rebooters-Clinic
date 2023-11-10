@@ -81,7 +81,7 @@ const Login = () => {
         />
         <br />
 
-        <a className="forgot" href="">
+        <a className="forgot" href="/forgotpassword">
           forgot password?
         </a>
         <br />
@@ -89,7 +89,7 @@ const Login = () => {
         <button onClick={handleLogin}>Login</button>
         <br />
 
-        <a className="forgot center" href="/register">
+        <a className="forgot center" href="/guest">
           CREATE ACCOUNT!
         </a>
       </div>

@@ -31,6 +31,7 @@ const doctorSchema = new Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   dateOfBirth: {
     type: Date,
@@ -61,6 +62,11 @@ const doctorSchema = new Schema({
     type: Number,
     default: 0.0,
   },
+  OTP:{
+    type: String,
+    default: "",
+  },
+  
 
 }, { timestamps: true });
 
