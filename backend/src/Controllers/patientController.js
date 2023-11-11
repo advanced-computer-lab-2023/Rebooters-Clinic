@@ -893,6 +893,11 @@ const unsubscribeToHealthPackage = async (req,res)=>{
        // Set the time separately
     appointment.datetime.setUTCHours(22); // Assuming you want to set the time to 22:00 UTC
 
+    const updatedAvailableSlots = doctor.availableSlots.filter(
+      (slot) => (slot.date === chosenSlot.date && slot.time === chosenSlot.time)
+    );
+    doctor.availableSlots = updatedAvailableSlots;
+
 
 
       await doctor.save();

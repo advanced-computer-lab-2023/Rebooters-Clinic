@@ -2,8 +2,11 @@
 const express = require("express");
 const { requireAuth } = require('./Middleware/authMiddleware');
 const mongoose = require('mongoose');
+const multer = require("multer"); // Import multer here
+const storage = multer.memoryStorage();
 mongoose.set('strictQuery', false);
 require("dotenv").config();
+const upload = multer({ storage });
 const cookieParser = require('cookie-parser');
 
 const MongoURI = process.env.MONGO_URI ;

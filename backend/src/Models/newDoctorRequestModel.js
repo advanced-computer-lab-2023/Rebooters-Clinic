@@ -36,14 +36,15 @@ const newDoctorRequestSchema = new Schema({
     type: Number,
     required: true,
   },
-  speciality: {
-    type: String,
-    //required: true,
-  },
   affiliation: {
     type: String,
     required: true,
   },
+  speciality: {
+    type: String,
+    required: true,
+  },
+  
   educationalBackground: {
     type: String,
     required: true,
@@ -54,7 +55,22 @@ const newDoctorRequestSchema = new Schema({
     type: String,
     enum: ['accepted', 'rejected', 'pending'], // Allowed values
     default: 'pending', // Default value
-  }
+  },
+  idDocument: {
+    data: Buffer,
+    contentType: String,
+    filename: String,
+  },
+  medicalLicense: {
+    data: Buffer,
+    contentType: String,
+    filename: String,
+  },
+  medicalDegree: {
+    data: Buffer,
+    contentType: String,
+    filename: String,
+  },
 }, { timestamps: true });
 
 const NewDoctorRequest = mongoose.model('NewDoctorRequest', newDoctorRequestSchema);

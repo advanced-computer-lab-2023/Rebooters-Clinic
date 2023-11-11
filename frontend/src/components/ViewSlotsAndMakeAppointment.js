@@ -92,10 +92,10 @@ function ViewSlotsAndMakeAppointment() {
       </Form.Group>
       <Button onClick={handleSubmitUsername}>Submit</Button>
       <ul>
-        {availableSlots.map((slot, index) => (
+        {Array.isArray(availableSlots) && availableSlots.map((slot, index) => (
           <li key={index}>
             <button onClick={() => handleSlotClick(slot)}>Click to book</button>
-            {slot.date}
+            {`${slot.date} ${slot.time}`}
           </li>
         ))}
       </ul>

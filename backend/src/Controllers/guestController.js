@@ -70,8 +70,27 @@ const createPatient = async (req, res) => {
 
 const createNewDoctorRequest =  async (req, res) => {
   try {
-    const {username,name,email,password,dateOfBirth,hourlyRate,speciality,affiliation,educationalBackground} = req.body; 
-    const newDoctorRequest = new NewDoctorRequest({username,name,email,password,dateOfBirth,hourlyRate,speciality,affiliation,educationalBackground});
+    const {username,name,email,password,dateOfBirth,hourlyRate,affiliation,speciality,educationalBackground} = req.body; 
+    const newDoctorRequest = new NewDoctorRequest({username,name,email,password,dateOfBirth,hourlyRate,affiliation,speciality,educationalBackground});
+    if (req.files) {
+      if (req.files.idDocument) {
+        newDoctorRequest.idDocument.data = req.files.idDocument[0].buffer;
+        newDoctorRequest.idDocument.contentType = req.files.idDocument[0].mimetype;
+        newDoctorRequest.idDocument.filename = req.files.idDocument[0].originalname;
+      }
+  
+      if (req.files.medicalLicense) {
+        newDoctorRequest.medicalLicense.data = req.files.medicalLicense[0].buffer;
+        newDoctorRequest.medicalLicense.contentType = req.files.medicalLicense[0].mimetype;
+        newDoctorRequest.medicalLicense.filename = req.files.medicalLicense[0].originalname;
+      }
+  
+      if (req.files.medicalDegree) {
+        newDoctorRequest.medicalDegree.data = req.files.medicalDegree[0].buffer;
+        newDoctorRequest.medicalDegree.contentType = req.files.medicalDegree[0].mimetype;
+        newDoctorRequest.medicalDegree.filename = req.files.medicalDegree[0].originalname;
+      }
+    }
     await newDoctorRequest.save();
     res.status(201).json(newDoctorRequest);
   } catch (error) {

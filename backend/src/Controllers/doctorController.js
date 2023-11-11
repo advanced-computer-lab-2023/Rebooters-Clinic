@@ -436,11 +436,19 @@ const rejectContract = async (req, res) => {
 const addAvailableSlots = async (req, res) => {
   try {
     const doctorUsername = req.cookies.username;
-    const { date , time } = req.body;
+    const { date, time } = req.body;
 
     const doctor = await Doctor.findOne({ username: doctorUsername });
     if (!doctor) {
       return res.status(404).json({ error: 'Doctor not found.' });
+    }
+
+    // Ensure the provided date and time are ahead of the current date and time
+    const currentDateTime = new Date();
+    const providedDateTime = new Date(`${date}T${time}`);
+
+    if (providedDateTime <= currentDateTime) {
+      return res.status(400).json({ error: 'Please provide a date and time ahead of the current date and time.' });
     }
 
     // Append the new available time slots to the doctor's existing slots
@@ -456,6 +464,7 @@ const addAvailableSlots = async (req, res) => {
     res.status(500).json({ error: 'An error occurred while adding available time slots.' });
   }
 };
+
 
 
 
