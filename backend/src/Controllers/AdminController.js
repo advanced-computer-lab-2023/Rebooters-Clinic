@@ -4,8 +4,10 @@ const Patient = require('../Models/patientModel');
 const NewDoctorRequest = require('../Models/newDoctorRequestModel');
 const bcrypt = require('bcrypt');
 const {logout, changePassword, createToken} = require('./authController');
-
 const mongoose = require('mongoose');
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+
 // const randomPassword = 'randompassword123'; // Replace with your random password generation logic
 
 // // Hash the password
@@ -39,6 +41,8 @@ const mongoose = require('mongoose');
 // and then add another admin using the addAdministrator function
 
 // Add another administrator with a set username and password
+
+
 const addAdministrator= async (req, res) => {
       try {
         const { username, password, email } = req.body;
@@ -302,10 +306,30 @@ const approveDoctorRequest = async (req, res) => {
       return res.status(404).json({ error: 'Request not found' });
     }
 
-    request.status = 'accepted';
-    await request.save();
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(request.password, salt);
 
-    res.status(200).json({ message: 'Request accepted' });
+    const newDoctor = new Doctor({
+      username: request.username,
+      password: hashedPassword,
+      name: request.name,
+      email: request.email,
+      dateOfBirth: request.dateOfBirth,
+      hourlyRate: request.hourlyRate,
+      speciality: request.speciality,
+      affiliation: request.affiliation,
+      educationalBackground: request.educationalBackground,
+
+    })
+
+    request.status = 'accepted';
+    await newDoctor.save();
+
+    await NewDoctorRequest.findOneAndRemove({username:username});
+
+    const emailInfo = await sendApprovalEmail(request.email);
+
+    res.status(200).json({ message: 'Request accepted', emailInfo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while approving the request' });
@@ -324,12 +348,71 @@ const rejectDoctorRequest = async (req, res) => {
     request.status = 'rejected';
     await request.save();
 
-    res.status(200).json({ message: 'Request rejected' });
+    const emailInfo = await sendRejectionEmail(request.email);
+
+    res.status(200).json({ message: 'Request rejected', emailInfo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while rejecting the request' });
   }
 };
+
+const sendApprovalEmail = async (email) => {
+  const subject = 'Doctor Application Approval';
+  const html = `
+    <h1>El7a2ni Doctor Application Approval</h1>
+    <p>Congratulations! Your Doctor application has been approved.</p>
+    <p>You are now a registered Doctor. Welcome to our platform!</p>
+  `;
+
+  const emailInfo = await sendEmail(email, subject, html);
+  return emailInfo;
+};
+
+const sendRejectionEmail = async (email) => {
+  const subject = 'Doctor Application Rejection';
+  const html = `
+    <h1>El7a2ni Doctor Application Rejection</h1>
+    <p>We regret to inform you that your Doctor application has been rejected.</p>
+    <p>If you have any questions, please contact our support team.</p>
+  `;
+
+  const emailInfo = await sendEmail(email, subject, html);
+  return emailInfo;
+};
+
+const sendEmail = async (email, subject, html) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false, // Add this line to bypass SSL verification
+      },
+    });
+    
+
+    // Send emails to users
+    let info = await transporter.sendMail({
+      from: "Rebooters",
+      to: email,
+      subject: subject,
+      html: html,
+    });
+
+    console.log("Email info: ", info);
+    return info;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error; // Add this line to rethrow the error
+  }
+};
+
 
 
 

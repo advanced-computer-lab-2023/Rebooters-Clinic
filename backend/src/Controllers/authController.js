@@ -193,6 +193,9 @@ const resetPasswordWithOTP = async (req, res) => {
   user.save();
   res.status(200).json({ message: "Password reset successful" });
 };
+
+
+
 module.exports = {
   logout,
   changePassword,
