@@ -2,14 +2,29 @@ const express = require('express') //require or import express
 const { requireAuth } = require('../Middleware/authMiddleware');
 const jwt = require('jsonwebtoken');
 const {viewAvailableDoctorSlots, unsubscribeToHealthPackage, viewHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
-    viewRegisteredFamilyMembers, addFamilyMember,
-    createPrescription,viewAllPrescriptions, selectDoctor,filterPrescriptions,
+    viewRegisteredFamilyMembers, addFamilyMember, payForAppointment, payForHealthPackage,
+    createPrescription,viewAllPrescriptions, selectDoctor,filterPrescriptions, addMedicalHistory,
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
-    viewMyAppointments, viewWallet , filterByPastDate , filterByUpcomingDate , viewHealthRecords, makeAppointment, logout, changePassword} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
+    viewMyAppointments, viewWallet , filterByPastDate , viewMedicalHistory, deleteMedicalHistory,
+    filterByUpcomingDate , viewHealthRecords, makeAppointment,
+     logout, changePassword} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 
 const Patient = require('../Models/patientModel'); 
 const router = express.Router() //create a router 
+
+const multer = require('multer'); 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, '../../frontend/public');
+    },
+    filename: (req, file, cb) => {
+      cb(null, file.originalname);
+    },
+  });
+
+const upload = multer({ storage: storage });
+
 
 router.get('/logout', requireAuth, logout);
 
@@ -19,7 +34,18 @@ router.get('/logout', requireAuth, logout);
 
 router.post('/changePassword', requireAuth, changePassword);
 
+router.post('/payForAppointment', requireAuth, payForAppointment);
+
+router.post('/payForHealthPackage', requireAuth, payForHealthPackage);
+
 router.post('/createNotFoundPatient', requireAuth, createNotFoundPatient); 
+
+router.post('/addMedicalHistory', requireAuth, upload.array('file', 1), addMedicalHistory);
+
+router.get('/viewMedicalHistory', requireAuth, viewMedicalHistory);
+
+router.delete('/deleteMedicalHistory/:filename', requireAuth, deleteMedicalHistory);
+
 
 //router.get('/selectDoctorByName' , selectDoctorByName);
 
@@ -68,6 +94,9 @@ router.post('/past-appointments', requireAuth, filterByPastDate);
 router.post('/upcoming-appointments', requireAuth, filterByUpcomingDate);
 
 router.post('/health-records', requireAuth, viewHealthRecords);
+
+
+
 
 
 module.exports = router //we need to export that router at the end so that server.js can access it

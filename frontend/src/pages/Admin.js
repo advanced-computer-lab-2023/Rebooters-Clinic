@@ -151,7 +151,15 @@ function Admin() {
       console.error("An error occurred while rejecting doctor request:", error);
     }
   };
-
+  const downloadDocument = async (fileName) => {
+    const link = document.createElement("a");
+    const url = fileName;
+    link.href = url;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  };
   const toggleDoctorRequests = () => {
     if (!showDoctorRequests) {
       viewDoctorRequests();
@@ -255,6 +263,9 @@ function Admin() {
                 <th>Speciality</th>
                 <th>Affiliation</th>
                 <th>Educational Background</th>
+                <th>ID Document</th>
+                <th>Medical License</th>
+                <th>Medical Degree</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -269,6 +280,43 @@ function Admin() {
                   <td>{request.speciality}</td>
                   <td>{request.affiliation}</td>
                   <td>{request.educationalBackground}</td>
+                  <td>
+                        {request.idDocument && (
+                          <button className="btn btn-info"
+                            onClick={() =>
+                              downloadDocument(request.idDocument.filename)
+                            }
+                          >
+                            Download ID Document
+                          </button>
+                        )}
+                      </td>
+                      <td>
+                        {request.medicalLicenseDocument && (
+                          <button className="btn btn-info"
+                            onClick={() =>
+                              downloadDocument(
+                                request.medicalLicenseDocument.filename
+                              )
+                            }
+                          >
+                            Download Medical License Document
+                          </button>
+                        )}
+                      </td>
+                      <td>
+                        {request.medicalDegreeDocument && (
+                          <button className="btn btn-info"
+                            onClick={() =>
+                              downloadDocument(
+                                request.medicalDegreeDocument.filename
+                              )
+                            }
+                          >
+                            Download Medical Degree Document
+                          </button>
+                        )}
+                      </td>
                   <td>
                     {request.status === "pending" ? (
                       <div>

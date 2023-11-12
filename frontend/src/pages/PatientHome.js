@@ -16,6 +16,9 @@ import ViewHealthPackage from "../components/ViewHealthPackage";
 import UnsubscribeToHealthPackage from "../components/UnsubscribeToHealthPackage";
 import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointment";
 import ChangePassword from "../components/ChangePassword";
+import MedicalHistoryComponent from "../components/MedicalHistory";
+
+
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -86,11 +89,16 @@ const PatientHome = () => {
         <Prescription />
       </div>
       <div className="mt-4">
+        <MedicalHistoryComponent />
+      </div>
+
+      <div className="mt-4">
         <AddFamilyMember />
       </div>
       <div className="mt-4">
         <PatientAppointments />
       </div>
+
       <div className="mt-4">
         <ViewSlotsAndMakeAppointment />
       </div>

@@ -31,14 +31,8 @@ const ViewDoctors = () => {
     <div className="container">
       <h2>Available Doctors:</h2>
       <div>
-        <label>Patient Username:</label>
-        <input
-          type="text"
-          value={patientUsername}
-          onChange={(e) => setPatientUsername(e.target.value)}
-        />
         <button className="btn btn-primary" onClick={fetchDoctors}>
-          Submit
+          View
         </button>
       </div>
       {error && <p className="text-danger">{error}</p>}

@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 const PatientAppointments = () => {
-  const [patientUsername, setPatientUsername] = useState("");
   const [appointmentsData, setAppointmentsData] = useState([]);
-  const [error, setError] = useState("");
   const [filterByStatusData, setFilterByStatusData] = useState([]);
   const [customStatus, setCustomStatus] = useState("");
   const [filterByDateRange, setFilterByDateRange] = useState([]);
@@ -12,15 +11,11 @@ const PatientAppointments = () => {
   const [filterByPastDate, setFilterByPastDate] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [appointmentId, setAppointmentId] = useState("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [paymentMessage, setPaymentMessage] = useState("");
+  const [paymentError, setPaymentError] = useState("");
 
-  const handlePatientUsernameChange = (e) => {
-    setPatientUsername(e.target.value);
-  };
-  const handleFetchAppointments = () => {
-    if (patientUsername) {
-      fetchAppointments();
-    }
-  };
 
   const fetchAppointments = async () => {
     try {
@@ -28,8 +23,7 @@ const PatientAppointments = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ patientUsername }),
+        }
       });
       const json = await response.json();
       if (response.ok) {
@@ -39,10 +33,10 @@ const PatientAppointments = () => {
         setAppointmentsData(json);
         setFilterByStatusData([]);
       } else {
-        setError("An error occurred while fetching appointments");
+        setPaymentError("An error occurred while fetching appointments");
       }
     } catch (error) {
-      setError("An error occurred while fetching appointments");
+      setPaymentError("An error occurred while fetching appointments");
     }
   };
 
@@ -53,7 +47,7 @@ const PatientAppointments = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ patientUsername, appointmentStatus }),
+        body: JSON.stringify({  appointmentStatus }),
       });
       const json = await response.json();
       if (response.ok) {
@@ -64,10 +58,14 @@ const PatientAppointments = () => {
         setFilterByStatusData(json);
         setCustomStatus("");
       } else {
-        setError("An error occurred while filtering appointments by status");
+        setPaymentError(
+          "An error occurred while filtering appointments by status"
+        );
       }
     } catch (error) {
-      setError("An error occurred while filtering appointments by status");
+      setPaymentError(
+        "An error occurred while filtering appointments by status"
+      );
     }
   };
 
@@ -78,7 +76,7 @@ const PatientAppointments = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ patientUsername, startDate, endDate }),
+        body: JSON.stringify({  startDate, endDate }),
       });
       const json = await response.json();
       if (response.ok) {
@@ -88,12 +86,14 @@ const PatientAppointments = () => {
         setAppointmentsData([]);
         setFilterByStatusData([]);
       } else {
-        setError(
+        setPaymentError(
           "An error occurred while filtering appointments by date range"
         );
       }
     } catch (error) {
-      setError("An error occurred while filtering appointments by date range");
+      setPaymentError(
+        "An error occurred while filtering appointments by date range"
+      );
     }
   };
 
@@ -103,8 +103,7 @@ const PatientAppointments = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ patientUsername: patientUsername }),
+        }
       });
       const json = await response.json();
       if (response.ok) {
@@ -114,12 +113,14 @@ const PatientAppointments = () => {
         setAppointmentsData([]);
         setFilterByStatusData([]);
       } else {
-        setError(
+        setPaymentError(
           "An error occurred while filtering appointments by upcoming date"
         );
       }
     } catch (error) {
-      setError("An error occurred while filtering appointments by date");
+      setPaymentError(
+        "An error occurred while filtering appointments by upcoming date"
+      );
     }
   };
 
@@ -129,8 +130,7 @@ const PatientAppointments = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ patientUsername: patientUsername }),
+        }
       });
       const json = await response.json();
       if (response.ok) {
@@ -140,27 +140,98 @@ const PatientAppointments = () => {
         setAppointmentsData([]);
         setFilterByStatusData([]);
       } else {
-        setError("An error occurred while filtering appointments by past date");
+        setPaymentError(
+          "An error occurred while filtering appointments by past date"
+        );
       }
     } catch (error) {
-      setError("An error occurred while filtering appointments by date");
+      setPaymentError(
+        "An error occurred while filtering appointments by past date"
+      );
     }
   };
+
+  const handleAppointmentIdChange = (event) => {
+    setAppointmentId(event.target.value);
+  };
+
+  const handlePaymentSelection = (event) => {
+    setSelectedPaymentMethod(event.target.value);
+  };
+
+  const handlePaymentSubmit = async () => {
+    if (!appointmentId || !selectedPaymentMethod) {
+      setPaymentError("Appointment ID and payment method are required.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/patient/payForAppointment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          appointmentId,
+          paymentMethod: selectedPaymentMethod,
+        }),
+      });
+
+      if (selectedPaymentMethod === "pay with credit card") {
+        try {
+          const stripeResponse = await fetch(
+            "http://localhost:3000/create-checkout-session",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                items: [
+                  { id: 1, quantity: 3 },
+                  { id: 2, quantity: 1 },
+                ],
+              }),
+            }
+          );
+
+          if (stripeResponse.ok) {
+            const { url } = await stripeResponse.json();
+            window.location = url;
+            console.log(url);
+          } else {
+            throw new Error("Network response from Stripe was not ok");
+          }
+        } catch (stripeError) {
+          console.error("Stripe Error:", stripeError);
+        }
+      }
+
+      if (response.ok) {
+        const data = await response.json();
+        setPaymentMessage(data.message);
+        setPaymentError("");
+        fetchAppointments(); // Refresh appointments after successful payment
+      } else {
+        const errorData = await response.json();
+        setPaymentError(errorData.error);
+        setPaymentMessage("");
+      }
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      setPaymentError("An error occurred while processing the payment.");
+      setPaymentMessage("");
+    }
+  };
+
+  useEffect(() => {
+    // Fetch appointments when the component mounts
+    fetchAppointments();
+  }, []);
 
   return (
     <div className="container">
       <h2>My Appointments:</h2>
-      <div>
-        <label>Patient Username:</label>
-        <input
-          type="text"
-          value={patientUsername}
-          onChange={handlePatientUsernameChange}
-        />
-      </div>
-      <button className="btn btn-primary" onClick={handleFetchAppointments}>
-        Submit
-      </button>
       <div>
         <label>Start Date:</label>
         <input
@@ -192,7 +263,7 @@ const PatientAppointments = () => {
       />
       <button
         className="btn btn-primary"
-        onClick= {filterAppointmentsByUpcomingDate}
+        onClick={filterAppointmentsByUpcomingDate}
       >
         Filter by Upcoming Date
       </button>
@@ -211,7 +282,8 @@ const PatientAppointments = () => {
       <button className="btn btn-primary" onClick={fetchAppointments}>
         Remove Filters
       </button>
-      {error && <p className="text-danger">{error}</p>}
+      {paymentError && <p className="text-danger">{paymentError}</p>}
+      {paymentMessage && <p className="text-success">{paymentMessage}</p>}
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -219,12 +291,13 @@ const PatientAppointments = () => {
             <th>Doctor</th>
             <th>Date and Time</th>
             <th>Status</th>
+            <th>Payment</th>
           </tr>
         </thead>
         <tbody>
           {filterByStatusData.length > 0
             ? filterByStatusData.map((appointment) => (
-                <tr>
+                <tr key={appointment._id}>
                   <td>{appointment._id}</td>
                   <td>{appointment.doctor}</td>
                   <td>
@@ -232,11 +305,12 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.payment}</td>
                 </tr>
               ))
             : filterByDateRange.length > 0
             ? filterByDateRange.map((appointment) => (
-                <tr>
+                <tr key={appointment._id}>
                   <td>{appointment._id}</td>
                   <td>{appointment.doctor}</td>
                   <td>
@@ -244,11 +318,12 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.payment}</td>
                 </tr>
               ))
             : filterByUpcomingDate.length > 0
             ? filterByUpcomingDate.map((appointment) => (
-                <tr>
+                <tr key={appointment._id}>
                   <td>{appointment._id}</td>
                   <td>{appointment.doctor}</td>
                   <td>
@@ -256,11 +331,12 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.payment}</td>
                 </tr>
               ))
             : filterByPastDate.length > 0
             ? filterByPastDate.map((appointment) => (
-                <tr>
+                <tr key={appointment._id}>
                   <td>{appointment._id}</td>
                   <td>{appointment.doctor}</td>
                   <td>
@@ -268,10 +344,11 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.payment}</td>
                 </tr>
               ))
             : appointmentsData.map((appointment) => (
-                <tr>
+                <tr key={appointment._id}>
                   <td>{appointment._id}</td>
                   <td>{appointment.doctor}</td>
                   <td>
@@ -279,10 +356,35 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.payment}</td>
                 </tr>
               ))}
         </tbody>
       </table>
+      <div>
+        <h2>Pay for Appointment</h2>
+        <Form.Group>
+          <Form.Label>Enter Appointment ID:</Form.Label>
+          <Form.Control
+            type="text"
+            value={appointmentId}
+            onChange={handleAppointmentIdChange}
+          />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Select Payment Method:</Form.Label>
+          <Form.Control
+            as="select"
+            value={selectedPaymentMethod}
+            onChange={handlePaymentSelection}
+          >
+            <option value="">Select Payment Method</option>
+            <option value="pay with my wallet">Pay with my wallet</option>
+            <option value="pay with credit card">Pay with credit card</option>
+          </Form.Control>
+        </Form.Group>
+        <Button onClick={handlePaymentSubmit}>Submit Payment</Button>
+      </div>
     </div>
   );
 };

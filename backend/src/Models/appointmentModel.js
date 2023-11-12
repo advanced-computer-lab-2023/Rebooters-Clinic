@@ -24,6 +24,12 @@ const appointmentSchema = new Schema({
     type: Number, 
     required: true,
   },
+  payment: {
+    type: String,
+    enum: ['Paid', 'Unpaid'], 
+    default: 'Unpaid',
+    
+  }
 });
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);

@@ -231,7 +231,7 @@ const createPrescription = async (req, res) => {
 
 const viewAllPrescriptions = async (req, res) => {
   try {
-    const { patientName } = req.body;
+    const { patientName } = req.cookies.username;
 
     // Convert the patientName to lowercase
     const lowercasePatientName = patientName.toLowerCase();
@@ -909,14 +909,166 @@ const unsubscribeToHealthPackage = async (req,res)=>{
       res.status(500).json({ error: 'An error occurred while making the appointment.' });
     }
   };  
-  
 
+
+  const payForAppointment = async (req, res) => {
+    try {
+      const patientUsername = req.cookies.username; // Assuming you store the patient's username in cookies
+      const { appointmentId, paymentMethod } = req.body;
+  
+      const patient = await Patient.findOne({ username: patientUsername });
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found.' });
+      }
+  
+      const foundAppointment = await Appointment.findOne({_id:appointmentId });
+      if (!foundAppointment) {
+        return res.status(404).json({ error: 'Appointment not found.' });
+      }
+
+      foundAppointment.payment = "Paid";
+      await foundAppointment.save();
+
+
+  
+      
+      if(foundAppointment.payment === "Unpaid"){
+        const appointmentPrice = foundAppointment.price;
+        if(paymentMethod === 'pay with my wallet'){
+          if (patient.wallet >= appointmentPrice) {
+            patient.wallet -= appointmentPrice;
+            await patient.save();
+            return res.status(200).json({ message: 'Payment from wallet successful.' });
+          } else {
+            return res.status(400).json({ error: 'Insufficient funds in the wallet' });
+          }
+        } else {
+          return res.status(200).json({ message: 'Payment from credit card successful.' });
+        }
+
+        } else {
+          return res.status(400).json({ error: 'Appointment already paid' })
+        }
+      
+
+
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while processing the payment.' });
+    }
+  };
+
+const payForHealthPackage = async (req, res) => {
+    try {
+      const patientUsername = req.cookies.username; // Assuming you store the patient's username in cookies
+      const { price, paymentMethod } = req.body;
+
+      const patient = await Patient.findOne({ username: patientUsername });
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found.' });
+      }
+  
+        if(paymentMethod === 'pay with my wallet'){
+          if (patient.wallet >= price) {
+            patient.wallet -= price;
+            await patient.save();
+            return res.status(200).json({ message: 'Payment from wallet successful.' });
+          } else {
+            return res.status(400).json({ error: 'Insufficient funds in the wallet' });
+          }
+        } else {
+          return res.status(200).json({ message: 'Payment from credit card successful.' });
+        }
+
+        
+      
+
+
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while processing the payment.' });
+    }
+  };  
+
+  const addMedicalHistory = async (req, res) => {
+    try {
+      const patientUsername = req.cookies.username; 
+      const patient = await Patient.findOne({ username: patientUsername });
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+      if (req.files) {
+        const files = req.files.map((file) => ({
+          data: file.buffer,
+          contentType: file.mimetype,
+          filename: file.originalname,
+        }));
+        patient.medicalHistory.push(...files);
+        await patient.save();
+  
+        res.status(200).json({ message: 'Files uploaded successfully' });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Could not upload files' });
+    }
+  };
+  
+  const viewMedicalHistory = async (req, res) => {
+    try {
+      const patientUsername = req.cookies.username;
+      const patient = await Patient.findOne({ username: patientUsername });
+  
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+  
+      // Return the list of medical history files
+      res.status(200).json(patient.medicalHistory);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
+  const deleteMedicalHistory = async (req, res) => {
+    try {
+      const { filename } = req.params;
+      const patientUsername = req.cookies.username;
+      const patient = await Patient.findOne({ username: patientUsername });
+  
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
+  
+      // Find the index of the file with the given filename
+      const fileIndex = patient.medicalHistory.findIndex((file) => file.filename === filename);
+  
+      if (fileIndex === -1) {
+        return res.status(404).json({ error: 'File not found' });
+      }
+  
+      // Remove the file from the array
+      patient.medicalHistory.splice(fileIndex, 1);
+  
+      // Save the updated patient
+      await patient.save();
+  
+      res.status(200).json({ message: 'File deleted successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  };
 
 module.exports = { 
-  unsubscribeToHealthPackage,
+  viewMedicalHistory, deleteMedicalHistory,
+  payForAppointment, unsubscribeToHealthPackage, payForHealthPackage,
   subscribeToHealthPackage, viewHealthPackageOptions,viewHealthPackage, createNotFoundPatient, 
   viewRegisteredFamilyMembers,createPrescription,viewAllPrescriptions, addFamilyMember,
    viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus,
   filterPrescriptions,selectDoctor, viewMyAppointments , viewWallet , filterByPastDate , 
-  filterByUpcomingDate , viewAvailableDoctorSlots, viewHealthRecords, makeAppointment , logout, changePassword
+  filterByUpcomingDate , viewAvailableDoctorSlots, viewHealthRecords, makeAppointment , logout, changePassword,
+  addMedicalHistory
 };

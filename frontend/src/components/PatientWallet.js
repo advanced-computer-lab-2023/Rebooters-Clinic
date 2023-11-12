@@ -29,16 +29,6 @@ function PatientWallet() {
       <div className="card-body">
         <div className="container">
           <h2>View Patient's Wallet</h2>
-          <div className="form-group">
-            <label htmlFor="patientUsername">Patient's Username:</label>
-            <input
-              type="text"
-              className="form-control"
-              id="patientUsername"
-              value={patientUsername}
-              onChange={handlePatientUsernameChange}
-            />
-          </div>
           <button className="btn btn-primary" onClick={handleViewWallet}>
             View Wallet
           </button>

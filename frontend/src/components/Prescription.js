@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 function Prescription() {
-  const [patientName, setPatientName] = useState('');
   const [prescriptions, setPrescriptions] = useState([]);
   const [viewMessage, setViewMessage] = useState('');
   const [filterMessage, setFilterMessage] = useState('');
@@ -13,25 +12,17 @@ function Prescription() {
   });
   const [selectedPrescription, setSelectedPrescription] = useState(null);
 
-  const handleInputChange = (event) => {
-    setPatientName(event.target.value);
-  };
 
   const handleViewPrescriptions = async () => {
-    if (!patientName) {
-      setViewMessage("Please fill in the patient's name.");
-      setPrescriptions([]);
-      return;
-    }
 
     try {
       const response = await fetch('/api/patient/viewPrescription', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ patientName }),
+        }
       });
+
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -98,6 +89,7 @@ function Prescription() {
         body: JSON.stringify(filterParams),
       });
 
+
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -134,13 +126,7 @@ function Prescription() {
     <div>
       <h1>Prescription Viewer</h1>
       <div>
-        <input
-          type="text"
-          placeholder="Enter Patient's Name"
-          value={patientName}
-          onChange={handleInputChange}
-        />
-        <button onClick={handleViewPrescriptions}>View</button>
+        <button onClick={handleViewPrescriptions}>View Prescriptions</button>
         {viewMessage && (
           <p style={errorStyle}>{viewMessage}</p>
         )}

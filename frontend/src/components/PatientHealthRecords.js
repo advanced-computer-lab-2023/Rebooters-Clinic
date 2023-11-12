@@ -44,14 +44,7 @@ function PatientHealthRecords() {
           <div>
             <h2>Patient Health Records</h2>
             <div>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter Patient Username"
-                value={patientUsername}
-                onChange={handleUsernameChange}
-              />
-              <button className="btn btn-primary" onClick={fetchPatientHealthRecords}>Submit</button>
+              <button className="btn btn-primary" onClick={fetchPatientHealthRecords}>View</button>
             </div>
             {patientRecords.length > 0 &&
               patientRecords.map((record) => (

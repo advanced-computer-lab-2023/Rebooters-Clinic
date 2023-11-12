@@ -64,8 +64,7 @@ const healthRecordSchema = new Schema({
   },
   notes: {
     type: String,
-  },
-  attachments: [String],   //TODO: pdf upload ??
+  }
 });
 
 
@@ -118,6 +117,14 @@ const PatientSchema = new Schema({
     type: Number,
     default: 0.0,
   },
+
+  medicalHistory: [
+    {
+      data: Buffer,
+      contentType: String,
+      filename: String,
+    },
+  ],
 
   healthRecords: [healthRecordSchema],
 
