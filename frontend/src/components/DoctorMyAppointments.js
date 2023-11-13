@@ -165,7 +165,7 @@ const DoctorMyAppointments = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ patientName: json[0].name }),
+          body: JSON.stringify({ patientName: json[0].username }),
         }
       );
       const json2 = await response2.json();

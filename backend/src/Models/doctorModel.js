@@ -62,6 +62,10 @@ const doctorSchema = new Schema({
     type: Number,
     default: 0.0,
   },
+  acceptedContract:{
+    type: Boolean,
+    default: false,
+  },
   OTP:{
     type: String,
     default: "",

@@ -1,59 +1,64 @@
 import React, { useState } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
-import Card from "react-bootstrap/Card";
 
 function DeleteHealthPackage() {
-  const [patientUsername, setPatientUsername] = useState("");
-  const [patientInfo, setPatientInfo] = useState(null);
-  const [message,setMessage]= useState("");
- 
- 
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
   const handleDeleteHealthPackage = async () => {
-   if (!patientUsername){
-    setMessage("please fill in all feilds");
-    return;
-   }
+    if (!name) {
+      setMessage("");
+      setError("Please fill in all fields");
+      return;
+    }
     try {
       const response = await fetch("/api/administrator/deleteHealthPackage", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ patientUsername }),
+        body: JSON.stringify({ name }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        setMessage(errorData.error);
+        setError(errorData.error);
+        setMessage("");
         return;
       }
-
-      setMessage("Done deleting health package.")
+      const data = await response.json();
+      setMessage(data);
     } catch (error) {
       console.error(error);
+      setError("An error occurred while deleting package");
+      setMessage("");
     }
   };
 
   return (
-    <Container>
-      <h1>Delete Health Package</h1>
-      <Form>
-        <Form.Group>
-          <Form.Label>Patient Username:</Form.Label>
-          <Form.Control
+    <div className="card">
+      <div className="card-body">
+        <h2>Delete a Health Package</h2>
+        {message && <p className="text-success">{message}</p>}
+        {error && <p className="text-danger">{error}</p>}
+        <div className="mb-3">
+          <label htmlFor="name" className="form-label">
+            Package Name:
+          </label>
+          <input
             type="text"
-            value={patientUsername}
-            onChange={(e) => setPatientUsername(e.target.value)}
+            className="form-control"
+            id="name"
+            name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
-        </Form.Group>
-        <Button variant="primary" onClick={handleDeleteHealthPackage}>
-          Delete Health Package
-        </Button>
-        {message && <p className="error-message">{message}</p>}
-      </Form>
-    </Container>
+        </div>
+        <button onClick={handleDeleteHealthPackage} className="btn btn-danger">
+          Delete Package
+        </button>
+      </div>
+    </div>
   );
 }
 

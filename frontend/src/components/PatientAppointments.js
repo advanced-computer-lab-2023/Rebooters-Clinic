@@ -211,7 +211,7 @@ const PatientAppointments = () => {
         const data = await response.json();
         setPaymentMessage(data.message);
         setPaymentError("");
-        fetchAppointments(); // Refresh appointments after successful payment
+        await fetchAppointments(); // Refresh appointments after successful payment
       } else {
         const errorData = await response.json();
         setPaymentError(errorData.error);
@@ -291,6 +291,7 @@ const PatientAppointments = () => {
             <th>Doctor</th>
             <th>Date and Time</th>
             <th>Status</th>
+            <th>Price</th>
             <th>Payment</th>
           </tr>
         </thead>
@@ -305,6 +306,7 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.price}</td>
                   <td>{appointment.payment}</td>
                 </tr>
               ))
@@ -318,6 +320,7 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.price}</td>
                   <td>{appointment.payment}</td>
                 </tr>
               ))
@@ -331,6 +334,7 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.price}</td>
                   <td>{appointment.payment}</td>
                 </tr>
               ))
@@ -344,6 +348,7 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.price}</td>
                   <td>{appointment.payment}</td>
                 </tr>
               ))
@@ -356,6 +361,7 @@ const PatientAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>{appointment.price}</td>
                   <td>{appointment.payment}</td>
                 </tr>
               ))}

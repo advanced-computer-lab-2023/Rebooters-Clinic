@@ -15,6 +15,7 @@ import TimeSlots from "../components/TimeSlots";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
+  const [contractStatus, setContractStatus] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -95,36 +96,41 @@ const DoctorHome = () => {
           ) : null}
         </div>
       </div>
-      <div className="card mt-4">
-        <DoctorUpdateProfile />
-      </div>
-      <div className="card mt-4">
-        <ChangePassword userType="doctor" />
-      </div>
-      <div className="card mt-4">
-        <DoctorMyAppointments />
-      </div>
-      <div className="card mt-4">
-        <DoctorMyPatients />
-      </div>
-      <div className="card mt-4">
-        <SearchForPatient />
-      </div>
-      <div className="card mt-4">
-        <DoctorWallet />
-      </div>
-      <div className="card mt-4">
-        <Contract />
-      </div>
-      <div className="card mt-4">
-        <ScheduleFollowup />
-      </div>
-      <div className="card mt-4">
-        <AddHealthRecord />
-      </div>
-      <div className="card mt-4">
-        <TimeSlots />
-      </div>
+      {doctorData && !doctorData.acceptedContract ? (
+        <div className="card mt-4">
+          <Contract />
+        </div>
+      ) : (
+        <>
+          <div className="card mt-4">
+            <DoctorUpdateProfile />
+          </div>
+          <div className="card mt-4">
+            <ChangePassword userType="doctor" />
+          </div>
+          <div className="card mt-4">
+            <DoctorMyAppointments />
+          </div>
+          <div className="card mt-4">
+            <DoctorMyPatients />
+          </div>
+          <div className="card mt-4">
+            <SearchForPatient />
+          </div>
+          <div className="card mt-4">
+            <DoctorWallet />
+          </div>
+          <div className="card mt-4">
+            <ScheduleFollowup />
+          </div>
+          <div className="card mt-4">
+            <AddHealthRecord />
+          </div>
+          <div className="card mt-4">
+            <TimeSlots />
+          </div>
+        </>
+      )}
     </div>
   );
 };

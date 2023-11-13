@@ -74,7 +74,7 @@ const MedicalHistoryComponent = () => {
       {/* File Upload */}
       <input
         type="file"
-        accept=".pdf,.doc,.docx,.jpg,.jpeg"
+        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
         onChange={(e) => {
           setFileInput(e.target);
           handleFileUpload(e);

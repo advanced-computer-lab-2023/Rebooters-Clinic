@@ -14,7 +14,7 @@ const PrescriptionSchema = new Schema({
   },
 
   date: {
-    type: String,
+    type: Date,
     required: true,
   },
 });

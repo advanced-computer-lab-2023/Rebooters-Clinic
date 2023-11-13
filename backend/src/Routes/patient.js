@@ -53,7 +53,7 @@ router.delete('/deleteMedicalHistory/:filename', requireAuth, deleteMedicalHisto
 
 router.post("/addPrescription", requireAuth, createPrescription);  
 
-router.post("/viewPrescription", requireAuth, viewAllPrescriptions); 
+router.post("/viewAllPrescriptions", requireAuth, viewAllPrescriptions); 
 
 router.get("/viewHealthPackageOptions", requireAuth, viewHealthPackageOptions);
 

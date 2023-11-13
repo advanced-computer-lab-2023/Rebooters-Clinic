@@ -21,7 +21,7 @@ const healthPackageSchema = new Schema({
   name: {
     type: String,
     required: true,
-    enum: ['Gold', 'Silver', 'Platinum'],
+    unique: true
   },
   price: {
     type: Number,

@@ -3,7 +3,7 @@ const { requireAuth } = require('../Middleware/authMiddleware');
 const {addAdministrator,
     removeUserFromSystem,
     viewDoctorApplication,
-    deleteHealthPackage, editHealthPackage, addHealthPackage, viewAllPatients,approveDoctorRequest,rejectDoctorRequest, logout, changePassword} = require('../Controllers/AdminController') //we're destructuring so we need curly braces
+    deleteHealthPackage, editHealthPackage, addHealthPackage, viewAllPatients,approveDoctorRequest,rejectDoctorRequest, logout, changePassword , viewHealthPackages} = require('../Controllers/AdminController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
@@ -32,6 +32,8 @@ router.get('/viewAllPatients' , requireAuth, viewAllPatients);
 router.post('/approveDoctorRequest' , requireAuth, approveDoctorRequest);
 
 router.post('/rejectDoctorRequest' , requireAuth, rejectDoctorRequest);
+
+router.get('/viewHealthPackages' , requireAuth, viewHealthPackages);
 
 
 

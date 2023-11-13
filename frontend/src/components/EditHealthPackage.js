@@ -5,97 +5,134 @@ import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 
 function EditHealthPackage() {
-  const [patientUsername, setPatientUsername] = useState("");
-  const [packageName, setPackageName] = useState("");
-  const [patientInfo, setPatientInfo] = useState(null);
-  const [error,setError]= useState("");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [discountOnSession, setDiscountOnSession] = useState("");
+  const [discountOnMedicine, setDiscountOnMedicine] = useState("");
+  const [discountOnSubscription, setDiscountOnSubscription] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
  
  
   const handleEditHealthPackage = async () => {
-   if (!patientUsername||!packageName){
-    setError("please fill in all feilds");
-    return;
-   }
+    if (
+      !name ||
+      !price ||
+      !discountOnSession ||
+      !discountOnMedicine ||
+      !discountOnSubscription
+    ) {
+      setMessage("");
+      setError("Please fill in all fields");
+      return;
+    }
     try {
       const response = await fetch("/api/administrator/editHealthPackage", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ patientUsername, packageName }),
+        body: JSON.stringify({
+          name,
+          price,
+          discountOnSession,
+          discountOnMedicine,
+          discountOnSubscription,
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.error);
+        setMessage("");
         return;
       }
 
       const data = await response.json();
-      
-      setPatientInfo(data);
+      setMessage(data);
     } catch (error) {
       console.error(error);
+      setError("An error occurred while adding package");
+      setMessage("");
     }
   };
  
   return (
-    <Container>
-      <h1>Edit Health Package</h1>
-      <Form>
-        <Form.Group>
-          <Form.Label>Patient Username:</Form.Label>
-          <Form.Control
+    <div className="card">
+      <div className="card-body">
+        <h2>Edit a Health Pacakge</h2>
+        {message && <p className="text-success">{message}</p>}
+        {error && <p className="text-danger">{error}</p>}
+        <div className="mb-3">
+          <label htmlFor="name" className="form-label">
+            Package Name:
+          </label>
+          <input
             type="text"
-            value={patientUsername}
-            onChange={(e) => setPatientUsername(e.target.value)}
+            className="form-control"
+            id="name"
+            name="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
-        </Form.Group>
-        <Form.Group>
-          <Form.Label>Package Name:</Form.Label>
-          <Form.Control
-            type="text"
-            value={packageName}
-            onChange={(e) => setPackageName(e.target.value)}
+        </div>
+        <div className="mb-3">
+          <label htmlFor="price" className="form-label">
+            Price:
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="price"
+            name="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
           />
-        </Form.Group>
-        <Button variant="primary" onClick={handleEditHealthPackage}>
-          Edit Health Package
-        </Button>
-        {error && <p className="error-message">{error}</p>}
-      </Form>
-      {patientInfo && (
-        <Card className="mt-4">
-          <Card.Body>
-            <Card.Title>Patient Information</Card.Title>
-            <Card.Text>
-              <strong>Username:</strong> {patientInfo.username}
-            </Card.Text>
-            <Card.Text>
-              <strong>Name:</strong> {patientInfo.name}
-            </Card.Text>
-            <Card.Text>
-              <strong>Health Package:</strong> {patientInfo.healthPackage.name}
-            </Card.Text>
-            <Card.Text>
-              <strong>Price:</strong> ${patientInfo.healthPackage.price}
-            </Card.Text>
-            <Card.Text>
-              <strong>Discount on Session:</strong>{" "}
-              {patientInfo.healthPackage.discountOnSession*100}%
-            </Card.Text>
-            <Card.Text>
-              <strong>Discount on Medicine:</strong>{" "}
-              {patientInfo.healthPackage.discountOnMedicine*100}%
-            </Card.Text>
-            <Card.Text>
-              <strong>Discount on Subscription:</strong>{" "}
-              {patientInfo.healthPackage.discountOnSubscription*100}%
-            </Card.Text>
-          </Card.Body>
-        </Card>
-      )}
-    </Container>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="discountOnSession" className="form-label">
+            % Discount On Session:
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="discountOnSession"
+            name="discountOnSession"
+            value={discountOnSession}
+            onChange={(e) => setDiscountOnSession(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="discountOnMedicine" className="form-label">
+            % Discount On Medicine:
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="discountOnMedicine"
+            name="discountOnMedicine"
+            value={discountOnMedicine}
+            onChange={(e) => setDiscountOnMedicine(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="discountOnSubscription" className="form-label">
+            % Discount On Subscription:
+          </label>
+          <input
+            type="number"
+            className="form-control"
+            id="discountOnSubscription"
+            name="discountOnSubscription"
+            value={discountOnSubscription}
+            onChange={(e) => setDiscountOnSubscription(e.target.value)}
+          />
+        </div>
+        <button onClick={handleEditHealthPackage} className="btn btn-success">
+          Edit Package
+        </button>
+      </div>
+    </div>
   );
 
 }

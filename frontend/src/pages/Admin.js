@@ -6,6 +6,8 @@ import EditHealthPackage from "../components/EditHealthPackage";
 import DeleteHealthPackage from "../components/DeleteHealthPackage";
 import ViewAllPatients from "../components/ViewAllPatients";
 import ChangePassword from "../components/ChangePassword";
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
 
 function Admin() {
   const [adminUsername, setAdminUsername] = useState("");
@@ -16,6 +18,8 @@ function Admin() {
   const [submissionStatus, setSubmissionStatus] = useState(null);
   const [message, setMessage] = useState("");
   const [showDoctorRequests, setShowDoctorRequests] = useState(false);
+  const [packages, setPackages] = useState([]);
+  const [showPackages, setShowPackages] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -183,6 +187,31 @@ function Admin() {
     }
   };
 
+  const handleViewHealthPackages = async () => {
+    if (showPackages) {
+      setShowPackages(false);
+    } else {
+      try {
+        const response = await fetch("/api/administrator/viewHealthPackages", {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setPackages(data);
+          setShowPackages(true);
+        } else {
+          console.error("Error fetching health package options.");
+        }
+      } catch (error) {
+        console.error(
+          "An error occurred while fetching health package options:",
+          error
+        );
+      }
+    }
+  };
+
   return (
     <div className="container mt-4">
       <button onClick={handleLogout} className="btn btn-danger mt-2">
@@ -281,42 +310,41 @@ function Admin() {
                   <td>{request.affiliation}</td>
                   <td>{request.educationalBackground}</td>
                   <td>
-                        {request.idDocument && (
-                          <button className="btn btn-info"
-                            onClick={() =>
-                              downloadDocument(request.idDocument.filename)
-                            }
-                          >
-                            Download ID Document
-                          </button>
-                        )}
-                      </td>
-                      <td>
-                        {request.medicalLicenseDocument && (
-                          <button className="btn btn-info"
-                            onClick={() =>
-                              downloadDocument(
-                                request.medicalLicenseDocument.filename
-                              )
-                            }
-                          >
-                            Download Medical License Document
-                          </button>
-                        )}
-                      </td>
-                      <td>
-                        {request.medicalDegreeDocument && (
-                          <button className="btn btn-info"
-                            onClick={() =>
-                              downloadDocument(
-                                request.medicalDegreeDocument.filename
-                              )
-                            }
-                          >
-                            Download Medical Degree Document
-                          </button>
-                        )}
-                      </td>
+                    {request.idDocument && (
+                      <button
+                        className="btn btn-info"
+                        onClick={() =>
+                          downloadDocument(request.idDocument.filename)
+                        }
+                      >
+                        Download ID Document
+                      </button>
+                    )}
+                  </td>
+                  <td>
+                    {request.medicalLicense && (
+                      <button
+                        className="btn btn-info"
+                        onClick={() =>
+                          downloadDocument(request.medicalLicense.filename)
+                        }
+                      >
+                        Download Medical License Document
+                      </button>
+                    )}
+                  </td>
+                  <td>
+                    {request.medicalDegree && (
+                      <button
+                        className="btn btn-info"
+                        onClick={() =>
+                          downloadDocument(request.medicalDegree.filename)
+                        }
+                      >
+                        Download Medical Degree Document
+                      </button>
+                    )}
+                  </td>
                   <td>
                     {request.status === "pending" ? (
                       <div>
@@ -335,6 +363,33 @@ function Admin() {
               ))}
             </tbody>
           </table>
+        )}
+      </div>
+      <br/>
+      <div className="card">
+        <div><button className="btn btn-primary" onClick={handleViewHealthPackages}>
+          {showPackages
+            ? "Hide Health Package Options"
+            : "View Health Package Options"}
+        </button></div>
+
+        {showPackages && (
+          <div>
+            <h2>All Health Packages</h2>
+            <ul>
+              {packages.map((option, index) => (
+                <li key={index}>
+                  <strong>Name: {option.name}</strong>
+                  <p>Price: {option.price}</p>
+                  <p>
+                    Discount on Subscription: {option.discountOnSubscription}
+                  </p>
+                  <p>Discount on Session: {option.discountOnSession}</p>
+                  <p>Discount on Medicine: {option.discountOnMedicine}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </div>
       <div className="mt-4">

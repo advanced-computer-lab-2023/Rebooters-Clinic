@@ -376,6 +376,11 @@ const acceptContract = async (req, res) => {
   try {
     const { contractID } = req.body;
     const doctorUsername = req.cookies.username;
+    const doctor = await Doctor.findOne({ username : doctorUsername });
+    if (!doctor) {
+      res.status(404).json({ error: 'Doctor not found' });
+      return;
+    }
 
     // Find the contract for the doctor
     const contract = await Contract.findOne({ _id : contractID });
@@ -392,6 +397,9 @@ const acceptContract = async (req, res) => {
     // Update the contract status to 'accepted'
     contract.status = 'accepted';
     await contract.save();
+
+    doctor.acceptedContract = true;
+    await doctor.save();
 
     res.status(200).json({ message: 'Contract accepted successfully.' });
   } catch (error) {
@@ -474,6 +482,11 @@ const scheduleAppointment = async (req, res) => {
     const doctorUsername = req.cookies.username;
     const {patientUsername, dateTime } = req.body;
 
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found.' });
+    }
+
     // Find the patient by their username
     const patient = await Patient.findOne({ username: patientUsername });
 
@@ -482,16 +495,28 @@ const scheduleAppointment = async (req, res) => {
     }
 
     // Create a new appointment for the follow-up or regular appointment
+    appointmentPrice = doctor.hourlyRate;
+    if (patient.statusOfHealthPackage === "Subscribed"){
+      appointmentPrice = doctor.hourlyRate * patient.healthPackage.discountOnSession
+    }
     const appointment = new Appointment({
       doctor: doctorUsername,
       patient: patientUsername,
       datetime: new Date(dateTime),
       status: 'Upcoming',
-      price: 0, // You may calculate or set the price as needed
+      price: appointmentPrice, 
     });
 
     // Save the appointment to the database
     await appointment.save();
+
+    const prescription = new Prescription({
+      patientName : patientUsername,
+      doctorName : doctorUsername,
+      date: new Date(dateTime),
+      
+    })
+    await prescription.save();
 
     res.status(201).json(appointment);
   } catch (error) {
@@ -505,7 +530,7 @@ const addHealthRecord = async (req, res) => {
   try {
     // attachements ba3den ?
     const doctorUsername = req.cookies.username;
-    const { patientUsername, diagnosis, treatment, notes } = req.body;
+    const { patientUsername, diagnosis, treatment, notes, medication, dosage } = req.body;
 
     // Find the patient by their username
     const patient = await Patient.findOne({ username: patientUsername });
@@ -528,7 +553,6 @@ const addHealthRecord = async (req, res) => {
       diagnosis,
       treatment,
       notes,
-  //  attachments: attachments || [],
     };
 
     // Add the health record to the patient's healthRecords array
@@ -536,6 +560,17 @@ const addHealthRecord = async (req, res) => {
 
     // Save the updated patient document
     await patient.save();
+
+    const prescription = new Prescription({
+      patientName : patientUsername,
+      doctorName : doctorUsername,
+      date: new Date(),
+      medication : medication,
+      dosage : dosage,
+      instructions : treatment,
+      filled : true
+    })
+    await prescription.save();
 
     res.status(201).json({ message: 'Health record added successfully.' });
   } catch (error) {

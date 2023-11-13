@@ -53,7 +53,7 @@ const DoctorMyPatients = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ patientName: patient.name }),
+          body: JSON.stringify({ patientName: patient.username }),
         }
       );
       const json2 = await response2.json();

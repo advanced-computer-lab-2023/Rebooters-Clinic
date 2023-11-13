@@ -16,6 +16,7 @@ const ScheduleFollowup = () => {
           });
         if (response.status === 201) {
           setMessage('Appointment scheduled successfully.');
+          window.location.reload();
         } else {
           setError('Failed to schedule the appointment.');
         }

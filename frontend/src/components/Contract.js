@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const Contract = () => {
   const [contracts, setContract] = useState([]);
@@ -11,7 +11,7 @@ const Contract = () => {
           const data = await response.json();
           setContract(data.contract);
         } else {
-          console.error('Failed to fetch contract details');
+          console.error("Failed to fetch contract details");
         }
       } catch (error) {
         console.error(error);
@@ -24,17 +24,17 @@ const Contract = () => {
   const handleAcceptContract = async (contractID) => {
     try {
       const response = await fetch(`/api/doctor/acceptContract`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({contractID}),
+        body: JSON.stringify({ contractID }),
       });
       if (response.ok) {
         const data = await response.json();
         window.location.reload();
       } else {
-        console.log('Already accepted')
+        console.log("Already accepted");
       }
     } catch (error) {
       console.error(error);
@@ -44,17 +44,17 @@ const Contract = () => {
   const handleRejectContract = async (contractID) => {
     try {
       const response = await fetch(`/api/doctor/rejectContract`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({contractID}),
+        body: JSON.stringify({ contractID }),
       });
       if (response.ok) {
         const data = await response.json();
         window.location.reload();
       } else {
-        console.log('Already accepted')
+        console.log("Already accepted");
       }
     } catch (error) {
       console.error(error);
@@ -74,18 +74,24 @@ const Contract = () => {
             <p>End Date: {contract.endDate}</p>
             <p>Salary: {contract.salary}</p>
             <p>Status: {contract.status}</p>
-            <button
-              type="button"
-              onClick={() => handleAcceptContract(contract._id)}
-              className="btn btn-primary"
-            >
-              Accept
-            </button>
-            <button type="button" 
-            onClick={() => handleRejectContract(contract._id)}
-            className="btn btn-danger">
-              Reject
-            </button>
+            {contract.status === "N/A" && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleAcceptContract(contract._id)}
+                  className="btn btn-primary"
+                >
+                  Accept
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRejectContract(contract._id)}
+                  className="btn btn-danger"
+                >
+                  Reject
+                </button>
+              </>
+            )}
           </div>
         ))
       ) : (
@@ -94,6 +100,5 @@ const Contract = () => {
     </div>
   );
 };
-
 
 export default Contract;

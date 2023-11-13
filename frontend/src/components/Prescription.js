@@ -16,7 +16,7 @@ function Prescription() {
   const handleViewPrescriptions = async () => {
 
     try {
-      const response = await fetch('/api/patient/viewPrescription', {
+      const response = await fetch('/api/patient/viewAllPrescriptions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ function Prescription() {
         <h2>Filter Prescriptions</h2>
         
         <input
-          type="text"
+          type="date"
           name="date"
           placeholder="Enter Date (YYYY-MM-DD)"
           value={filterParams.date}
@@ -153,9 +153,9 @@ function Prescription() {
           value={filterParams.filled}
           onChange={handleFilterChange}
         >
-          <option value="">Select Filled Status</option>
-          <option value="true">Filled</option>
-          <option value="false">Unfilled</option>
+          <option value={undefined}>Select Filled Status</option>
+          <option value={true}>Filled</option>
+          <option value={false}>Unfilled</option>
         </select>
         <button onClick={handleFilterPrescriptions}>Filter</button>
         {filterMessage && (

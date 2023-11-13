@@ -67,6 +67,7 @@ function ViewSlotsAndMakeAppointment() {
         // Handle success, e.g., show a success message
         setShowModal(false);
         fetchAvailableSlots(); // Refresh available slots after making an appointment
+        window.location.reload();
       } else {
         console.error("Error making an appointment.");
       }
