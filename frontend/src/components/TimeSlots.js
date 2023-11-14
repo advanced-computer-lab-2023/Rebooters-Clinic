@@ -19,18 +19,24 @@ const TimeSlots = ({}) => {
       if (response.ok) {
         const data = await response.json();
         setMessage(data.message);
+        setError("");
       } else {
-        setError("Failed to add available time slots.");
+        const data = await response.json();
+        setError(data.error);
+        setMessage("");
       }
     } catch (error) {
       console.error(error);
       setError("An error occurred while adding available time slots.");
+      setMessage("");
     }
   };
 
   return (
     <div>
       <h2>Add Available Time Slots</h2>
+      {message && <p>{message}</p>}
+      {error && <p>{error}</p>}
       <input
         type="date"
         value={date}
@@ -43,8 +49,6 @@ const TimeSlots = ({}) => {
       />
       <button onClick={handleAddSlots}>Add Slots</button>
 
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
     </div>
   );
 };

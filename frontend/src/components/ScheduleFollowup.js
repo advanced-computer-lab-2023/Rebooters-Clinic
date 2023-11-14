@@ -16,12 +16,16 @@ const ScheduleFollowup = () => {
           });
         if (response.status === 201) {
           setMessage('Appointment scheduled successfully.');
+          setError("");
           window.location.reload();
         } else {
-          setError('Failed to schedule the appointment.');
+          const data = await response.json();
+          setMessage("");
+          setError(data.error);
         }
       } catch (error) {
         console.error(error);
+        setMessage("");
         setError('An error occurred while scheduling the appointment.');
       }
     };

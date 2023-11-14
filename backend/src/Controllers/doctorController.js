@@ -1,16 +1,16 @@
-const Doctor = require('../Models/doctorModel');
-const Patient = require('../Models/patientModel');
-const Appointment = require('../Models/appointmentModel'); 
-const Prescription = require('../Models/prescriptionModel'); 
-const Contract = require('../Models/contractModel');
-const DoctorRequest = require('../Models/newDoctorRequestModel');
-const bcrypt = require('bcrypt'); //needed only for creating the dummy doctor password
-const {logout, changePassword } = require('./authController');
+const Doctor = require("../Models/doctorModel");
+const Patient = require("../Models/patientModel");
+const Appointment = require("../Models/appointmentModel");
+const Prescription = require("../Models/prescriptionModel");
+const Contract = require("../Models/contractModel");
+const DoctorRequest = require("../Models/newDoctorRequestModel");
+const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor password
+const { logout, changePassword } = require("./authController");
 
-const { default: mongoose } = require('mongoose');
+const { default: mongoose } = require("mongoose");
 
 // //dummy doctor but with the password encryption:
-// // Generate a random password 
+// // Generate a random password
 // const randomPassword = 'randompassword123'; // Replace with your random password generation logic
 
 // // Hash the password
@@ -49,23 +49,22 @@ const { default: mongoose } = require('mongoose');
 //   email: 'dummypatient@example.com',
 //   password: 'dummypatientpassword',
 //   dateOfBirth: new Date('1995-03-15'),
-//   gender: 'Female', 
+//   gender: 'Female',
 //   mobile_number: '123-456-7890',
 //   emergency_contact: '987-654-3210',
 // });
 
-// dummyPatient.save(); 
+// dummyPatient.save();
 
 // const dummyAppointment = new Appointment({
-//   doctor: 'dummydoctor', 
-//   patient: 'dummypatient', 
-//   datetime: new Date('2024-10-25T14:00:00'), 
-//   status: 'Scheduled', 
-//   price: 150.0, 
+//   doctor: 'dummydoctor',
+//   patient: 'dummypatient',
+//   datetime: new Date('2024-10-25T14:00:00'),
+//   status: 'Scheduled',
+//   price: 150.0,
 // });
 
 // dummyAppointment.save();
-
 
 // Create a new Contract instance
 // const newContract = new Contract({
@@ -90,93 +89,118 @@ const { default: mongoose } = require('mongoose');
 
 // sampleContract.save();
 
-
 const viewProfile = async (req, res) => {
-    try {
-        //const {doctorUsername} = req.body;
-        const doctorUsername = req.cookies.username;
-        const doctor = await Doctor.findOne({ username : doctorUsername });
-        if (!doctor) {
-            return res.status(404).json({ error: 'Doctor not found' });
-          }
-      res.status(200).json(doctor);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while fetching profile data' });
+  try {
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found" });
     }
+    res.status(200).json(doctor);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching profile data" });
+  }
 };
-  
+
 const updateProfile = async (req, res) => {
-    try {
-      //const {doctorUsername} = req.body;
-      const doctorUsername = req.cookies.username;
-      const { email, hourlyRate, affiliation } = req.body;
-      await Doctor.findOneAndUpdate(
-        { username: doctorUsername }, {
+  try {
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
+    const { email, hourlyRate, affiliation } = req.body;
+    await Doctor.findOneAndUpdate(
+      { username: doctorUsername },
+      {
         email,
         hourlyRate,
         affiliation,
-      });
-      res.status(200).json({ message: 'Profile updated successfully' });
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while updating the profile' });
-    }
+      }
+    );
+    res.status(200).json({ message: "Profile updated successfully" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating the profile" });
+  }
 };
-  
+
 const viewMyPatients = async (req, res) => {
-    try {
-      //const {doctorUsername} = req.body;
-      const doctorUsername = req.cookies.username;
-      const appointments  = await Appointment.find({ doctor: doctorUsername });
-      const patientUsernames = appointments.map((appointment) => appointment.patient);
-      const patients = await Patient.find({ username: { $in: patientUsernames } });
-      res.status(200).json(patients);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while fetching patients' });
-    }
+  try {
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+    const patients = await Patient.find({
+      username: { $in: patientUsernames },
+    });
+    res.status(200).json(patients);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching patients" });
+  }
 };
 
 const viewAllPatients = async (req, res) => {
-    try {
-        const patients = await Patient.find();
-      res.status(200).json(patients);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while fetching patients' });
-    }
+  try {
+    const patients = await Patient.find();
+    res.status(200).json(patients);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching patients" });
+  }
 };
-  
+
 const searchPatientByName = async (req, res) => {
-    try {
-        const { name } = req.body;
-        const patient = await Patient.find({name : { $regex: new RegExp(name, 'i') }}); //this is case insensitive
-      res.status(200).json(patient);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while searching for patients' });
-    }
+  try {
+    const { name } = req.body;
+    const patient = await Patient.find({
+      name: { $regex: new RegExp(name, "i") },
+    }); //this is case insensitive
+    res.status(200).json(patient);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while searching for patients" });
+  }
 };
 
 const searchPatientByUsername = async (req, res) => {
   try {
-      const { patientUsername } = req.body;
-      const patient = await Patient.find({username : patientUsername}); 
-      if (!patient) {
-        return res.status(404).json({ error: 'Patient not found or no prescriptions found' });
-      }
+    const { patientUsername } = req.body;
+    const patient = await Patient.find({ username: patientUsername });
+    if (!patient) {
+      return res
+        .status(404)
+        .json({ error: "Patient not found or no prescriptions found" });
+    }
     res.status(200).json(patient);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while searching for patients' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while searching for patients" });
   }
 };
 
 const searchPatientPrescriptionsByName = async (req, res) => {
   try {
-      const { patientName } = req.body;
-      const prescriptions = await Prescription.find({patientName : patientName}); 
-      if (!prescriptions) {
-        return res.status(404).json({ error: 'Patient not found or no prescriptions found' });
-      }
+    const { patientName } = req.body;
+    const prescriptions = await Prescription.find({ patientName: patientName });
+    if (!prescriptions) {
+      return res
+        .status(404)
+        .json({ error: "Patient not found or no prescriptions found" });
+    }
     res.status(200).json(prescriptions);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while searching for patients' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while searching for patients" });
   }
 };
 
@@ -185,49 +209,58 @@ const viewMyAppointments = async (req, res) => {
     //const {doctorUsername} = req.body;
     const doctorUsername = req.cookies.username;
     const currentDateTime = new Date();
-    const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
+    const upcomingAppointments = await Appointment.find({
+      doctor: doctorUsername,
+    });
     res.status(200).json(upcomingAppointments);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred' });
+    res.status(500).json({ error: "An error occurred" });
   }
 };
-  
+
 const filterByUpcomingDate = async (req, res) => {
-    try {
-      //const {doctorUsername} = req.body;
-      const doctorUsername = req.cookies.username;
-      const currentDateTime = new Date();
-      const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
-      const filteredAppointments = upcomingAppointments.filter(appointment => {
-        const appointmentDateTime = new Date(appointment.datetime);
-        return appointmentDateTime >= currentDateTime;
+  try {
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
+    const currentDateTime = new Date();
+    const upcomingAppointments = await Appointment.find({
+      doctor: doctorUsername,
+    });
+    const filteredAppointments = upcomingAppointments.filter((appointment) => {
+      const appointmentDateTime = new Date(appointment.datetime);
+      return appointmentDateTime >= currentDateTime;
     });
     filteredAppointments.sort((a, b) => {
       const dateA = new Date(a.datetime);
       const dateB = new Date(b.datetime);
       return dateA - dateB;
-    }); 
-      res.status(200).json(filteredAppointments);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while filtering patients' });
-    }
+    });
+    res.status(200).json(filteredAppointments);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while filtering patients" });
+  }
 };
 
 const filterByStatus = async (req, res) => {
-    try {
-      //const {doctorUsername} = req.body;
-      const doctorUsername = req.cookies.username;
-      const { status } = req.body;
-      const upcomingAppointments = await Appointment.find({ doctor: doctorUsername });
-      const filteredAppointments = upcomingAppointments.filter(appointment => {
-        return appointment.status.toLowerCase() === status.toLowerCase();
+  try {
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
+    const { status } = req.body;
+    const upcomingAppointments = await Appointment.find({
+      doctor: doctorUsername,
     });
-      res.status(200).json(filteredAppointments);
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while filtering patients' });
-    }
+    const filteredAppointments = upcomingAppointments.filter((appointment) => {
+      return appointment.status.toLowerCase() === status.toLowerCase();
+    });
+    res.status(200).json(filteredAppointments);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while filtering patients" });
+  }
 };
-  
 
 const selectPatient = async (req, res) => {
   try {
@@ -237,14 +270,16 @@ const selectPatient = async (req, res) => {
     const doctor = await Doctor.findOne({ doctorUsername });
 
     if (!doctor) {
-      return res.status(404).json({ error: 'Doctor not found' });
+      return res.status(404).json({ error: "Doctor not found" });
     }
     doctor.selectedPatients.push(...patientUsernames);
     await doctor.save();
-    res.status(200).json({ message: 'Patients selected successfully' });
+    res.status(200).json({ message: "Patients selected successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while selecting patients' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while selecting patients" });
   }
 };
 
@@ -258,7 +293,7 @@ const filterByDateRange = async (req, res) => {
     startDateTime.setHours(0, 0, 0, 0);
     endDateTime.setHours(23, 59, 59, 999);
     if (startDateTime > endDateTime) {
-      return res.status(400).json({ error: 'Invalid date range' });
+      return res.status(400).json({ error: "Invalid date range" });
     }
     const appointmentsInRange = await Appointment.find({
       doctor: doctorUsername,
@@ -276,15 +311,17 @@ const filterByDateRange = async (req, res) => {
 
     res.status(200).json(appointmentsInRange);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while filtering appointments' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while filtering appointments" });
   }
 };
 const viewAllDoctors = async (req, res) => {
   try {
-      const doctors = await Doctor.find({});
+    const doctors = await Doctor.find({});
     res.status(200).json(doctors);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while fetching doctors' });
+    res.status(500).json({ error: "An error occurred while fetching doctors" });
   }
 };
 
@@ -292,15 +329,17 @@ const viewWallet = async (req, res) => {
   try {
     //const {doctorUsername} = req.body;
     const doctorUsername = req.cookies.username;
-    const doctor = await Doctor.findOne({ username : doctorUsername });
+    const doctor = await Doctor.findOne({ username: doctorUsername });
     if (!doctor) {
-      res.status(404).json({ error: 'Doctor not found' });
+      res.status(404).json({ error: "Doctor not found" });
       return;
     }
     const wallet = doctor.wallet;
     res.status(200).json({ wallet });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while fetching the wallet' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching the wallet" });
   }
 };
 
@@ -324,7 +363,9 @@ const filterByPastDate = async (req, res) => {
 
     res.status(200).json(filteredAppointments);
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while filtering past appointments' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while filtering past appointments" });
   }
 };
 
@@ -333,18 +374,22 @@ const viewHealthRecords = async (req, res) => {
     const { patientUsername } = req.body;
     const patient = await Patient.findOne({ username: patientUsername });
     if (!patient) {
-      res.status(404).json({ error: 'Patient not found' });
+      res.status(404).json({ error: "Patient not found" });
       return;
     }
 
-    const healthRecords = patient.healthRecords; 
+    const healthRecords = patient.healthRecords;
     if (!healthRecords || healthRecords.length === 0) {
-      res.status(404).json({ error: 'No health records found for the patient' });
+      res
+        .status(404)
+        .json({ error: "No health records found for the patient" });
       return;
     }
     res.status(200).json({ healthRecords });
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred while fetching health records' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching health records" });
   }
 };
 
@@ -355,56 +400,57 @@ const viewContract = async (req, res) => {
     const doctorUsername = req.cookies.username;
 
     // Find the contract for the doctor
-    const contract = await Contract.find({ doctorName : doctorUsername });
+    const contract = await Contract.find({ doctorName: doctorUsername });
 
     if (!contract) {
-      return res.status(404).json({ error: 'Contract not found.' });
+      return res.status(404).json({ error: "Contract not found." });
     }
 
     res.status(200).json({ contract });
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while accepting the contract.' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while accepting the contract." });
   }
 };
-
-
 
 //  16.2:
 const acceptContract = async (req, res) => {
   try {
     const { contractID } = req.body;
     const doctorUsername = req.cookies.username;
-    const doctor = await Doctor.findOne({ username : doctorUsername });
+    const doctor = await Doctor.findOne({ username: doctorUsername });
     if (!doctor) {
-      res.status(404).json({ error: 'Doctor not found' });
+      res.status(404).json({ error: "Doctor not found" });
       return;
     }
 
     // Find the contract for the doctor
-    const contract = await Contract.findOne({ _id : contractID });
+    const contract = await Contract.findOne({ _id: contractID });
 
     if (!contract) {
-      return res.status(404).json({ error: 'Contract not found.' });
+      return res.status(404).json({ error: "Contract not found." });
     }
 
     // Check if the contract is already accepted
-    if (contract.status === 'accepted') {
-      return res.status(400).json({ error: 'Contract is already accepted.' });
+    if (contract.status === "accepted") {
+      return res.status(400).json({ error: "Contract is already accepted." });
     }
 
     // Update the contract status to 'accepted'
-    contract.status = 'accepted';
+    contract.status = "accepted";
     await contract.save();
 
     doctor.acceptedContract = true;
     await doctor.save();
 
-    res.status(200).json({ message: 'Contract accepted successfully.' });
+    res.status(200).json({ message: "Contract accepted successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while accepting the contract.' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while accepting the contract." });
   }
 };
 
@@ -416,29 +462,29 @@ const rejectContract = async (req, res) => {
     const doctorUsername = req.cookies.username;
 
     // Find the contract for the doctor
-    const contract = await Contract.findOne({ _id : contractID });
+    const contract = await Contract.findOne({ _id: contractID });
 
     if (!contract) {
-      return res.status(404).json({ error: 'Contract not found.' });
+      return res.status(404).json({ error: "Contract not found." });
     }
 
     // Check if the contract is already accepted
-    if (contract.status === 'accepted') {
-      return res.status(400).json({ error: 'Contract is already accepted.' });
+    if (contract.status === "accepted") {
+      return res.status(400).json({ error: "Contract is already accepted." });
     }
 
     // Update the contract status to 'rejected'
-    contract.status = 'rejected';
+    contract.status = "rejected";
     await contract.save();
 
-    res.status(200).json({ message: 'Contract rejected successfully.' });
+    res.status(200).json({ message: "Contract rejected successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while rejecting the contract.' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while rejecting the contract." });
   }
 };
-
-
 
 // 17: Function to add available time slots for appointments
 const addAvailableSlots = async (req, res) => {
@@ -448,7 +494,7 @@ const addAvailableSlots = async (req, res) => {
 
     const doctor = await Doctor.findOne({ username: doctorUsername });
     if (!doctor) {
-      return res.status(404).json({ error: 'Doctor not found.' });
+      return res.status(404).json({ error: "Doctor not found." });
     }
 
     // Ensure the provided date and time are ahead of the current date and time
@@ -456,7 +502,12 @@ const addAvailableSlots = async (req, res) => {
     const providedDateTime = new Date(`${date}T${time}`);
 
     if (providedDateTime <= currentDateTime) {
-      return res.status(400).json({ error: 'Please provide a date and time ahead of the current date and time.' });
+      return res
+        .status(400)
+        .json({
+          error:
+            "Please provide a date and time ahead of the current date and time.",
+        });
     }
 
     // Append the new available time slots to the doctor's existing slots
@@ -466,84 +517,120 @@ const addAvailableSlots = async (req, res) => {
     // Save the updated doctor document
     await doctor.save();
 
-    res.status(200).json({ message: 'Available time slots added successfully.' });
+    res
+      .status(200)
+      .json({ message: "Available time slots added successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while adding available time slots.' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while adding available time slots." });
   }
 };
-
-
-
 
 //  51:
 const scheduleAppointment = async (req, res) => {
   try {
     const doctorUsername = req.cookies.username;
-    const {patientUsername, dateTime } = req.body;
+    const { patientUsername, dateTime } = req.body;
 
     const doctor = await Doctor.findOne({ username: doctorUsername });
     if (!doctor) {
-      return res.status(404).json({ error: 'Doctor not found.' });
+      return res.status(404).json({ error: "Doctor not found." });
     }
 
     // Find the patient by their username
     const patient = await Patient.findOne({ username: patientUsername });
 
     if (!patient) {
-      return res.status(404).json({ error: 'Patient not found.' });
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    //make sure patient is one of doctor's patients
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+    
+    if (!patientUsernames.includes(patientUsername)) {
+      return res.status(404).json({ error: "Patient is not one of the doctor's patients" });
+    }
+
+    // Ensure the provided date and time are ahead of the current date and time
+    const currentDateTime = new Date();
+    const providedDateTime = new Date(`${dateTime}`);
+
+    if (providedDateTime <= currentDateTime) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "Please provide a date and time ahead of the current date and time.",
+        });
     }
 
     // Create a new appointment for the follow-up or regular appointment
     appointmentPrice = doctor.hourlyRate;
-    if (patient.statusOfHealthPackage === "Subscribed"){
-      appointmentPrice = doctor.hourlyRate * patient.healthPackage.discountOnSession
+    if (patient.statusOfHealthPackage === "Subscribed") {
+      appointmentPrice =
+        doctor.hourlyRate * patient.healthPackage.discountOnSession;
     }
     const appointment = new Appointment({
       doctor: doctorUsername,
       patient: patientUsername,
       datetime: new Date(dateTime),
-      status: 'Upcoming',
-      price: appointmentPrice, 
+      status: "Upcoming",
+      price: appointmentPrice,
     });
 
     // Save the appointment to the database
     await appointment.save();
 
     const prescription = new Prescription({
-      patientName : patientUsername,
-      doctorName : doctorUsername,
+      patientName: patientUsername,
+      doctorName: doctorUsername,
       date: new Date(dateTime),
-      
-    })
+    });
     await prescription.save();
 
     res.status(201).json(appointment);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while scheduling the appointment.' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while scheduling the appointment." });
   }
 };
 
-//  60: 
+//  60:
 const addHealthRecord = async (req, res) => {
   try {
     // attachements ba3den ?
     const doctorUsername = req.cookies.username;
-    const { patientUsername, diagnosis, treatment, notes, medication, dosage } = req.body;
+    const { patientUsername, diagnosis, treatment, notes, medication, dosage } =
+      req.body;
 
     // Find the patient by their username
     const patient = await Patient.findOne({ username: patientUsername });
 
     if (!patient) {
-      return res.status(404).json({ error: 'Patient not found.' });
+      return res.status(404).json({ error: "Patient not found." });
     }
 
     // Find the doctor by their username
     const doctor = await Doctor.findOne({ username: doctorUsername });
 
     if (!doctor) {
-      return res.status(404).json({ error: 'Doctor not found.' });
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+    
+    if (!patientUsernames.includes(patientUsername)) {
+      return res.status(404).json({ error: "Patient is not one of the doctor's patients" });
     }
 
     // Create a new health record
@@ -562,30 +649,48 @@ const addHealthRecord = async (req, res) => {
     await patient.save();
 
     const prescription = new Prescription({
-      patientName : patientUsername,
-      doctorName : doctorUsername,
+      patientName: patientUsername,
+      doctorName: doctorUsername,
       date: new Date(),
-      medication : medication,
-      dosage : dosage,
-      instructions : treatment,
-      filled : true
-    })
+      medication: medication,
+      dosage: dosage,
+      instructions: treatment,
+      filled: true,
+    });
     await prescription.save();
 
-    res.status(201).json({ message: 'Health record added successfully.' });
+    res.status(201).json({ message: "Health record added successfully." });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'An error occurred while adding a health record.' });
+    res
+      .status(500)
+      .json({ error: "An error occurred while adding a health record." });
   }
 };
 
-
-  
-module.exports = { viewProfile, updateProfile, viewMyPatients , 
-    viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
-    selectPatient, viewMyAppointments, searchPatientByUsername , 
-    filterByDateRange,viewAllDoctors, searchPatientPrescriptionsByName , 
-    viewWallet, filterByPastDate, viewHealthRecords, viewContract, acceptContract , rejectContract ,
-    addAvailableSlots, scheduleAppointment, addHealthRecord ,  logout, changePassword  };
-
-
+module.exports = {
+  viewProfile,
+  updateProfile,
+  viewMyPatients,
+  viewAllPatients,
+  searchPatientByName,
+  filterByUpcomingDate,
+  filterByStatus,
+  selectPatient,
+  viewMyAppointments,
+  searchPatientByUsername,
+  filterByDateRange,
+  viewAllDoctors,
+  searchPatientPrescriptionsByName,
+  viewWallet,
+  filterByPastDate,
+  viewHealthRecords,
+  viewContract,
+  acceptContract,
+  rejectContract,
+  addAvailableSlots,
+  scheduleAppointment,
+  addHealthRecord,
+  logout,
+  changePassword,
+};

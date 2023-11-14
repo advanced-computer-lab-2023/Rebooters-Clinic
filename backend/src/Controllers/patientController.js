@@ -742,10 +742,11 @@ const subscribeToHealthPackage = async (req, res) => {
     }
 
     healthPackage.price -= healthPackage.price * discount;
-    patient.statusOfHealthPackage = "Subscribed";
-    patient.healthPackageCreatedAt = new Date();
+
 
     if (!patient.healthPackage) {
+      patient.statusOfHealthPackage = "Subscribed";
+      patient.healthPackageCreatedAt = new Date();
       patient.healthPackage = healthPackage;
       await patient.save();
     } else {
@@ -908,8 +909,6 @@ const payForAppointment = async (req, res) => {
       return res.status(404).json({ error: "Appointment not found." });
     }
 
-    //foundAppointment.payment = "Paid";
-    //await foundAppointment.save();
 
     if (foundAppointment.payment === "Unpaid") {
       const appointmentPrice = foundAppointment.price;
@@ -948,12 +947,17 @@ const payForAppointment = async (req, res) => {
 const payForHealthPackage = async (req, res) => {
   try {
     const patientUsername = req.cookies.username; // Assuming you store the patient's username in cookies
-    const { price, paymentMethod } = req.body;
+    const { packageName, paymentMethod } = req.body;
 
     const patient = await Patient.findOne({ username: patientUsername });
     if (!patient) {
       return res.status(404).json({ error: "Patient not found." });
     }
+    const healthPackage = await HealthPackage.findOne({ name: packageName });
+    if (!healthPackage) {
+      return res.status(404).json({ error: "Health package not found" });
+    }
+    const price = healthPackage.price;
 
     if (paymentMethod === "pay with my wallet") {
       if (patient.wallet >= price) {

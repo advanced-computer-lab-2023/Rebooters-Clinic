@@ -27,12 +27,15 @@ const AddHealthRecord = () => {
       });
       if (response.status === 201) {
         setMessage("Health record added successfully.");
+        setError("");
         // Clear the input fields
         setDiagnosis("");
         setTreatment("");
         setNotes("");
       } else {
-        setError("Failed to add the health record.");
+        setMessage("");
+        const data = await response.json();
+        setError(data.error);
       }
     } catch (error) {
       console.error(error);

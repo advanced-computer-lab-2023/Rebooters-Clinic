@@ -24,76 +24,82 @@ const SubscribeToHealthPackage = () => {
     }
 
     try {
-      const response = await fetch("/api/patient/subscribeToHealthPackage", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          packageName: selectedPackage,
-        }),
-      });
+      // If the payment method is "pay with my wallet," call the payForHealthPackage function
+      if (selectedPaymentMethod === "pay with my wallet") {
+        const payResponse = await fetch("/api/patient/payForHealthPackage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            packageName: selectedPackage,
+            paymentMethod: "pay with my wallet", // Assuming wallet payment for health packages
+          }),
+        });
 
-      if (response.ok) {
-        const data = await response.json();
-
-        // If the payment method is "pay with my wallet," call the payForHealthPackage function
-        if (selectedPaymentMethod === "pay with my wallet") {
-          const payResponse = await fetch("/api/patient/payForHealthPackage", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              price: data.healthPackage.price,
-              paymentMethod: "pay with my wallet", // Assuming wallet payment for health packages
-            }),
-          });
-
-          if (payResponse.ok) {
-            const payData = await payResponse.json();
-            setPaymentMessage(payData.message);
-            setPaymentError("");
-          } else {
-            const payErrorData = await payResponse.json();
-            setPaymentError(payErrorData.error);
-            setPaymentMessage("");
-          }
-        } else {
-          if (selectedPaymentMethod === "pay with credit card") {
-            try {
-              const stripeResponse = await fetch(
-                "http://localhost:3000/create-checkout-session",
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    items: [
-                      { id: 1, quantity: 3 },
-                      { id: 2, quantity: 1 },
-                    ],
-                  }),
-                }
-              );
-
-              if (stripeResponse.ok) {
-                const { url } = await stripeResponse.json();
-                window.location = url;
-                console.log(url);
-              } else {
-                throw new Error("Network response from Stripe was not ok");
-              }
-            } catch (stripeError) {
-              console.error("Stripe Error:", stripeError);
+        if (payResponse.ok) {
+          const payData = await payResponse.json();
+          setPaymentMessage(payData.message);
+          setPaymentError("");
+          const response = await fetch(
+            "/api/patient/subscribeToHealthPackage",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                packageName: selectedPackage,
+              }),
             }
-          }
+          );
+        } else {
+          const payErrorData = await payResponse.json();
+          setPaymentError(payErrorData.error);
+          setPaymentMessage("");
         }
       } else {
-        const errorData = await response.json();
-        setPaymentError(errorData.error);
-        setPaymentMessage("");
+        if (selectedPaymentMethod === "pay with credit card") {
+          const response = await fetch(
+            "/api/patient/subscribeToHealthPackage",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                packageName: selectedPackage,
+              }),
+            }
+          );
+          try {
+            const stripeResponse = await fetch(
+              "http://localhost:3000/create-checkout-session",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  items: [
+                    { id: 1, quantity: 3 },
+                    { id: 2, quantity: 1 },
+                  ],
+                }),
+              }
+            );
+
+            if (stripeResponse.ok) {
+              const { url } = await stripeResponse.json();
+              window.location = url;
+              console.log(url);
+            } else {
+              throw new Error("Network response from Stripe was not ok");
+            }
+          } catch (stripeError) {
+            console.error("Stripe Error:", stripeError);
+          }
+        }
       }
     } catch (error) {
       console.error("Error subscribing and paying:", error);
@@ -138,9 +144,7 @@ const SubscribeToHealthPackage = () => {
         >
           <option value="">Select Health Package</option>
           {packages.map((packageOption) => (
-            <option value={packageOption.name}>
-              {packageOption.name}
-            </option>
+            <option value={packageOption.name}>{packageOption.name}</option>
           ))}
         </Form.Control>
       </Form.Group>
