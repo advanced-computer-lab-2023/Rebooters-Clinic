@@ -9,14 +9,12 @@ import DoctorWallet from "../components/DoctorWallet";
 import ChangePassword from "../components/ChangePassword";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Contract from "../components/Contract";
-import ScheduleFollowup from "../components/ScheduleFollowup";
-import AddHealthRecord from "../components/AddHealthRecord";
 import TimeSlots from "../components/TimeSlots";
-import AddPrescription from "../components/AddPrescription";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
   const [contractStatus, setContractStatus] = useState(null);
+  const [activeTab, setActiveTab] = useState("home");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,65 +72,132 @@ const DoctorHome = () => {
   useEffect(() => {
     viewProfile();
   }, []);
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
   return (
     <div className="container">
-      <button onClick={handleLogout} className="btn btn-danger mt-2">
-        Logout
-      </button>
-      <div className="card mt-4">
-        <div className="card-body">
-          <h2 className="card-title">Your Profile:</h2>
-          {doctorData ? (
-            <>
-              <p>ID: {doctorData._id}</p>
-              <p>Username: {doctorData.username}</p>
-              <p>Name: {doctorData.name}</p>
-              <p>Email: {doctorData.email}</p>
-              <p>Date of Birth: {doctorData.dateOfBirth}</p>
-              <p>Hourly Rate: {doctorData.hourlyRate}</p>
-              <p>Speciality: {doctorData.speciality}</p>
-              <p>Affiliation: {doctorData.affiliation}</p>
-              <p>Educational Background: {doctorData.educationalBackground}</p>
-            </>
-          ) : null}
+      {doctorData && doctorData.acceptedContract ? (
+        <nav className="navbar navbar-expand-lg navbar-light bg-light">
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav">
+              <li>
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </li>
+              <li
+                className={`nav-item ${activeTab === "home" ? "active" : ""}`}
+              >
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={() => handleTabClick("home")}
+                >
+                  Home
+                </button>
+              </li>
+              <li
+                className={`nav-item ${
+                  activeTab === "settings" ? "active" : ""
+                }`}
+              >
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={() => handleTabClick("settings")}
+                >
+                  Settings
+                </button>
+              </li>
+              <li
+                className={`nav-item ${
+                  activeTab === "appointments" ? "active" : ""
+                }`}
+              >
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={() => handleTabClick("appointments")}
+                >
+                  Appointments
+                </button>
+              </li>
+              <li
+                className={`nav-item ${
+                  activeTab === "patients" ? "active" : ""
+                }`}
+              >
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={() => handleTabClick("patients")}
+                >
+                  Patients
+                </button>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      ) : null}
+      {activeTab === "home" ? (
+        <div className="card mt-4">
+          <div className="card-body">
+            <h2 className="card-title">Your Profile:</h2>
+            {doctorData ? (
+              <>
+                <p>ID: {doctorData._id}</p>
+                <p>Username: {doctorData.username}</p>
+                <p>Name: {doctorData.name}</p>
+                <p>Email: {doctorData.email}</p>
+                <p>Date of Birth: {doctorData.dateOfBirth}</p>
+                <p>Hourly Rate: {doctorData.hourlyRate}</p>
+                <p>Speciality: {doctorData.speciality}</p>
+                <p>Affiliation: {doctorData.affiliation}</p>
+                <p>
+                  Educational Background: {doctorData.educationalBackground}
+                </p>
+              </>
+            ) : null}
+          </div>
         </div>
-      </div>
+      ) : null}
+
       {doctorData && !doctorData.acceptedContract ? (
         <div className="card mt-4">
           <Contract />
         </div>
       ) : (
         <>
+        {activeTab === "home" && (
           <div className="card mt-4">
-            <DoctorUpdateProfile />
-          </div>
+            {activeTab === "home" && <DoctorWallet />}
+          </div>)}
+          {activeTab === "settings" && (
           <div className="card mt-4">
-            <ChangePassword userType="doctor" />
-          </div>
+            {activeTab === "settings" && <DoctorUpdateProfile />}
+          </div>)}
+          {activeTab === "settings" && (
           <div className="card mt-4">
-            <DoctorMyAppointments />
-          </div>
+            {activeTab === "settings" && <ChangePassword userType="doctor" />}
+          </div>)}
+          {activeTab === "appointments" && (
           <div className="card mt-4">
-            <DoctorMyPatients />
-          </div>
+            {activeTab === "appointments" && <DoctorMyAppointments />}
+          </div> )}
+          {activeTab === "patients" && (
+          <div className="card mt-4">
+             <DoctorMyPatients />
+          </div> )}
+          {activeTab === "patients" && (
           <div className="card mt-4">
             <SearchForPatient />
-          </div>
-          <div className="card mt-4">
-            <DoctorWallet />
-          </div>
-          <div className="card mt-4">
-            <ScheduleFollowup />
-          </div>
-          <div className="card mt-4">
-            <AddHealthRecord />
-          </div>
-          <div className="card mt-4">
-            <TimeSlots />
-          </div>
-          {/* <div className="card mt-4">
-            <AddPrescription />
-          </div> */}
+          </div> )}
+          {activeTab === "appointments" && (
+            <div className="card mt-4">
+              <TimeSlots />
+            </div>
+          )}
         </>
       )}
     </div>

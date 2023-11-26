@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-const AddHealthRecord = () => {
-  const [patientUsername, setPatientUsername] = useState("");
+const AddHealthRecord = ({patient}) => {
+  const [patientUsername, setPatientUsername] = useState(patient);
   const [diagnosis, setDiagnosis] = useState("");
   const [treatment, setTreatment] = useState("");
   const [medication, setMedication] = useState("");
@@ -28,7 +28,8 @@ const AddHealthRecord = () => {
       if (response.status === 201) {
         setMessage("Health record added successfully.");
         setError("");
-        // Clear the input fields
+        setMedication("");
+        setDosage("");
         setDiagnosis("");
         setTreatment("");
         setNotes("");
@@ -45,15 +46,9 @@ const AddHealthRecord = () => {
 
   return (
     <div className="container">
-      <h2>Add Health Record</h2>
-      <label>Patient Username:</label>
-      <input
-        type="text"
-        className="form-control"
-        value={patientUsername}
-        onChange={(e) => setPatientUsername(e.target.value)}
-      />
-      <br />
+      <h2>Add Health Record for {patientUsername}</h2>
+      {message && <p className="text-success">{message}</p>}
+      {error && <p className="text-danger">{error}</p>}
       <label>Diagnosis:</label>
       <input
         type="text"
@@ -92,9 +87,6 @@ const AddHealthRecord = () => {
       <div>
         <button  className="btn btn-primary" onClick={handleAddHealthRecord}>Add Health Record</button>
       </div>
-
-      {message && <p>{message}</p>}
-      {error && <p>{error}</p>}
     </div>
   );
 };

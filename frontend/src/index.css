@@ -63,6 +63,12 @@ header a {
   overflow-y: scroll;
 }
 
+.scheduleFollowup {
+  height: 200px;
+  width: 900px;
+  overflow-y: scroll;
+}
+
 
 
 

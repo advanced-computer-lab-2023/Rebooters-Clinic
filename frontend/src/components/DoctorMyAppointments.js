@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AddPrescription from "./AddPrescription";
 import EditPrescription from "./EditPrescription";
+import AddHealthRecord from "./AddHealthRecord";
+import ScheduleFollowup from "./ScheduleFollowup";
 
 const DoctorMyAppointments = () => {
   const [appointmentsData, setAppointmentsData] = useState([]);
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
   const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =
     useState([]);
@@ -22,6 +23,10 @@ const DoctorMyAppointments = () => {
   const [patientUsername, setPatientUsername] = useState(""); // Input for end date
   const [showAddPrescription, setShowAddPrescription] = useState(false);
   const [showEditPrescription, setShowEditPrescription] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showAddHealthRecord, setShowAddHealthRecord] = useState(false);
+  const [showScheduleFollowup, setShowScheduleFollowup] = useState(false);
 
   const handleAddPrescription = (patient) => {
     setShowAddPrescription(true);
@@ -32,6 +37,15 @@ const DoctorMyAppointments = () => {
     setShowAddPrescription(false);
   };
 
+  const handleViewProfile = (patient) => {
+    setShowProfile(true);
+    setPatientUsername(patient);
+  };
+
+  const handleCloseViewProfile = () => {
+    setShowProfile(false);
+  };
+
   const handleEditPrescription = (patient) => {
     setShowEditPrescription(true);
     setPatientUsername(patient);
@@ -39,6 +53,28 @@ const DoctorMyAppointments = () => {
 
   const handleCloseEditPrescription = () => {
     setShowEditPrescription(false);
+  };
+
+  const handleToggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
+  const handleAddHealthRecord = (patient) => {
+    setPatientUsername(patient);
+    setShowAddHealthRecord(true);
+  };
+
+  const handleCloseAddHealthRecord = () => {
+    setShowAddHealthRecord(false);
+  };
+
+  const handleScheduleFollowup = (patient) => {
+    setPatientUsername(patient);
+    setShowScheduleFollowup(true);
+  };
+
+  const handleCloseScheduleFollowup = () => {
+    setShowScheduleFollowup(false);
   };
 
   useEffect(() => {
@@ -90,7 +126,6 @@ const DoctorMyAppointments = () => {
         setFilterByDateData([]);
         setFilterByStatusData(json);
         setFilterByDateRange([]);
-        setCustomStatus(""); // Clear the custom status input field
       } else {
         setError("An error occurred while filtering appointments by status");
       }
@@ -189,7 +224,6 @@ const DoctorMyAppointments = () => {
       });
       const json = await response.json();
       if (response.ok && json.length > 0) {
-        setSelectedAppointment(appointment);
         setSelectedPatientProfile(json[0]);
       } else {
         setError("An error occurred while fetching patient profile");
@@ -240,13 +274,6 @@ const DoctorMyAppointments = () => {
     return null;
   };
 
-  const handleCloseCard = () => {
-    setSelectedAppointment(null);
-    setSelectedPatientProfile(null);
-    setSelectedPatientPrescriptions([]);
-    setSelectedPatientRecords([]);
-  };
-
   const sortedAppointments = [...appointmentsData].sort((a, b) => {
     const dateA = new Date(a.datetime);
     const dateB = new Date(b.datetime);
@@ -287,60 +314,214 @@ const DoctorMyAppointments = () => {
           </div>
         </div>
       )}
+      {showAddHealthRecord && (
+        <div className="modal-overlay">
+          <div className="card">
+            <div className="editPrescription">
+              <AddHealthRecord patient={patientUsername} />
+            </div>
+            <button
+              className="btn btn-danger"
+              onClick={handleCloseAddHealthRecord}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showScheduleFollowup && (
+        <div className="modal-overlay">
+          <div className="card">
+            <div className="scheduleFollowup">
+              <ScheduleFollowup patient={patientUsername} />
+            </div>
+            <button
+              className="btn btn-danger"
+              onClick={handleCloseScheduleFollowup}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showProfile && (
+        <div className="modal-overlay">
+          <div className="card">
+            <div className="editPrescription">
+              {selectedPatientProfile && (
+                <div className="card mt-3">
+                  <div className="card-body">
+                    <h5 className="card-title">Patient Profile</h5>
+                    <p className="card-text">
+                      <strong>Username:</strong>{" "}
+                      {selectedPatientProfile.username}
+                      <br />
+                      <strong>Name:</strong> {selectedPatientProfile.name}
+                      <br />
+                      <strong>National ID:</strong>{" "}
+                      {selectedPatientProfile.national_id}
+                      <br />
+                      <strong>Email:</strong> {selectedPatientProfile.email}
+                      <br />
+                      <strong>Date of Birth:</strong>{" "}
+                      {selectedPatientProfile.dateOfBirth}
+                      <br />
+                      <strong>Gender:</strong> {selectedPatientProfile.gender}
+                      <br />
+                      <strong>Mobile Number:</strong>{" "}
+                      {selectedPatientProfile.mobile_number}
+                      <br />
+                      <strong>Emergency Contact First Name:</strong>{" "}
+                      {selectedPatientProfile.emergency_contact.firstName}
+                      <br />
+                      <strong>Emergency Contact Middle Name:</strong>{" "}
+                      {selectedPatientProfile.emergency_contact.middleName}
+                      <br />
+                      <strong>Emergency Contact Last Name:</strong>{" "}
+                      {selectedPatientProfile.emergency_contact.lastName}
+                      <br />
+                      <strong>Emergency Contact Mobile Phone:</strong>{" "}
+                      {selectedPatientProfile.emergency_contact.mobile_number}
+                      <hr></hr>
+                      <h5>Patient Health Record:</h5>
+                      {selectedPatientRecords.length > 0 &&
+                        selectedPatientRecords.map((record) => (
+                          <div>
+                            <h6>Record Date: {record.date}</h6>
+                            <p>
+                              <strong>Doctor:</strong> {record.doctor}
+                            </p>
+                            <p>
+                              <strong>diagnosis:</strong> {record.diagnosis}
+                            </p>
+                            <p>
+                              <strong>Treatment:</strong> {record.treatment}
+                            </p>
+                            <p>
+                              <strong>Notes:</strong> {record.notes}
+                            </p>
+                          </div>
+                        ))}
+                      <hr></hr>
+                      <h5>Patient Prescriptions:</h5>
+                      {selectedPatientPrescriptions.map((prescription) => (
+                        <div className="card" key={prescription._id}>
+                          <h6>
+                            Prescription Date:{" "}
+                            {new Date(prescription.date).toLocaleDateString()}{" "}
+                            {new Date(prescription.date).toLocaleTimeString()}
+                          </h6>
+                          {prescription.medicationInfo.map(
+                            (medicine, index) => (
+                              <div key={index}>
+                                <p>
+                                  <strong>Medicine {index + 1}:</strong>{" "}
+                                  {medicine.medicine}
+                                </p>
+                                <p style={{ marginLeft: "20px" }}>
+                                  <strong>Dosage:</strong> {medicine.dosage}
+                                </p>
+                                <p style={{ marginLeft: "20px" }}>
+                                  <strong>Instructions:</strong>{" "}
+                                  {medicine.instructions}
+                                </p>
+                              </div>
+                            )
+                          )}
+                          <p>
+                            <strong>Doctor:</strong> {prescription.doctorName}
+                          </p>
+                          {prescription.filled ? (
+                            <p>Status: Filled</p>
+                          ) : (
+                            <p>Status: Not Filled</p>
+                          )}
+                        </div>
+                      ))}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+            <button className="btn btn-danger" onClick={handleCloseViewProfile}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <h2>My Appointments:</h2>
-      <div>
-        <label>Start Date:</label>
-        <input
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>End Date:</label>
-        <input
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-        />
-      </div>
-      <button
-        className="btn btn-primary"
-        onClick={filterAppointmentsByDateRange}
-      >
-        Filter by Date Range
+      <button className="btn btn-secondary" onClick={handleToggleFilters}>
+        {showFilters ? "Hide Filters" : "Show Filters"}
       </button>
-      <input
-        type="text"
-        className="form-control"
-        placeholder="Custom Status"
-        value={customStatus}
-        onChange={(e) => setCustomStatus(e.target.value)}
-      />
-      <button
-        className="btn btn-primary"
-        onClick={() => filterAppointmentsByStatus(customStatus)}
-      >
-        Filter by Status
-      </button>
-      <button className="btn btn-primary" onClick={filterAppointmentsByDate}>
-        Filter by Upcoming Date
-      </button>
-      <button
-        className="btn btn-primary"
-        onClick={filterAppointmentsByPastDate}
-      >
-        Filter by Past Date
-      </button>
-      <button className="btn btn-primary" onClick={fetchAppointments}>
-        Remove Filters
-      </button>
+      {showFilters && (
+        <>
+          <div className="card">
+            <div className="card-body">
+              <label>Start Date:</label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+              &nbsp; &nbsp;&nbsp;
+              <label>End Date:</label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+              &nbsp; &nbsp;&nbsp;
+              <button
+                className="btn btn-primary"
+                onClick={filterAppointmentsByDateRange}
+              >
+                Filter by Date Range
+              </button>
+            </div>
+            <div>
+              <select
+                className="btn btn-secondary dropdown-toggle"
+                value={customStatus}
+                onChange={(e) => setCustomStatus(e.target.value)}
+              >
+                <option value="Completed">Completed</option>
+                <option value="Upcoming">Upcoming</option>
+                <option value="Rescheduled">Rescheduled</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+              <button
+                className="btn btn-primary"
+                onClick={() => filterAppointmentsByStatus(customStatus)}
+              >
+                Filter by Status
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={filterAppointmentsByDate}
+              >
+                Filter by Upcoming Date
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={filterAppointmentsByPastDate}
+              >
+                Filter by Past Date
+              </button>
+            </div>
+            <button className="btn btn-danger" onClick={fetchAppointments}>
+              Remove Filters
+            </button>
+          </div>
+        </>
+      )}
+
       {error && <p className="text-danger">{error}</p>}
-      <table className="table table-bordered table-hover">
+      <table className="table table-bordered">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Patient (click to view profile)</th>
+            <th>Patient</th>
             <th
               onClick={() => handleSort("datetime")}
               style={{ cursor: "pointer" }}
@@ -357,12 +538,52 @@ const DoctorMyAppointments = () => {
                 <tr
                   key={appointment._id}
                   onClick={() => handleRowClick(appointment)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
                   <td>{new Date(appointment.datetime).toLocaleString()}</td>
                   <td>{appointment.status}</td>
+                  <td>
+                    <button
+                      className="btn btn-info"
+                      onClick={(e) => {
+                        handleViewProfile(appointment.patient);
+                      }}
+                    >
+                      View Patient Profile
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleAddPrescription(appointment.patient);
+                      }}
+                    >
+                      Add Prescription
+                    </button>
+                    <button
+                      className="btn btn-success"
+                      onClick={(e) => {
+                        handleEditPrescription(appointment.patient);
+                      }}
+                    >
+                      Manage Prescriptions
+                    </button>
+                    <button
+                      className="btn btn-warning"
+                      onClick={(e) => {
+                        handleAddHealthRecord(appointment.patient);
+                      }}
+                    >
+                      Add Health Record
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleScheduleFollowup(appointment.patient);
+                      }}
+                    >
+                      Schedule Followup
+                    </button>
+                  </td>
                 </tr>
               ))
             : filterByDateData.length > 0
@@ -372,7 +593,6 @@ const DoctorMyAppointments = () => {
                   onClick={() => handleRowClick(appointment)}
                   style={{ cursor: "pointer" }}
                 >
-                  <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
@@ -380,6 +600,14 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
+                    <button
+                      className="btn btn-info"
+                      onClick={(e) => {
+                        handleViewProfile(appointment.patient);
+                      }}
+                    >
+                      View Patient Profile
+                    </button>
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -395,6 +623,22 @@ const DoctorMyAppointments = () => {
                       }}
                     >
                       Manage Prescriptions
+                    </button>
+                    <button
+                      className="btn btn-warning"
+                      onClick={(e) => {
+                        handleAddHealthRecord(appointment.patient);
+                      }}
+                    >
+                      Add Health Record
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleScheduleFollowup(appointment.patient);
+                      }}
+                    >
+                      Schedule Followup
                     </button>
                   </td>
                 </tr>
@@ -404,9 +648,7 @@ const DoctorMyAppointments = () => {
                 <tr
                   key={appointment._id}
                   onClick={() => handleRowClick(appointment)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
@@ -414,6 +656,14 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
+                    <button
+                      className="btn btn-info"
+                      onClick={(e) => {
+                        handleViewProfile(appointment.patient);
+                      }}
+                    >
+                      View Patient Profile
+                    </button>
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -429,6 +679,22 @@ const DoctorMyAppointments = () => {
                       }}
                     >
                       Manage Prescriptions
+                    </button>
+                    <button
+                      className="btn btn-warning"
+                      onClick={(e) => {
+                        handleAddHealthRecord(appointment.patient);
+                      }}
+                    >
+                      Add Health Record
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleScheduleFollowup(appointment.patient);
+                      }}
+                    >
+                      Schedule Followup
                     </button>
                   </td>
                 </tr>
@@ -438,9 +704,7 @@ const DoctorMyAppointments = () => {
                 <tr
                   key={appointment._id}
                   onClick={() => handleRowClick(appointment)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
@@ -448,6 +712,14 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
+                    <button
+                      className="btn btn-info"
+                      onClick={(e) => {
+                        handleViewProfile(appointment.patient);
+                      }}
+                    >
+                      View Patient Profile
+                    </button>
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -463,6 +735,22 @@ const DoctorMyAppointments = () => {
                       }}
                     >
                       Manage Prescriptions
+                    </button>
+                    <button
+                      className="btn btn-warning"
+                      onClick={(e) => {
+                        handleAddHealthRecord(appointment.patient);
+                      }}
+                    >
+                      Add Health Record
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleScheduleFollowup(appointment.patient);
+                      }}
+                    >
+                      Schedule Followup
                     </button>
                   </td>
                 </tr>
@@ -471,9 +759,7 @@ const DoctorMyAppointments = () => {
                 <tr
                   key={appointment._id}
                   onClick={() => handleRowClick(appointment)}
-                  style={{ cursor: "pointer" }}
                 >
-                  <td>{appointment._id}</td>
                   <td>{appointment.patient}</td>
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
@@ -481,6 +767,14 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
+                    <button
+                      className="btn btn-info"
+                      onClick={(e) => {
+                        handleViewProfile(appointment.patient);
+                      }}
+                    >
+                      View Patient Profile
+                    </button>
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -497,104 +791,27 @@ const DoctorMyAppointments = () => {
                     >
                       Manage Prescriptions
                     </button>
+                    <button
+                      className="btn btn-warning"
+                      onClick={(e) => {
+                        handleAddHealthRecord(appointment.patient);
+                      }}
+                    >
+                      Add Health Record
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleScheduleFollowup(appointment.patient);
+                      }}
+                    >
+                      Schedule Followup
+                    </button>
                   </td>
                 </tr>
               ))}
         </tbody>
       </table>
-
-      {selectedPatientProfile && (
-        <div className="card mt-3">
-          <div className="card-body">
-            <h5 className="card-title">Patient Profile</h5>
-            <p className="card-text">
-              <strong>Username:</strong> {selectedPatientProfile.username}
-              <br />
-              <strong>Name:</strong> {selectedPatientProfile.name}
-              <br />
-              <strong>National ID:</strong> {selectedPatientProfile.national_id}
-              <br />
-              <strong>Email:</strong> {selectedPatientProfile.email}
-              <br />
-              <strong>Date of Birth:</strong>{" "}
-              {selectedPatientProfile.dateOfBirth}
-              <br />
-              <strong>Gender:</strong> {selectedPatientProfile.gender}
-              <br />
-              <strong>Mobile Number:</strong>{" "}
-              {selectedPatientProfile.mobile_number}
-              <br />
-              <strong>Emergency Contact First Name:</strong>{" "}
-              {selectedPatientProfile.emergency_contact.firstName}
-              <br />
-              <strong>Emergency Contact Middle Name:</strong>{" "}
-              {selectedPatientProfile.emergency_contact.middleName}
-              <br />
-              <strong>Emergency Contact Last Name:</strong>{" "}
-              {selectedPatientProfile.emergency_contact.lastName}
-              <br />
-              <strong>Emergency Contact Mobile Phone:</strong>{" "}
-              {selectedPatientProfile.emergency_contact.mobile_number}
-              <hr></hr>
-              <h5>Patient Health Record:</h5>
-              {selectedPatientRecords.length > 0 &&
-                selectedPatientRecords.map((record) => (
-                  <div>
-                    <h6>Record Date: {record.date}</h6>
-                    <p>
-                      <strong>Doctor:</strong> {record.doctor}
-                    </p>
-                    <p>
-                      <strong>diagnosis:</strong> {record.diagnosis}
-                    </p>
-                    <p>
-                      <strong>Treatment:</strong> {record.treatment}
-                    </p>
-                    <p>
-                      <strong>Notes:</strong> {record.notes}
-                    </p>
-                  </div>
-                ))}
-              <hr></hr>
-              <h5>Patient Prescriptions:</h5>
-              {selectedPatientPrescriptions.map((prescription) => (
-                <div className="card" key={prescription._id}>
-                  <h6>
-                    Prescription Date:{" "}
-                    {new Date(prescription.date).toLocaleDateString()}{" "}
-                    {new Date(prescription.date).toLocaleTimeString()}
-                  </h6>
-                  {prescription.medicationInfo.map((medicine, index) => (
-                    <div key={index}>
-                      <p>
-                        <strong>Medicine {index + 1}:</strong>{" "}
-                        {medicine.medicine}
-                      </p>
-                      <p style={{ marginLeft: "20px" }}>
-                        <strong>Dosage:</strong> {medicine.dosage}
-                      </p>
-                      <p style={{ marginLeft: "20px" }}>
-                        <strong>Instructions:</strong> {medicine.instructions}
-                      </p>
-                    </div>
-                  ))}
-                  <p>
-                    <strong>Doctor:</strong> {prescription.doctorName}
-                  </p>
-                  {prescription.filled ? (
-                    <p>Status: Filled</p>
-                  ) : (
-                    <p>Status: Not Filled</p>
-                  )}
-                </div>
-              ))}
-            </p>
-            <button className="btn btn-primary" onClick={handleCloseCard}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
