@@ -4,7 +4,8 @@ const {viewProfile, updateProfile, viewMyPatients ,
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
     selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , 
     searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , 
-    viewContract ,acceptContract , rejectContract , addAvailableSlots , scheduleAppointment , addHealthRecord, logout, changePassword } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+    viewContract ,acceptContract , rejectContract , addAvailableSlots , scheduleAppointment , addHealthRecord, 
+    logout, changePassword, addPrescription, removeFromPrescription, addToPrescription, editPrescription } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
@@ -35,5 +36,12 @@ router.post("/rejectContract", requireAuth ,rejectContract);
 router.post("/addAvailableSlots", requireAuth ,addAvailableSlots);
 router.post("/scheduleAppointment", requireAuth ,scheduleAppointment);
 router.post("/addHealthRecord", requireAuth ,addHealthRecord);
+
+router.post("/addPrescription", requireAuth ,addPrescription);
+router.post("/removeFromPrescription", requireAuth ,removeFromPrescription);
+router.post("/addToPrescription", requireAuth ,addToPrescription);
+router.post("/editPrescription", requireAuth ,editPrescription);
+
+
 
 module.exports = router;

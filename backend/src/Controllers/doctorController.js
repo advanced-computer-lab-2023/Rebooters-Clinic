@@ -502,12 +502,10 @@ const addAvailableSlots = async (req, res) => {
     const providedDateTime = new Date(`${date}T${time}`);
 
     if (providedDateTime <= currentDateTime) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Please provide a date and time ahead of the current date and time.",
-        });
+      return res.status(400).json({
+        error:
+          "Please provide a date and time ahead of the current date and time.",
+      });
     }
 
     // Append the new available time slots to the doctor's existing slots
@@ -551,9 +549,11 @@ const scheduleAppointment = async (req, res) => {
     const patientUsernames = appointments.map(
       (appointment) => appointment.patient
     );
-    
+
     if (!patientUsernames.includes(patientUsername)) {
-      return res.status(404).json({ error: "Patient is not one of the doctor's patients" });
+      return res
+        .status(404)
+        .json({ error: "Patient is not one of the doctor's patients" });
     }
 
     // Ensure the provided date and time are ahead of the current date and time
@@ -561,12 +561,10 @@ const scheduleAppointment = async (req, res) => {
     const providedDateTime = new Date(`${dateTime}`);
 
     if (providedDateTime <= currentDateTime) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Please provide a date and time ahead of the current date and time.",
-        });
+      return res.status(400).json({
+        error:
+          "Please provide a date and time ahead of the current date and time.",
+      });
     }
 
     // Create a new appointment for the follow-up or regular appointment
@@ -628,9 +626,11 @@ const addHealthRecord = async (req, res) => {
     const patientUsernames = appointments.map(
       (appointment) => appointment.patient
     );
-    
+
     if (!patientUsernames.includes(patientUsername)) {
-      return res.status(404).json({ error: "Patient is not one of the doctor's patients" });
+      return res
+        .status(404)
+        .json({ error: "Patient is not one of the doctor's patients" });
     }
 
     // Create a new health record
@@ -668,6 +668,222 @@ const addHealthRecord = async (req, res) => {
   }
 };
 
+const addPrescription = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { patientUsername, medicationInfo } = req.body;
+
+    // Find the patient by their username
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    // Find the doctor by their username
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+
+    if (!patientUsernames.includes(patientUsername)) {
+      return res
+        .status(404)
+        .json({ error: "Patient is not one of the doctor's patients" });
+    }
+
+    const prescription = new Prescription({
+      patientName: patientUsername,
+      doctorName: doctorUsername,
+      date: new Date(),
+      medicationInfo: medicationInfo,
+      filled: true,
+    });
+    await prescription.save();
+
+    res
+      .status(201)
+      .json({ message: "Patient Prescription added successfully." });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while adding Prescription." });
+  }
+};
+
+const removeFromPrescription = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { patientUsername, prescriptionID, medicineIndex } = req.body;
+
+    // Find the patient by their username
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    // Find the doctor by their username
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+
+    if (!patientUsernames.includes(patientUsername)) {
+      return res
+        .status(404)
+        .json({ error: "Patient is not one of the doctor's patients" });
+    }
+
+    const prescription = await Prescription.findOne({ _id: prescriptionID });
+    prescription.medicationInfo.splice(medicineIndex, 1);
+    await prescription.save();
+    const updatedPrescription = await Prescription.findOne({
+      _id: prescriptionID,
+    });
+    res.status(201).json({
+      message: "Medicine removed from prescription successfully.",
+      prescription: updatedPrescription,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "An error occurred while removing medicine from Prescription.",
+    });
+  }
+};
+
+const addToPrescription = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { patientUsername, prescriptionID, medicine } = req.body;
+
+    // Find the patient by their username
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    // Find the doctor by their username
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+
+    if (!patientUsernames.includes(patientUsername)) {
+      return res
+        .status(404)
+        .json({ error: "Patient is not one of the doctor's patients" });
+    }
+
+    const prescription = await Prescription.findOne({ _id: prescriptionID });
+    prescription.medicationInfo.push({
+      medicine: medicine.medicine,
+      dosage: medicine.dosage,
+      instructions: medicine.instructions,
+    });
+    await prescription.save();
+    const updatedPrescription = await Prescription.findOne({
+      _id: prescriptionID,
+    });
+    res.status(201).json({
+      message: "Medicine added to prescription successfully.",
+      prescription: updatedPrescription,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "An error occurred while adding medicine To Prescription.",
+    });
+  }
+};
+
+const editPrescription = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const {
+      patientUsername,
+      prescriptionID,
+      medicineIndex,
+      dosage,
+      instructions,
+    } = req.body;
+
+    // Find the patient by their username
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    // Find the doctor by their username
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+
+    if (!patientUsernames.includes(patientUsername)) {
+      return res
+        .status(404)
+        .json({ error: "Patient is not one of the doctor's patients" });
+    }
+
+    const prescription = await Prescription.findOne({ _id: prescriptionID });
+    if (
+      medicineIndex >= 0 &&
+      medicineIndex < prescription.medicationInfo.length
+    ) {
+      if (dosage !== undefined && dosage !== "") {
+        prescription.medicationInfo[medicineIndex].dosage = dosage;
+      }
+
+      if (instructions !== undefined && instructions !== "") {
+        prescription.medicationInfo[medicineIndex].instructions = instructions;
+      }
+
+      await prescription.save();
+      const updatedPrescription = await Prescription.findOne({
+        _id: prescriptionID,
+      });
+      res.status(201).json({
+        message: "Prescription updated successfully.",
+        prescription: updatedPrescription,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while updating Prescription." });
+  }
+};
+
 module.exports = {
   viewProfile,
   updateProfile,
@@ -693,4 +909,8 @@ module.exports = {
   addHealthRecord,
   logout,
   changePassword,
+  addPrescription,
+  removeFromPrescription,
+  addToPrescription,
+  editPrescription,
 };

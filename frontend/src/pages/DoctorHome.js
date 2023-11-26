@@ -12,6 +12,7 @@ import Contract from "../components/Contract";
 import ScheduleFollowup from "../components/ScheduleFollowup";
 import AddHealthRecord from "../components/AddHealthRecord";
 import TimeSlots from "../components/TimeSlots";
+import AddPrescription from "../components/AddPrescription";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -129,6 +130,9 @@ const DoctorHome = () => {
           <div className="card mt-4">
             <TimeSlots />
           </div>
+          {/* <div className="card mt-4">
+            <AddPrescription />
+          </div> */}
         </>
       )}
     </div>

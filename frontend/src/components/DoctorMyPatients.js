@@ -6,7 +6,8 @@ const DoctorMyPatients = () => {
   const [error, setError] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
-  const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =useState([]);
+  const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =
+    useState([]);
 
   useEffect(() => {
     // Call the viewPatients function when the component mounts
@@ -154,20 +155,28 @@ const DoctorMyPatients = () => {
               <hr></hr>
               <h5>Patient Prescriptions:</h5>
               {selectedPatientPrescriptions.map((prescription) => (
-                <div key={prescription._id}>
-                  <h6>Prescription Date: {prescription.date}</h6>
+                <div className="card" key={prescription._id}>
+                  <h6>
+                    Prescription Date:{" "}
+                    {new Date(prescription.date).toLocaleDateString()}{" "}
+                    {new Date(prescription.date).toLocaleTimeString()}
+                  </h6>
+                  {prescription.medicationInfo.map((medicine, index) => (
+                    <div key={index}>
+                      <p>
+                        <strong>Medicine {index + 1}:</strong>{" "}
+                        {medicine.medicine}
+                      </p>
+                      <p style={{ marginLeft: '20px' }}>
+                        <strong>Dosage:</strong> {medicine.dosage}
+                      </p>
+                      <p style={{ marginLeft: '20px' }}>
+                        <strong>Instructions:</strong> {medicine.instructions}
+                      </p>
+                    </div>
+                  ))}
                   <p>
-                    <strong>Medication:</strong> {prescription.medication}
-                  </p>
-                  <p>
-                    <strong>Dosage:</strong> {prescription.dosage}
-                  </p>
-                  <p>
-                    <strong>Instructions:</strong> {prescription.instructions}
-                  </p>
-                  <p>
-                    <strong>Doctor: </strong>
-                    {prescription.doctorName}
+                    <strong>Doctor:</strong> {prescription.doctorName}
                   </p>
                   {prescription.filled ? (
                     <p>Status: Filled</p>

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import AddPrescription from "./AddPrescription";
+import EditPrescription from "./EditPrescription";
 
 const DoctorMyAppointments = () => {
   const [appointmentsData, setAppointmentsData] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [selectedPatientProfile, setSelectedPatientProfile] = useState(null);
-  const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =useState([]);
-  const [selectedPatientRecords, setSelectedPatientRecords] =useState([]);
+  const [selectedPatientPrescriptions, setSelectedPatientPrescriptions] =
+    useState([]);
+  const [selectedPatientRecords, setSelectedPatientRecords] = useState([]);
   const [error, setError] = useState("");
   const [filterByStatusData, setFilterByStatusData] = useState([]);
   const [filterByDateData, setFilterByDateData] = useState([]);
@@ -14,8 +17,29 @@ const DoctorMyAppointments = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // "asc" or "desc"
   const [sortByField, setSortByField] = useState("datetime"); // Default to sorting by appointment datetime
   const [filterByDateRange, setFilterByDateRange] = useState([]);
-  const [startDate, setStartDate] = useState(''); // Input for start date
-  const [endDate, setEndDate] = useState('');     // Input for end date
+  const [startDate, setStartDate] = useState(""); // Input for start date
+  const [endDate, setEndDate] = useState(""); // Input for end date
+  const [patientUsername, setPatientUsername] = useState(""); // Input for end date
+  const [showAddPrescription, setShowAddPrescription] = useState(false);
+  const [showEditPrescription, setShowEditPrescription] = useState(false);
+
+  const handleAddPrescription = (patient) => {
+    setShowAddPrescription(true);
+    setPatientUsername(patient);
+  };
+
+  const handleCloseAddPrescription = () => {
+    setShowAddPrescription(false);
+  };
+
+  const handleEditPrescription = (patient) => {
+    setShowEditPrescription(true);
+    setPatientUsername(patient);
+  };
+
+  const handleCloseEditPrescription = () => {
+    setShowEditPrescription(false);
+  };
 
   useEffect(() => {
     fetchAppointments();
@@ -27,14 +51,13 @@ const DoctorMyAppointments = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },  
+        },
       });
       const json = await response.json();
       if (response.ok) {
         if (Array.isArray(json)) {
           setAppointmentsData(json);
-        }
-        else {
+        } else {
           setAppointmentsData([]);
         }
 
@@ -51,13 +74,16 @@ const DoctorMyAppointments = () => {
 
   const filterAppointmentsByStatus = async (status) => {
     try {
-      const response = await fetch("/api/doctor/doctor-patients/status-filter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status }),
-      });
+      const response = await fetch(
+        "/api/doctor/doctor-patients/status-filter",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status }),
+        }
+      );
       const json = await response.json();
       if (response.ok) {
         setAppointmentsData([]);
@@ -75,12 +101,15 @@ const DoctorMyAppointments = () => {
 
   const filterAppointmentsByDate = async () => {
     try {
-      const response = await fetch("/api/doctor/doctor-patients/upcoming-date-filter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "/api/doctor/doctor-patients/upcoming-date-filter",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const json = await response.json();
       if (response.ok) {
         setFilterByDateData(json);
@@ -88,7 +117,9 @@ const DoctorMyAppointments = () => {
         setFilterByStatusData([]);
         setFilterByDateRange([]);
       } else {
-        setError("An error occurred while filtering appointments by upcoming date");
+        setError(
+          "An error occurred while filtering appointments by upcoming date"
+        );
       }
     } catch (error) {
       setError("An error occurred while filtering appointments by date");
@@ -119,13 +150,16 @@ const DoctorMyAppointments = () => {
 
   const filterAppointmentsByDateRange = async () => {
     try {
-      const response = await fetch("/api/doctor/doctor-patients/date-range-filter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ startDate, endDate}),
-      });
+      const response = await fetch(
+        "/api/doctor/doctor-patients/date-range-filter",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ startDate, endDate }),
+        }
+      );
       const json = await response.json();
       if (response.ok) {
         setFilterByDateRange(json);
@@ -133,7 +167,9 @@ const DoctorMyAppointments = () => {
         setAppointmentsData([]);
         setFilterByStatusData([]);
       } else {
-        setError("An error occurred while filtering appointments by date range");
+        setError(
+          "An error occurred while filtering appointments by date range"
+        );
       }
     } catch (error) {
       setError("An error occurred while filtering appointments by date range");
@@ -173,22 +209,20 @@ const DoctorMyAppointments = () => {
         setSelectedPatientPrescriptions(json2);
       }
 
-    const response3 = await fetch("/api/doctor/get-health-records",
-      {
+      const response3 = await fetch("/api/doctor/get-health-records", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ patientUsername: appointment.patient }),
+      });
+      const json3 = await response3.json();
+      if (response3.ok) {
+        setSelectedPatientRecords(json3.healthRecords);
       }
-    );
-    const json3 = await response3.json();
-    if (response3.ok) {
-      setSelectedPatientRecords(json3.healthRecords);
+    } catch (error) {
+      setError("An error occurred while fetching patient profile");
     }
-  } catch (error) {
-    setError("An error occurred while fetching patient profile");
-  }
   };
 
   const handleSort = (field) => {
@@ -222,16 +256,58 @@ const DoctorMyAppointments = () => {
 
   return (
     <div className="container">
+      {showAddPrescription && (
+        <div className="modal-overlay">
+          <div className="card">
+            <div className="addPrescription">
+              <AddPrescription patient={patientUsername} />
+            </div>
+            <button
+              className="btn btn-danger"
+              onClick={handleCloseAddPrescription}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showEditPrescription && (
+        <div className="modal-overlay">
+          <div className="card">
+            <div className="editPrescription">
+              <EditPrescription patient={patientUsername} />
+            </div>
+            <button
+              className="btn btn-danger"
+              onClick={handleCloseEditPrescription}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       <h2>My Appointments:</h2>
       <div>
         <label>Start Date:</label>
-        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+        />
       </div>
       <div>
         <label>End Date:</label>
-        <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+        />
       </div>
-      <button className="btn btn-primary" onClick={filterAppointmentsByDateRange}>
+      <button
+        className="btn btn-primary"
+        onClick={filterAppointmentsByDateRange}
+      >
         Filter by Date Range
       </button>
       <input
@@ -250,7 +326,10 @@ const DoctorMyAppointments = () => {
       <button className="btn btn-primary" onClick={filterAppointmentsByDate}>
         Filter by Upcoming Date
       </button>
-      <button className="btn btn-primary" onClick={filterAppointmentsByPastDate}>
+      <button
+        className="btn btn-primary"
+        onClick={filterAppointmentsByPastDate}
+      >
         Filter by Past Date
       </button>
       <button className="btn btn-primary" onClick={fetchAppointments}>
@@ -269,6 +348,7 @@ const DoctorMyAppointments = () => {
               Date and Time {getSortIcon("datetime")}
             </th>
             <th>Status </th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -299,6 +379,24 @@ const DoctorMyAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleAddPrescription(appointment.patient);
+                      }}
+                    >
+                      Add Prescription
+                    </button>
+                    <button
+                      className="btn btn-success"
+                      onClick={(e) => {
+                        handleEditPrescription(appointment.patient);
+                      }}
+                    >
+                      Manage Prescriptions
+                    </button>
+                  </td>
                 </tr>
               ))
             : sortedAppointments.length > 0
@@ -315,23 +413,59 @@ const DoctorMyAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleAddPrescription(appointment.patient);
+                      }}
+                    >
+                      Add Prescription
+                    </button>
+                    <button
+                      className="btn btn-success"
+                      onClick={(e) => {
+                        handleEditPrescription(appointment.patient);
+                      }}
+                    >
+                      Manage Prescriptions
+                    </button>
+                  </td>
                 </tr>
-            ))
+              ))
             : filterByDateRange.length > 0
             ? filterByDateRange.map((appointment) => (
-              <tr
-              key={appointment._id}
-              onClick={() => handleRowClick(appointment)}
-              style={{ cursor: "pointer" }}
-            >
-              <td>{appointment._id}</td>
-              <td>{appointment.patient}</td>
-              <td>
+                <tr
+                  key={appointment._id}
+                  onClick={() => handleRowClick(appointment)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{appointment._id}</td>
+                  <td>{appointment.patient}</td>
+                  <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
-              <td>{appointment.status}</td>
-            </tr>
+                  <td>{appointment.status}</td>
+                  <td>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleAddPrescription(appointment.patient);
+                      }}
+                    >
+                      Add Prescription
+                    </button>
+                    <button
+                      className="btn btn-success"
+                      onClick={(e) => {
+                        handleEditPrescription(appointment.patient);
+                      }}
+                    >
+                      Manage Prescriptions
+                    </button>
+                  </td>
+                </tr>
               ))
             : appointmentsData.map((appointment) => (
                 <tr
@@ -346,6 +480,24 @@ const DoctorMyAppointments = () => {
                     {new Date(appointment.datetime).toLocaleTimeString()}
                   </td>
                   <td>{appointment.status}</td>
+                  <td>
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleAddPrescription(appointment.patient);
+                      }}
+                    >
+                      Add Prescription
+                    </button>
+                    <button
+                      className="btn btn-success"
+                      onClick={(e) => {
+                        handleEditPrescription(appointment.patient);
+                      }}
+                    >
+                      Manage Prescriptions
+                    </button>
+                  </td>
                 </tr>
               ))}
         </tbody>
@@ -385,40 +537,49 @@ const DoctorMyAppointments = () => {
               {selectedPatientProfile.emergency_contact.mobile_number}
               <hr></hr>
               <h5>Patient Health Record:</h5>
-              {selectedPatientRecords.length > 0 && selectedPatientRecords.map((record) => (
-                <div>
-                  <h6>Record Date: {record.date}</h6>
-                  <p>
-                    <strong>Doctor:</strong> {record.doctor}
-                  </p>
-                  <p>
-                    <strong>diagnosis:</strong> {record.diagnosis}
-                  </p>
-                  <p>
-                    <strong>Treatment:</strong> {record.treatment}
-                  </p>
-                  <p>
-                    <strong>Notes:</strong> {record.notes}
-                  </p>
-                </div>
-              ))}
+              {selectedPatientRecords.length > 0 &&
+                selectedPatientRecords.map((record) => (
+                  <div>
+                    <h6>Record Date: {record.date}</h6>
+                    <p>
+                      <strong>Doctor:</strong> {record.doctor}
+                    </p>
+                    <p>
+                      <strong>diagnosis:</strong> {record.diagnosis}
+                    </p>
+                    <p>
+                      <strong>Treatment:</strong> {record.treatment}
+                    </p>
+                    <p>
+                      <strong>Notes:</strong> {record.notes}
+                    </p>
+                  </div>
+                ))}
               <hr></hr>
               <h5>Patient Prescriptions:</h5>
-              {selectedPatientPrescriptions.length > 0 && selectedPatientPrescriptions.map((prescription) => (
-                <div key={prescription._id}>
-                  <h6>Prescription Date: {prescription.date}</h6>
+              {selectedPatientPrescriptions.map((prescription) => (
+                <div className="card" key={prescription._id}>
+                  <h6>
+                    Prescription Date:{" "}
+                    {new Date(prescription.date).toLocaleDateString()}{" "}
+                    {new Date(prescription.date).toLocaleTimeString()}
+                  </h6>
+                  {prescription.medicationInfo.map((medicine, index) => (
+                    <div key={index}>
+                      <p>
+                        <strong>Medicine {index + 1}:</strong>{" "}
+                        {medicine.medicine}
+                      </p>
+                      <p style={{ marginLeft: "20px" }}>
+                        <strong>Dosage:</strong> {medicine.dosage}
+                      </p>
+                      <p style={{ marginLeft: "20px" }}>
+                        <strong>Instructions:</strong> {medicine.instructions}
+                      </p>
+                    </div>
+                  ))}
                   <p>
-                    <strong>Medication:</strong> {prescription.medication}
-                  </p>
-                  <p>
-                    <strong>Dosage:</strong> {prescription.dosage}
-                  </p>
-                  <p>
-                    <strong>Instructions:</strong> {prescription.instructions}
-                  </p>
-                  <p>
-                    <strong>Doctor: </strong>
-                    {prescription.doctorName}
+                    <strong>Doctor:</strong> {prescription.doctorName}
                   </p>
                   {prescription.filled ? (
                     <p>Status: Filled</p>
@@ -427,8 +588,6 @@ const DoctorMyAppointments = () => {
                   )}
                 </div>
               ))}
-
-              
             </p>
             <button className="btn btn-primary" onClick={handleCloseCard}>
               Close
