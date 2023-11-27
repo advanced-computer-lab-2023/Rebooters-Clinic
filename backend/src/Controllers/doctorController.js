@@ -883,8 +883,23 @@ const editPrescription = async (req, res) => {
       .json({ error: "An error occurred while updating Prescription." });
   }
 };
-
+const cancelAppointment = async (req, res) => {
+  try {
+    const {datetime,patientUsername} = req.body;
+    const appointment= await Appointment.findOneAndDelete({datetime});
+    if(appointment.payment=="Paid"){
+    const patient=await Patient.findOne({ username:patientUsername});
+    patient.wallet=appointment.price+patient.wallet;
+    await patient.save();
+    }
+    res.status(200).json({ message: "Appointment removed successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error removing Appointment from the system" });
+  }
+};
 module.exports = {
+  cancelAppointment,
   viewProfile,
   updateProfile,
   viewMyPatients,

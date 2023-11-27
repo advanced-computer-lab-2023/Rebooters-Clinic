@@ -1,6 +1,6 @@
 const express = require('express') //require or import express
 const { requireAuth } = require('../Middleware/authMiddleware');
-const {viewProfile, updateProfile, viewMyPatients , 
+const {cancelAppointment,viewProfile, updateProfile, viewMyPatients , 
     viewAllPatients, searchPatientByName, filterByUpcomingDate, filterByStatus, 
     selectPatient, viewMyAppointments, searchPatientByUsername , filterByDateRange, viewAllDoctors , 
     searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , 
@@ -41,6 +41,7 @@ router.post("/addPrescription", requireAuth ,addPrescription);
 router.post("/removeFromPrescription", requireAuth ,removeFromPrescription);
 router.post("/addToPrescription", requireAuth ,addToPrescription);
 router.post("/editPrescription", requireAuth ,editPrescription);
+router.post("/cancelAppointment", requireAuth ,cancelAppointment);
 
 
 
