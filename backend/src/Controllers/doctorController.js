@@ -586,7 +586,8 @@ const scheduleAppointment = async (req, res) => {
 
     const prescription = new Prescription({
       patientName: patientUsername,
-      doctorName: doctorUsername,
+      doctorUsername: doctorUsername,
+      doctorName : doctor.name,
       date: new Date(dateTime),
     });
     await prescription.save();
@@ -648,16 +649,17 @@ const addHealthRecord = async (req, res) => {
     // Save the updated patient document
     await patient.save();
 
-    const prescription = new Prescription({
+    /*const prescription = new Prescription({
       patientName: patientUsername,
-      doctorName: doctorUsername,
+      doctorUsername: doctorUsername,
+      doctorName: doctor.name,
       date: new Date(),
       medication: medication,
       dosage: dosage,
       instructions: treatment,
       filled: true,
     });
-    await prescription.save();
+    await prescription.save();*/
 
     res.status(201).json({ message: "Health record added successfully." });
   } catch (error) {
@@ -700,7 +702,8 @@ const addPrescription = async (req, res) => {
 
     const prescription = new Prescription({
       patientName: patientUsername,
-      doctorName: doctorUsername,
+      doctorUsername: doctorUsername,
+      doctorName: doctor.name,
       date: new Date(),
       medicationInfo: medicationInfo,
       filled: true,

@@ -32,6 +32,9 @@ const DoctorSelection = () => {
       let endpoint = "";
       if (searchType === "filterDoctor") {
         endpoint = "/api/patient/filterDoctor";
+        if (searchCriteria.date !== ""){
+          searchCriteria.date+= ":00.000+00:00";
+        }
       } else if (searchType === "findDoctor") {
         endpoint = "/api/patient/findDoctor";
       }
@@ -128,7 +131,7 @@ const DoctorSelection = () => {
           <p>Name: {doctorDetails.name}</p>
           <p>Speciality: {doctorDetails.speciality}</p>
           <p>Affiliation (Hospital): {doctorDetails.affiliation}</p>
-          <p>Educational Background: {doctorDetails.education}</p>
+          <p>Educational Background: {doctorDetails.educationalBackground}</p>
           <button onClick={handleCloseDoctorDetails}>Close Details</button>
         </div>
       )}

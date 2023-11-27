@@ -1,31 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 function Prescription() {
   const [prescriptions, setPrescriptions] = useState([]);
-  const [viewMessage, setViewMessage] = useState('');
-  const [filterMessage, setFilterMessage] = useState('');
+  const [viewMessage, setViewMessage] = useState("");
+  const [filterMessage, setFilterMessage] = useState("");
   const [prescriptionDetails, setPrescriptionDetails] = useState(null);
   const [filterParams, setFilterParams] = useState({
-    date: '',
-    doctorName: '',
+    date: "",
+    doctorName: "",
     filled: undefined,
   });
   const [selectedPrescription, setSelectedPrescription] = useState(null);
 
-
   const handleViewPrescriptions = async () => {
-
     try {
-      const response = await fetch('/api/patient/viewAllPrescriptions', {
-        method: 'POST',
+      const response = await fetch("/api/patient/viewAllPrescriptions", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-        }
+          "Content-Type": "application/json",
+        },
       });
 
-
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
 
       const data = await response.json();
@@ -34,16 +31,16 @@ function Prescription() {
         setViewMessage(data.message);
         setPrescriptions([]);
       } else {
-        setViewMessage('');
+        setViewMessage("");
         setPrescriptions(data);
         setSelectedPrescription(null); // Clear selected prescription when viewing all prescriptions
       }
     } catch (error) {
       console.error(error);
-      setViewMessage('An error occurred while fetching prescriptions.');
+      setViewMessage("An error occurred while fetching prescriptions.");
       setPrescriptions([]);
     }
-  }
+  };
 
   const handleClosePrescription = (index) => {
     // Create a copy of the prescriptions array
@@ -74,39 +71,42 @@ function Prescription() {
   };
 
   const handleFilterPrescriptions = async () => {
-    if (!filterParams.date && !filterParams.doctorName && filterParams.filled === undefined) {
-      setFilterMessage('Please fill the text');
+    if (
+      !filterParams.date &&
+      !filterParams.doctorName &&
+      filterParams.filled === undefined
+    ) {
+      setFilterMessage("Please fill the text");
       setPrescriptions([]);
       return;
     }
 
     try {
-      const response = await fetch('/api/patient/filterPrescription', {
-        method: 'POST',
+      const response = await fetch("/api/patient/filterPrescription", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(filterParams),
       });
 
+      const data = await response.json();
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        setFilterMessage(data.error);
       }
-
-      const data = await response.json();
 
       if (data.message) {
         setFilterMessage(data.message);
         setPrescriptions([]);
       } else {
-        setFilterMessage('');
+        setFilterMessage("");
         setPrescriptions(data);
         setSelectedPrescription(null); // Clear selected prescription when filtering
       }
     } catch (error) {
       console.error(error);
-      setFilterMessage('An error occurred while filtering prescriptions.');
+      setFilterMessage("An error occurred while filtering prescriptions.");
       setPrescriptions([]);
     }
   };
@@ -122,18 +122,17 @@ function Prescription() {
     fontWeight: "bold",
   };
 
+  useEffect(() => {
+    handleViewPrescriptions();
+  }, []);
+
   return (
     <div>
-      <h1>Prescription Viewer</h1>
+      <h2>Prescriptions:</h2>
+      <div>{viewMessage && <p style={errorStyle}>{viewMessage}</p>}</div>
       <div>
-        <button onClick={handleViewPrescriptions}>View Prescriptions</button>
-        {viewMessage && (
-          <p style={errorStyle}>{viewMessage}</p>
-        )}
-      </div>
-      <div>
-        <h2>Filter Prescriptions</h2>
-        
+        <h3>Filter Prescriptions</h3>
+
         <input
           type="date"
           name="date"
@@ -152,47 +151,79 @@ function Prescription() {
           name="filled"
           value={filterParams.filled}
           onChange={handleFilterChange}
+          className="btn btn-secondary dropdown-toggle"
         >
           <option value={undefined}>Select Filled Status</option>
           <option value={true}>Filled</option>
           <option value={false}>Unfilled</option>
         </select>
-        <button onClick={handleFilterPrescriptions}>Filter</button>
-        {filterMessage && (
-          <p style={errorStyle}>{filterMessage}</p>
-        )}
+        <button onClick={handleFilterPrescriptions} className="btn btn-primary">Filter</button>
+        <button className="btn btn-danger" onClick={handleViewPrescriptions}>
+          Remove Filters
+        </button>
+        {filterMessage && <p style={errorStyle}>{filterMessage}</p>}
       </div>
       {prescriptions.length > 0 && !prescriptionDetails && (
         <div>
           <ul>
             {prescriptions.map((prescription, index) => (
               <li key={index}>
-                <div>
+                <div className="card">
                   <h3>Prescription {index + 1}</h3>
-                  <p><strong>Doctor:</strong> {prescription.doctorName}</p>
-                  <p><strong>Medication:</strong> {prescription.medication}</p>
-                  <p><strong>Dosage:</strong> {prescription.dosage}</p>
-                  <p><strong>Instructions:</strong> {prescription.instructions}</p>
-                  <p><strong>Filled:</strong> {prescription.filled ? 'Yes' : 'No'}</p>
-                  <p><strong>Date:</strong> {prescription.date}</p>
+                  <p>
+                    <strong>Doctor:</strong> {prescription.doctorName}
+                  </p>
+                  <p>
+                    <strong>Date:</strong>{" "}
+                    {new Date(prescription.date).toLocaleDateString()}{" "}
+                    {new Date(prescription.date).toLocaleTimeString()}{" "}
+                  </p>
                 </div>
-                <button onClick={() => handleShowPrescriptionDetails(prescription)}>Select</button>
-                <button onClick={() => handleClosePrescription(index)}>Close</button>
+                <button
+                  onClick={() => handleShowPrescriptionDetails(prescription)}
+                >
+                  Select
+                </button>
+                <button onClick={() => handleClosePrescription(index)}>
+                  Close
+                </button>
               </li>
             ))}
           </ul>
         </div>
       )}
       {prescriptionDetails && (
-        <div>
+        <div className="card">
           <h3>Prescription Details:</h3>
-          <p><strong>Doctor:</strong> {prescriptionDetails.doctorName}</p>
-          <p><strong>Medication:</strong> {prescriptionDetails.medication}</p>
-          <p><strong>Dosage:</strong> {prescriptionDetails.dosage}</p>
-          <p><strong>Instructions:</strong> {prescriptionDetails.instructions}</p>
-          <p><strong>Filled:</strong> {prescriptionDetails.filled ? 'Yes' : 'No'}</p>
-          <p><strong>Date:</strong> {prescriptionDetails.date}</p>
-          <button onClick={handleClosePrescriptionDetails}>Close Details</button>
+          <p>
+            <strong>Doctor:</strong> {prescriptionDetails.doctorName}
+          </p>
+          {prescriptionDetails.medicationInfo.map((medicine, index) => (
+            <div key={index}>
+              <p>
+                <strong>Medicine {index + 1}:</strong> {medicine.medicine}
+              </p>
+              <p style={{ marginLeft: "20px" }}>
+                <strong>Dosage:</strong> {medicine.dosage}
+              </p>
+              <p style={{ marginLeft: "20px" }}>
+                <strong>Instructions:</strong> {medicine.instructions}
+              </p>
+            </div>
+          ))}
+          <p>
+            <strong>Filled:</strong> {prescriptionDetails.filled ? "Yes" : "No"}
+          </p>
+          <p>
+            <strong>Date:</strong>
+            {new Date(prescriptionDetails.date).toLocaleDateString()}{" "}
+            {new Date(prescriptionDetails.date).toLocaleTimeString()}{" "}
+          </p>
+          <div>
+            <button onClick={handleClosePrescriptionDetails}>
+              Close Details
+            </button>
+          </div>
         </div>
       )}
     </div>

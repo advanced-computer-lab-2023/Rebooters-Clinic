@@ -180,11 +180,6 @@ const PatientHome = () => {
           <ChangePassword userType="patient" />
         </div>
       )}
-      {activeTab === "doctors" && (
-        <div className="card mt-4">
-          <DoctorSelection />
-        </div>
-      )}
       {activeTab === "prescriptions" && (
         <div className="mt-4">
           <Prescription />
@@ -227,22 +222,22 @@ const PatientHome = () => {
       )}
       {activeTab === "subscription" && (
         <div className="mt-4">
-          <ViewHealthPackageOptions />
-        </div>
-      )}
-      {activeTab === "subscription" && (
-        <div className="mt-4">
           <ViewHealthPackage />
         </div>
       )}
       {activeTab === "subscription" && (
         <div className="mt-4">
-          <SubscribeToHealthPackage />
+          <UnsubscribeToHealthPackage />
         </div>
       )}
       {activeTab === "subscription" && (
         <div className="mt-4">
-          <UnsubscribeToHealthPackage />
+          <ViewHealthPackageOptions />
+        </div>
+      )}
+      {activeTab === "subscription" && (
+        <div className="mt-4">
+          <SubscribeToHealthPackage />
         </div>
       )}
     </div>

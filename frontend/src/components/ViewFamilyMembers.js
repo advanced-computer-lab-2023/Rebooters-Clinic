@@ -24,21 +24,17 @@ const ViewFamilyMembers = () => {
     }
   };
 
- 
-  const handleFetchFamilyMembers = () => {
+
+
+  useEffect(() => {
     fetchData();
-  };
+  }, []);
 
   return (
     <div className="card mt-4">
       <div className="card-body">
-        <h2>View Registered Family Members</h2>
+        <h2>Registered Family Members</h2>
         <div className="mb-3">
-          <div className="input-group">
-            <button className="btn btn-primary" onClick={handleFetchFamilyMembers}>
-              Fetch Family Members
-            </button>
-          </div>
         </div>
         <table className="table">
           <thead>

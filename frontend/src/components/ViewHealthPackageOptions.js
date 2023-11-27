@@ -22,17 +22,22 @@ const ViewHealthPackageOptions = () => {
           console.error("Error fetching health package options.");
         }
       } catch (error) {
-        console.error("An error occurred while fetching health package options:", error);
+        console.error(
+          "An error occurred while fetching health package options:",
+          error
+        );
       }
     }
   };
 
   return (
     <div>
+      <h3>Not Subscribed?</h3>
       <button className="btn btn-primary" onClick={handleViewOptions}>
-        {showOptions ? "Hide Health Package Options" : "View Health Package Options"}
+        {showOptions
+          ? "Hide Health Package Options"
+          : "View Health Package Options"}
       </button>
-
       {showOptions && (
         <div>
           <h2>Health Package Options</h2>

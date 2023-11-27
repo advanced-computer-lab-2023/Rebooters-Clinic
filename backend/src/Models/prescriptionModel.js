@@ -4,6 +4,7 @@ const Schema = mongoose.Schema;
 const PrescriptionSchema = new Schema({
   patientName: String,
   doctorName: String,
+  doctorUsername: String,
   medicationInfo: [
     {
       medicine: String,

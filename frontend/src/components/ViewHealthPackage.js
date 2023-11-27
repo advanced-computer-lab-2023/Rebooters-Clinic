@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 
@@ -20,22 +20,26 @@ function ViewHealthPackage() {
         console.error("Error fetching health package information.");
       }
     } catch (error) {
-      console.error("An error occurred while fetching health package information:", error);
+      console.error(
+        "An error occurred while fetching health package information:",
+        error
+      );
     }
   };
 
+  useEffect(() => {
+    handleViewHealthPackage();
+  }, []);
+
   return (
     <div>
-      <Button variant="primary" onClick={handleViewHealthPackage}>
-        {showHealthPackage ? "Hide My Health Package" : "View My Health Package"}
-      </Button>
-
       {showHealthPackage && healthPackage && (
         <Card className="mt-4">
           <Card.Body>
             <Card.Title>Health Package Information</Card.Title>
             <Card.Text>
-              <strong>Status Of Health Package:</strong> {healthPackage.statusOfHealthPackage}
+              <strong>Status Of Health Package:</strong>{" "}
+              {healthPackage.statusOfHealthPackage}
             </Card.Text>
             {healthPackage.statusOfHealthPackage === "Subscribed" && (
               <Card.Text>

@@ -327,9 +327,12 @@ const viewDoctors = async (req, res) => {
 
       return {
         _id: doctor._id,
-        username:doctor.username,
+        username: doctor.username,
         name: doctor.name,
         speciality: doctor.speciality,
+        educationalBackground: doctor.educationalBackground,
+        affiliation: doctor.affiliation,
+        dateOfBirth: doctor.dateOfBirth,
         sessionPrice,
       };
     });
@@ -344,6 +347,8 @@ const viewDoctors = async (req, res) => {
 const findDoctor = async (req, res) => {
   try {
     const { speciality, name } = req.body;
+    const patientUsername = req.cookies.username;
+    const patient = await Patient.findOne({ username: patientUsername });
 
     // Build a query based on provided parameters
     const query = {};
@@ -373,7 +378,35 @@ const findDoctor = async (req, res) => {
     }
 
     // Return the list of matching doctors
-    res.status(200).json(doctors);
+
+    // Calculate session prices for each doctor
+    const doctorsWithSessionPrices = doctors.map((doctor) => {
+      let sessionPrice = doctor.hourlyRate;
+
+      if (patient.healthPackage) {
+        // Apply the discount from the patient's health package
+        sessionPrice =
+          doctor.hourlyRate +
+          doctor.hourlyRate * 0.1 -
+          patient.healthPackage.discountOnSession;
+      } else {
+        // If no health package, calculate session price with clinic's markup only
+        sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
+      }
+      doctor.sessionPrice = sessionPrice;
+      return {
+        _id: doctor._id,
+        username: doctor.username,
+        name: doctor.name,
+        speciality: doctor.speciality,
+        educationalBackground: doctor.educationalBackground,
+        affiliation: doctor.affiliation,
+        dateOfBirth: doctor.dateOfBirth,
+        sessionPrice,
+      };
+    });
+
+    res.status(200).json(doctorsWithSessionPrices);
   } catch (error) {
     console.error(error);
     res
@@ -386,6 +419,8 @@ const findDoctor = async (req, res) => {
 const filterDoctor = async (req, res) => {
   try {
     const { speciality, date } = req.body; // Get speciality, date, and time from the request body
+    const patientUsername = req.cookies.username;
+    const patient = await Patient.findOne({ username: patientUsername });
 
     if (!speciality && !date) {
       return res.status(400).json({
@@ -395,38 +430,136 @@ const filterDoctor = async (req, res) => {
     }
 
     if (speciality && !date) {
-      filteredDoctors = await Doctor.find({
+      let filteredDoctors = await Doctor.find({
         speciality: { $regex: new RegExp(speciality, "i") },
         acceptedContract: true,
       });
-      return res.status(200).json(filteredDoctors);
+
+      // Calculate session prices for each doctor
+      const doctorsWithSessionPrices = filteredDoctors.map((doctor) => {
+        let sessionPrice = doctor.hourlyRate;
+
+        if (patient.healthPackage) {
+          // Apply the discount from the patient's health package
+          sessionPrice =
+            doctor.hourlyRate +
+            doctor.hourlyRate * 0.1 -
+            patient.healthPackage.discountOnSession;
+        } else {
+          // If no health package, calculate session price with clinic's markup only
+          sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
+        }
+        doctor.sessionPrice = sessionPrice;
+        return {
+          _id: doctor._id,
+          username: doctor.username,
+          name: doctor.name,
+          speciality: doctor.speciality,
+          educationalBackground: doctor.educationalBackground,
+          affiliation: doctor.affiliation,
+          dateOfBirth: doctor.dateOfBirth,
+          sessionPrice,
+        };
+      });
+
+      res.status(200).json(doctorsWithSessionPrices);
     } else if (!speciality && date) {
-      const combinedDateTime = new Date(`${date}` + ":00.000+00:00");
-      const appointments = await Appointment.find({
-        datetime: combinedDateTime,
+      const combinedDateTime = new Date(date);
+      const doctors = await Doctor.find();
+      const doctorsWithAvailableSlots = [];
+
+      doctors.forEach((doctor) => {
+        const hasAvailableSlot = doctor.availableSlots.some(
+          (slot) =>
+            new Date(slot.datetime).getTime() === combinedDateTime.getTime() &&
+            slot.reservingPatientUsername === null
+        );
+
+        if (hasAvailableSlot && doctor.acceptedContract) {
+          doctorsWithAvailableSlots.push(doctor);
+        }
       });
-      const doctorsWithAppointments = appointments.map(
-        (appointment) => appointment.doctor
+
+      // Calculate session prices for each doctor
+      const doctorsWithSessionPrices = doctorsWithAvailableSlots.map(
+        (doctor) => {
+          let sessionPrice = doctor.hourlyRate;
+
+          if (patient.healthPackage) {
+            // Apply the discount from the patient's health package
+            sessionPrice =
+              doctor.hourlyRate +
+              doctor.hourlyRate * 0.1 -
+              patient.healthPackage.discountOnSession;
+          } else {
+            // If no health package, calculate session price with clinic's markup only
+            sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
+          }
+          doctor.sessionPrice = sessionPrice;
+          return {
+            _id: doctor._id,
+            username: doctor.username,
+            name: doctor.name,
+            speciality: doctor.speciality,
+            educationalBackground: doctor.educationalBackground,
+            affiliation: doctor.affiliation,
+            dateOfBirth: doctor.dateOfBirth,
+            sessionPrice,
+          };
+        }
       );
-      filteredDoctors = await Doctor.find({
-        username: { $nin: doctorsWithAppointments },
-        acceptedContract: true,
-      });
-      return res.status(200).json(filteredDoctors);
+
+      res.status(200).json(doctorsWithSessionPrices);
     } else if (speciality && date) {
-      const combinedDateTime = new Date(`${date}` + ":00.000+00:00");
-      const appointments = await Appointment.find({
-        datetime: combinedDateTime,
+      const combinedDateTime = new Date(date);
+      const doctors = await Doctor.find();
+      const doctorsWithAvailableSlots = [];
+
+      doctors.forEach((doctor) => {
+        const hasAvailableSlot = doctor.availableSlots.some(
+          (slot) =>
+            new Date(slot.datetime).getTime() === combinedDateTime.getTime() &&
+            slot.reservingPatientUsername === null
+        );
+
+        if (hasAvailableSlot && doctor.acceptedContract) {
+          doctorsWithAvailableSlots.push(doctor.username);
+        }
       });
-      const doctorsWithAppointments = appointments.map(
-        (appointment) => appointment.doctor
-      );
       filteredDoctors = await Doctor.find({
         speciality: { $regex: new RegExp(speciality, "i") },
-        username: { $nin: doctorsWithAppointments },
+        username: { $in: doctorsWithAvailableSlots },
         acceptedContract: true,
       });
-      return res.status(200).json(filteredDoctors);
+
+      // Calculate session prices for each doctor
+      const doctorsWithSessionPrices = filteredDoctors.map((doctor) => {
+        let sessionPrice = doctor.hourlyRate;
+
+        if (patient.healthPackage) {
+          // Apply the discount from the patient's health package
+          sessionPrice =
+            doctor.hourlyRate +
+            doctor.hourlyRate * 0.1 -
+            patient.healthPackage.discountOnSession;
+        } else {
+          // If no health package, calculate session price with clinic's markup only
+          sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
+        }
+        doctor.sessionPrice = sessionPrice;
+        return {
+          _id: doctor._id,
+          username: doctor.username,
+          name: doctor.name,
+          speciality: doctor.speciality,
+          educationalBackground: doctor.educationalBackground,
+          affiliation: doctor.affiliation,
+          dateOfBirth: doctor.dateOfBirth,
+          sessionPrice,
+        };
+      });
+
+      res.status(200).json(doctorsWithSessionPrices);
     } else {
       return res.status(400).json({
         error:
@@ -744,7 +877,6 @@ const subscribeToHealthPackage = async (req, res) => {
 
     healthPackage.price -= healthPackage.price * discount;
 
-
     if (!patient.healthPackage) {
       patient.statusOfHealthPackage = "Subscribed";
       patient.healthPackageCreatedAt = new Date();
@@ -861,10 +993,8 @@ const makeAppointment = async (req, res) => {
       status: "Upcoming",
       price: appointmentPrice,
     });
-    
-    doctor.availableSlots[index].reservingPatientUsername = patientUsername;
 
-  
+    doctor.availableSlots[index].reservingPatientUsername = patientUsername;
 
     await doctor.save();
     await appointment.save();
@@ -901,7 +1031,6 @@ const payForAppointment = async (req, res) => {
     if (!foundAppointment) {
       return res.status(404).json({ error: "Appointment not found." });
     }
-
 
     if (foundAppointment.payment === "Unpaid") {
       const appointmentPrice = foundAppointment.price;
