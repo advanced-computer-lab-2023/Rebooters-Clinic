@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import FollowUpRequest from "./FollowUpRequest";
+import RescheduleAppointment from "./RescheduleAppointment";
 
 const PatientAppointments = () => {
   const [appointmentsData, setAppointmentsData] = useState([]);
@@ -18,7 +20,10 @@ const PatientAppointments = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showPayAppointment, setShowPayAppointment] = useState(false);
   const [chosenAppointment, setChosenAppointment] = useState(null);
-
+  const [followUpRequest, setFollowUpRequest] = useState(false);
+  const [appFollowUp, setAppFollowUp] = useState("");
+  const [showReschedule, setShowReschedule] = useState(false);
+  const [doctor, setDoctor] = useState("");
   const handleToggleFilters = () => {
     setShowFilters(!showFilters);
   };
@@ -57,6 +62,27 @@ const PatientAppointments = () => {
       setPaymentError("An error occurred while fetching appointments");
     }
   };
+  const FollowUp = async (datetime) => {
+    if(datetime.toLocaleString()>new Date().toISOString()){
+    alert('This appointment is upcoming!')
+    }
+    else{
+    setAppFollowUp(datetime.toLocaleString());
+    setFollowUpRequest(true);
+    }
+  }
+  const closeFollowUpRequest = () => {
+    setFollowUpRequest(false);
+  };
+  
+  const closeReschedule = () => {
+    setShowReschedule(false);
+  };
+  const handleRescheduleAppointment  = async (doctor,date) => {
+    setShowReschedule(true);
+    setDoctor(doctor);
+    setAppFollowUp(date)
+  }
 
   const filterAppointmentsByStatus = async (appointmentStatus) => {
     try {
@@ -245,10 +271,40 @@ const PatientAppointments = () => {
   useEffect(() => {
     // Fetch appointments when the component mounts
     fetchAppointments();
-  }, []);
+  }, [appointmentsData]);
 
   return (
     <div className="container">
+      {showReschedule && (
+  <div className="modal-overlay">
+    <div className="card">
+      <div className="scheduleFollowup">
+        <RescheduleAppointment doctorUsername={doctor} dateApp={appFollowUp}/>
+      </div>
+      <button
+        className="btn btn-danger"
+        onClick={closeReschedule}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+       {followUpRequest && (
+  <div className="modal-overlay">
+    <div className="card">
+      <div className="scheduleFollowup">
+        <FollowUpRequest datetimeApp={appFollowUp}/>
+      </div>
+      <button
+        className="btn btn-danger"
+        onClick={closeFollowUpRequest}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
       {showPayAppointment && (
         <div className="modal-overlay">
           <div className="card">
@@ -373,6 +429,7 @@ const PatientAppointments = () => {
             <th>Price</th>
             <th>Payment Status</th>
             <th>Actions</th>
+
           </tr>
         </thead>
         <tbody>
@@ -383,6 +440,7 @@ const PatientAppointments = () => {
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
+                   
                   </td>
                   <td>{appointment.status}</td>
                   <td>{appointment.price}</td>
@@ -399,6 +457,7 @@ const PatientAppointments = () => {
                       </button>
                     )}
                   </td>
+                 
                 </tr>
               ))
             : filterByDateRange.length > 0
@@ -482,6 +541,14 @@ const PatientAppointments = () => {
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
+                    <button 
+                     onClick={
+                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
+                    }
+                    style={{  marginLeft: 'auto',
+                     marginRight: 'auto',
+                     display: 'block' }                  
+                     }>Reschedule</button>
                   </td>
                   <td>{appointment.status}</td>
                   <td>{appointment.price}</td>
@@ -497,6 +564,11 @@ const PatientAppointments = () => {
                         Pay
                       </button>
                     )}
+                     <button 
+                     onClick={
+                      () => FollowUp(appointment.datetime)
+                    }
+                   >Request a Follow-up</button>
                   </td>
                 </tr>
               ))}

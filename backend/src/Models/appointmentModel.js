@@ -6,6 +6,7 @@ const appointmentSchema = new Schema({
     type: String, 
     required: true,
   },
+
   patient: {
     type: String, 
     required: true,
@@ -29,6 +30,10 @@ const appointmentSchema = new Schema({
     enum: ['Paid', 'Unpaid'], 
     default: 'Unpaid',
     
+  },
+  FollowUpRequest:{
+    reason: String,
+    preferredDate: String
   }
 });
 

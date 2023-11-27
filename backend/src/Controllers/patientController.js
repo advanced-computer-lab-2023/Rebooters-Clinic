@@ -1177,8 +1177,46 @@ const deleteMedicalHistory = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+const rescheduleAppointment = async (req, res) => {
+  try {
+   const{datetime,doctorUsername,newdate}=req.body;
+   const appointment = await Appointment.findOne({ datetime,doctor:doctorUsername});
+   appointment.datetime=newdate;
 
+   const doctor = await Doctor.findOne({username:doctorUsername});
+  
+  for(let i=0;i<doctor.availableSlots.length;i++){
+    if(doctor.availableSlots[i].datetime.getTime()==new Date(newdate).getTime()){
+    doctor.availableSlots[i].reservingPatientUsername=req.cookies.username;
+  }
+}
+   appointment.save();
+   doctor.save();
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while rescheduling the appointment." });
+  }
+  
+};
+const requestFollowUp = async (req, res) => {
+  try {
+    const {reason,preferredDate,datetime}=req.body;
+     await Appointment.updateOne(
+      { datetime  },
+      { $set: { FollowUpRequest: {reason,preferredDate}}},
+    );
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while requesting a follow-up." });
+  }
+};
 module.exports = {
+  requestFollowUp,
+  rescheduleAppointment,
   viewMedicalHistory,
   deleteMedicalHistory,
   payForAppointment,
