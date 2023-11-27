@@ -69,7 +69,7 @@ const MedicalHistoryComponent = () => {
 
   return (
     <div>
-      <h2>Medical History</h2>
+      <h2>Upload Medical History</h2>
 
       {/* File Upload */}
       <input
@@ -81,14 +81,14 @@ const MedicalHistoryComponent = () => {
         }}
       />
       <br />
-
+      <hr/>
       {/* List of Files */}
       <ul>
         {files.map((file) => (
           <li key={file.filename}>
             {file.filename}{' '}
-            <button onClick={() => downloadDocument(file.filename)}>Download</button>{' '}
-            <button onClick={() => handleFileDelete(file.filename)}>Delete</button>
+            <button onClick={() => downloadDocument(file.filename)} className="btn btn-primary">Download</button>{' '}
+            <button onClick={() => handleFileDelete(file.filename)} className="btn btn-danger">Delete</button>
           </li>
         ))}
       </ul>

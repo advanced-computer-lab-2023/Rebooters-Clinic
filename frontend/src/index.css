@@ -69,6 +69,19 @@ header a {
   overflow-y: scroll;
 }
 
+.payAppointment {
+  height: 600px;
+  width: 900px;
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.bookAppointment {
+  height: 600px;
+  width: 900px;
+  margin-left: 10px;
+  margin-top: 10px;
+}
 
 
 

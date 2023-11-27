@@ -14,7 +14,7 @@ const TimeSlots = ({}) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({date , time}),
+        body: JSON.stringify({datetime : date}),
       });
       if (response.ok) {
         const data = await response.json();
@@ -38,14 +38,9 @@ const TimeSlots = ({}) => {
       {message && <p>{message}</p>}
       {error && <p>{error}</p>}
       <input
-        type="date"
+        type="datetime-local"
         value={date}
         onChange={(e) => setDate(e.target.value)}
-      />
-      <input
-        type="time"
-        value={time}
-        onChange={(e) => setTime(e.target.value)}
       />
       <button onClick={handleAddSlots}>Add Slots</button>
 

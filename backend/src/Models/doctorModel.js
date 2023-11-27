@@ -1,12 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const AvailableSlotSchema = new Schema({
-  date: {
+  datetime: {
     type: Date,
-    required: true,
-  },
-  time: {
-    type: String,
     required: true,
   },
   reservingPatientUsername: { //this attribute determines which patient reserved which slot. If null, then this slot is available

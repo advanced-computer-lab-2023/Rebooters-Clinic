@@ -18,10 +18,9 @@ import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointme
 import ChangePassword from "../components/ChangePassword";
 import MedicalHistoryComponent from "../components/MedicalHistory";
 
-
-
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
+  const [activeTab, setActiveTab] = useState("home");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,58 +73,178 @@ const PatientHome = () => {
       console.error("Error during logout:", error);
     }
   };
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div className="container">
-      <button onClick={handleLogout} className="btn btn-danger mt-2">
-        Logout
-      </button>
-      <div className="card mt-4">
-        <ChangePassword userType="patient" />
-      </div>
-      <div className="mt-4">
-        <DoctorSelection />
-      </div>
-      <div className="mt-4">
-        <Prescription />
-      </div>
-      <div className="mt-4">
-        <MedicalHistoryComponent />
-      </div>
-
-      <div className="mt-4">
-        <AddFamilyMember />
-      </div>
-      <div className="mt-4">
-        <PatientAppointments />
-      </div>
-
-      <div className="mt-4">
-        <ViewSlotsAndMakeAppointment />
-      </div>
-      <div className="mt-4">
-        <ViewDoctors />
-      </div>
-      <div className="mt-4">
-        <ViewFamilyMembers />
-      </div>
-      <div className="mt-4">
-        <PatientWallet />
-      </div>
-      <div className="mt-4">
-        <PatientHealthRecords />
-      </div>
-      <div className="mt-4">
-        <ViewHealthPackageOptions />
-      </div>
-      <div className="mt-4">
-        <ViewHealthPackage />
-      </div>
-      <div className="mt-4">
-        <SubscribeToHealthPackage />
-      </div>
-      <div className="mt-4">
-        <UnsubscribeToHealthPackage />
-      </div>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav">
+            <li>
+              <button className="nav-link btn btn-link" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+            <li className={`nav-item ${activeTab === "home" ? "active" : ""}`}>
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("home")}
+              >
+                Home
+              </button>
+            </li>
+            <li
+              className={`nav-item ${activeTab === "settings" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("settings")}
+              >
+                Settings
+              </button>
+            </li>
+            <li
+              className={`nav-item ${
+                activeTab === "appointments" ? "active" : ""
+              }`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("appointments")}
+              >
+                Appointments
+              </button>
+            </li>
+            <li
+              className={`nav-item ${
+                activeTab === "prescriptions" ? "active" : ""
+              }`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("prescriptions")}
+              >
+                Prescriptions
+              </button>
+            </li>
+            <li
+              className={`nav-item ${activeTab === "health" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("health")}
+              >
+                Health
+              </button>
+            </li>
+            <li
+              className={`nav-item ${
+                activeTab === "subscription" ? "active" : ""
+              }`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("subscription")}
+              >
+                Subscription
+              </button>
+            </li>
+            <li
+              className={`nav-item ${activeTab === "family" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("family")}
+              >
+                Family
+              </button>
+            </li>
+            <li
+              className={`nav-item ${activeTab === "doctors" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("doctors")}
+              >
+                Doctors
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      {activeTab === "settings" && (
+        <div className="card mt-4">
+          <ChangePassword userType="patient" />
+        </div>
+      )}
+      {activeTab === "doctors" && (
+        <div className="card mt-4">
+          <DoctorSelection />
+        </div>
+      )}
+      {activeTab === "prescriptions" && (
+        <div className="mt-4">
+          <Prescription />
+        </div>
+      )}
+      {activeTab === "health" && (
+        <div className="mt-4">
+          <PatientHealthRecords />
+        </div>
+      )}
+      {activeTab === "health" && (
+        <div className="card mt-4">
+          <MedicalHistoryComponent />
+        </div>
+      )}
+      {activeTab === "family" && (
+        <div className="mt-4">
+          <AddFamilyMember />
+        </div>
+      )}
+      {activeTab === "appointments" && (
+        <div className="card mt-4">
+          <PatientAppointments />
+        </div>
+      )}
+      {activeTab === "doctors" && (
+        <div className="mt-4">
+          <ViewDoctors />
+        </div>
+      )}
+      {activeTab === "family" && (
+        <div className="mt-4">
+          <ViewFamilyMembers />
+        </div>
+      )}
+      {activeTab === "home" && (
+        <div className="mt-4">
+          <PatientWallet />
+        </div>
+      )}
+      {activeTab === "subscription" && (
+        <div className="mt-4">
+          <ViewHealthPackageOptions />
+        </div>
+      )}
+      {activeTab === "subscription" && (
+        <div className="mt-4">
+          <ViewHealthPackage />
+        </div>
+      )}
+      {activeTab === "subscription" && (
+        <div className="mt-4">
+          <SubscribeToHealthPackage />
+        </div>
+      )}
+      {activeTab === "subscription" && (
+        <div className="mt-4">
+          <UnsubscribeToHealthPackage />
+        </div>
+      )}
     </div>
   );
 };

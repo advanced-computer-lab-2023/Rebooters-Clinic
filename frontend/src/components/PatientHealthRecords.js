@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 function PatientHealthRecords() {
-  const [patientUsername, setPatientUsername] = useState("");
   const [patientRecords, setPatientRecords] = useState([]);
   const [error, setError] = useState(null);
-
-  const handleUsernameChange = (e) => {
-    setPatientUsername(e.target.value);
-  };
 
   const fetchPatientHealthRecords = async () => {
     try {
@@ -15,8 +10,7 @@ function PatientHealthRecords() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ patientUsername: patientUsername }),
+        }
       });
 
       if (response.ok) {
@@ -42,10 +36,7 @@ function PatientHealthRecords() {
       <div className="card-body">
         <div className="container">
           <div>
-            <h2>Patient Health Records</h2>
-            <div>
-              <button className="btn btn-primary" onClick={fetchPatientHealthRecords}>View</button>
-            </div>
+            <h2>Health Records</h2>
             {patientRecords.length > 0 &&
               patientRecords.map((record) => (
                 <div>

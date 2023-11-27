@@ -327,6 +327,7 @@ const viewDoctors = async (req, res) => {
 
       return {
         _id: doctor._id,
+        username:doctor.username,
         name: doctor.name,
         speciality: doctor.speciality,
         sessionPrice,
@@ -830,7 +831,7 @@ const viewAvailableDoctorSlots = async (req, res) => {
 const makeAppointment = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
-    const { doctorUsername, chosenSlot } = req.body;
+    const { doctorUsername, chosenSlot, index } = req.body;
 
     const patient = await Patient.findOne({ username: patientUsername });
     const doctor = await Doctor.findOne({
@@ -846,10 +847,7 @@ const makeAppointment = async (req, res) => {
       return res.status(404).json({ error: "Patient not found." });
     }
 
-    //chosenSlot.reservingPatientUsername = patientUsername;
-    const datePart = chosenSlot.date.substring(0, chosenSlot.date.indexOf("T"));
-    const combinedDateTimeString = `${datePart}T${chosenSlot.time}`;
-    const combinedDateTime = new Date(combinedDateTimeString);
+    const combinedDateTime = new Date(chosenSlot.datetime);
 
     appointmentPrice = doctor.hourlyRate;
     if (patient.statusOfHealthPackage === "Subscribed") {
@@ -863,15 +861,10 @@ const makeAppointment = async (req, res) => {
       status: "Upcoming",
       price: appointmentPrice,
     });
+    
+    doctor.availableSlots[index].reservingPatientUsername = patientUsername;
 
-    for (let i = 0; i < doctor.availableSlots.length; i++) {
-      const slot = doctor.availableSlots[i];
-      const date = slot.date.toISOString();
-      if (date === chosenSlot.date && slot.time === chosenSlot.time) {
-        doctor.availableSlots[i].reservingPatientUsername = patientUsername;
-        break;
-      }
-    }
+  
 
     await doctor.save();
     await appointment.save();

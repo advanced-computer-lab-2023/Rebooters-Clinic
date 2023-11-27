@@ -3,25 +3,19 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 
-function ViewSlotsAndMakeAppointment() {
-  const [doctorUsername, setDoctorUsername] = useState("");
+const ViewSlotsAndMakeAppointment = ({ doctor }) => {
+  const [doctorUsername, setDoctorUsername] = useState(doctor);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [index, setIndex] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Fetch available slots when the component mounts
     fetchAvailableSlots();
   }, []);
 
   const fetchAvailableSlots = async () => {
     try {
-      if (!doctorUsername) {
-        console.log("here")
-        return; // Don't fetch slots without a doctor username
-      }
-
-      // Replace this with your API endpoint for fetching available slots
       const response = await fetch("/api/patient/viewAvailableDoctorSlots", {
         method: "POST",
         headers: {
@@ -29,7 +23,6 @@ function ViewSlotsAndMakeAppointment() {
         },
         body: JSON.stringify({ doctorUsername }),
       });
-      console.log("here2")
 
       if (response.ok) {
         const data = await response.json();
@@ -42,8 +35,9 @@ function ViewSlotsAndMakeAppointment() {
     }
   };
 
-  const handleSlotClick = (slot) => {
+  const handleSlotClick = (slot , index) => {
     setSelectedSlot(slot);
+    setIndex(index);
     setShowModal(true);
   };
 
@@ -60,14 +54,14 @@ function ViewSlotsAndMakeAppointment() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ doctorUsername, chosenSlot: selectedSlot }),
+        body: JSON.stringify({ doctorUsername, chosenSlot: selectedSlot, index }),
       });
 
       if (response.ok) {
         // Handle success, e.g., show a success message
         setShowModal(false);
         fetchAvailableSlots(); // Refresh available slots after making an appointment
-        window.location.reload();
+        //window.location.reload();
       } else {
         console.error("Error making an appointment.");
       }
@@ -76,29 +70,32 @@ function ViewSlotsAndMakeAppointment() {
     }
   };
 
-  const handleSubmitUsername = () => {
+  useEffect(() => {
     fetchAvailableSlots();
-  };
+  }, []);
 
   return (
     <div>
-      <h1>Available Slots</h1>
-      <Form.Group>
-        <Form.Label>Doctor's Username:</Form.Label>
-        <Form.Control
-          type="text"
-          value={doctorUsername}
-          onChange={(e) => setDoctorUsername(e.target.value)}
-        />
-      </Form.Group>
-      <Button onClick={handleSubmitUsername}>Submit</Button>
+      <h1>Doctor's Available Slots</h1>
       <ul>
-        {Array.isArray(availableSlots) && availableSlots.map((slot, index) => (
-          <li key={index}>
-            <button onClick={() => handleSlotClick(slot)}>Click to book</button>
-            {`${slot.date} ${slot.time}`}
-          </li>
-        ))}
+        {Array.isArray(availableSlots) && availableSlots.length > 0 ? (
+          <ul>
+            {availableSlots.map((slot, index) => (
+              <li key={index}>
+                <button
+                  onClick={() => handleSlotClick(slot , index)}
+                  className="btn btn-primary"
+                >
+                  Click to book
+                </button>
+                {new Date(slot.datetime).toLocaleDateString()}{" "}
+                {new Date(slot.datetime).toLocaleTimeString()}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No available slots at the moment.</p>
+        )}
       </ul>
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
@@ -107,15 +104,17 @@ function ViewSlotsAndMakeAppointment() {
         <Modal.Body>
           {selectedSlot && (
             <div>
-              <p>Date: {selectedSlot.date}</p>
-              <p>Time: {selectedSlot.time}</p>
-              <Button onClick={handleMakeAppointment}>Confirm Appointment</Button>
+              <p>Date: {new Date(selectedSlot.datetime).toLocaleDateString()} </p>
+              <p>Time: {new Date(selectedSlot.datetime).toLocaleTimeString()}</p>
+              <Button onClick={handleMakeAppointment}>
+                Confirm Appointment
+              </Button>
             </div>
           )}
         </Modal.Body>
       </Modal>
     </div>
   );
-}
+};
 
 export default ViewSlotsAndMakeAppointment;
