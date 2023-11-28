@@ -20,6 +20,7 @@ function Admin() {
   const [showDoctorRequests, setShowDoctorRequests] = useState(false);
   const [packages, setPackages] = useState([]);
   const [showPackages, setShowPackages] = useState(false);
+  const [activeTab, setActiveTab] = useState("home");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -211,12 +212,87 @@ function Admin() {
       }
     }
   };
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
 
   return (
     <div className="container mt-4">
-      <button onClick={handleLogout} className="btn btn-danger mt-2">
-        Logout
-      </button>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav">
+            <li>
+              <button className="nav-link btn btn-link" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+            <li className={`nav-item ${activeTab === "home" ? "active" : ""}`}>
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("home")}
+              >
+                Home
+              </button>
+            </li>
+            <li
+              className={`nav-item ${activeTab === "settings" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("settings")}
+              >
+                Settings
+              </button>
+            </li>
+            <li
+              className={`nav-item ${
+                activeTab === "administrators" ? "active" : ""
+              }`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("administrators")}
+              >
+                Administrators
+              </button>
+            </li>
+            <li
+              className={`nav-item ${
+                activeTab === "patients" ? "active" : ""
+              }`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("patients")}
+              >
+                Patients
+              </button>
+            </li>
+            <li
+              className={`nav-item ${
+                activeTab === "healthpackages" ? "active" : ""
+              }`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("healthpackages")}
+              >
+                Health Packages
+              </button>
+            </li>
+            <li
+              className={`nav-item ${activeTab === "usermanager" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("usermanager")}
+              >
+                User Manager
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
       <h1 className="mb-4">Administrator Dashboard</h1>
       {submissionStatus === "success" && (
         <div className="alert alert-success">{message}</div>
@@ -224,9 +300,11 @@ function Admin() {
       {submissionStatus === "error" && (
         <div className="alert alert-danger">{message}</div>
       )}
+      {activeTab === "settings" && (
       <div className="card mt-4">
         <ChangePassword userType="administrator" />
-      </div>
+      </div>)}
+      {activeTab === "administrators" && (
       <div className="mb-3">
         <h2>Add Administrator</h2>
         <input
@@ -253,8 +331,9 @@ function Admin() {
         <button className="btn btn-primary" onClick={addAdministrator}>
           Add Administrator
         </button>
-      </div>
+      </div>)}
 
+      {activeTab === "usermanager" && (
       <div className="mt-4">
         <h2>Doctor/Patient/Admin to remove</h2>
         <div className="mb-3">
@@ -272,7 +351,8 @@ function Admin() {
             Remove Doctor/Patient/Admin
           </button>
         </div>
-      </div>
+      </div>)}
+      {activeTab === "usermanager" && (
       <div className="mt-4">
         <h2>New Doctor Requests</h2>
         <button className="btn btn-primary" onClick={toggleDoctorRequests}>
@@ -364,14 +444,20 @@ function Admin() {
             </tbody>
           </table>
         )}
-      </div>
-      <br/>
+      </div>)}
+      <br />
+      {activeTab === "healthpackages" && (
       <div className="card">
-        <div><button className="btn btn-primary" onClick={handleViewHealthPackages}>
-          {showPackages
-            ? "Hide Health Package Options"
-            : "View Health Package Options"}
-        </button></div>
+        <div>
+          <button
+            className="btn btn-primary"
+            onClick={handleViewHealthPackages}
+          >
+            {showPackages
+              ? "Hide Health Package Options"
+              : "View Health Package Options"}
+          </button>
+        </div>
 
         {showPackages && (
           <div>
@@ -391,19 +477,23 @@ function Admin() {
             </ul>
           </div>
         )}
-      </div>
+      </div>)}
+      {activeTab === "healthpackages" && (
       <div className="mt-4">
         <AddHealthPackage />
-      </div>
+      </div>)}
+      {activeTab === "healthpackages" && (
       <div className="mt-4">
         <EditHealthPackage />
-      </div>
+      </div>)}
+      {activeTab === "healthpackages" && (
       <div className="mt-4">
         <DeleteHealthPackage />
-      </div>
+      </div>)}
+      {activeTab === "patients" && (
       <div className="mt-4">
         <ViewAllPatients />
-      </div>
+      </div>)}
     </div>
   );
 }
