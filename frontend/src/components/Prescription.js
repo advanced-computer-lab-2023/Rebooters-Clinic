@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { saveAs } from 'file-saver';
+import { Viewer, Document, Page, Text, View, PDFDownloadLink } from '@react-pdf-viewer/core';
+import jsPDF from 'jspdf';
 
 function Prescription() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -41,8 +44,7 @@ function Prescription() {
       setPrescriptions([]);
     }
   };
-
-  const handleClosePrescription = (index) => {
+    const handleClosePrescription = (index) => {
     // Create a copy of the prescriptions array
     const updatedPrescriptions = [...prescriptions];
 
@@ -70,6 +72,37 @@ function Prescription() {
     });
   };
 
+  const handleDownloadPDF = async () => {
+    if (!prescriptionDetails) {
+      return;
+    }
+  
+    try {
+      // Create a new jsPDF instance
+      const pdf = new jsPDF();
+  
+      // Add content to the PDF
+      pdf.text(`Prescription Details:
+  Doctor: ${prescriptionDetails.doctorName}
+  Patient: ${prescriptionDetails.patientName}
+  Date: ${new Date(prescriptionDetails.date).toLocaleString()}
+  Filled: ${prescriptionDetails.filled ? "Yes" : "No"}`, 10, 10);
+  
+      prescriptionDetails.medicationInfo.forEach((med, index) => {
+        const yOffset = 50 + index * 20;
+        pdf.text(`Medicine ${index + 1}:
+  - Name: ${med.medicine}
+  - Dosage: ${med.dosage}
+  - Instructions: ${med.instructions}`, 10, yOffset);
+      });
+  
+      // Save the PDF
+      pdf.save('prescription_details.pdf');
+    } catch (error) {
+      console.error(error);
+      // Handle the error, e.g., display an error message to the user
+    }
+  };
   const handleFilterPrescriptions = async () => {
     if (
       !filterParams.date &&
@@ -222,6 +255,9 @@ function Prescription() {
           <div>
             <button onClick={handleClosePrescriptionDetails}>
               Close Details
+            </button>
+            <button onClick={handleDownloadPDF}>
+              Download PDF
             </button>
           </div>
         </div>

@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor pa
 const { logout, changePassword } = require("./authController");
 const { createToken } = require("./authController");
 const maxAge = 3 * 24 * 60 * 60;
+const nodemailer = require('nodemailer');
 
 //i put these here also instead of creating a model of familyMember
 const mongoose = require("mongoose");
@@ -1005,6 +1006,40 @@ const makeAppointment = async (req, res) => {
       date: combinedDateTime,
     });
     await prescription.save();
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+
+    // Email content for the patient
+    const patientEmailOptions = {
+      from: "Rebooters",
+      to: patient.email,
+      subject: 'Appointment Confirmation',
+      text: `Dear ${patientUsername},\n\nYour appointment with Dr. ${doctorUsername} is confirmed on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Email content for the doctor
+    const doctorEmailOptions = {
+      from: "Rebooters",
+      to: doctor.email,
+      subject: 'New Appointment',
+      text: `Dear Dr. ${doctorUsername},\n\nYou have a new appointment with ${patientUsername} on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Send emails
+    await transporter.sendMail(patientEmailOptions);
+    await transporter.sendMail(doctorEmailOptions);
+
+
+
+
 
     res
       .status(200)
