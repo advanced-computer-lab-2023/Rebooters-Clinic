@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom"; // Import Link for navigation
@@ -18,6 +17,7 @@ import UnsubscribeToHealthPackage from "../components/UnsubscribeToHealthPackage
 import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointment";
 import ChangePassword from "../components/ChangePassword";
 import MedicalHistoryComponent from "../components/MedicalHistory";
+import ViewFamilyHealthPackage from "../components/ViewFamilyHealthPackage";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -170,7 +170,7 @@ const PatientHome = () => {
                 className="nav-link btn btn-link"
                 onClick={() => handleTabClick("doctors")}
               >
-                Doctors
+                View Doctors/Reserve
               </button>
             </li>
           </ul>
@@ -224,6 +224,11 @@ const PatientHome = () => {
       {activeTab === "subscription" && (
         <div className="mt-4">
           <ViewHealthPackage />
+        </div>
+      )}
+      {activeTab === "subscription" && (
+        <div className="mt-4">
+          <ViewFamilyHealthPackage />
         </div>
       )}
       {activeTab === "subscription" && (

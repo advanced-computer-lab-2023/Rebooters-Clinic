@@ -9,6 +9,8 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [index, setIndex] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState("");
+  const [familyMembers, setFamilyMembers] = useState([]);
 
   useEffect(() => {
     fetchAvailableSlots();
@@ -35,7 +37,7 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
     }
   };
 
-  const handleSlotClick = (slot , index) => {
+  const handleSlotClick = (slot, index) => {
     setSelectedSlot(slot);
     setIndex(index);
     setShowModal(true);
@@ -54,7 +56,12 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ doctorUsername, chosenSlot: selectedSlot, index }),
+        body: JSON.stringify({
+          doctorUsername,
+          chosenSlot: selectedSlot,
+          index,
+          reservingUser: selectedFamilyMember,
+        }),
       });
 
       if (response.ok) {
@@ -69,6 +76,29 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
       console.error("An error occurred while making an appointment:", error);
     }
   };
+  const handleViewFamilyMembers = async () => {
+    try {
+      const response = await fetch("/api/patient/viewRegisteredFamilyMembers", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFamilyMembers(data);
+      } else {
+        console.error("Error fetching registered family members.");
+      }
+    } catch (error) {
+      console.error(
+        "An error occurred while fetching registered family members:",
+        error
+      );
+    }
+  };
+
+  useEffect(() => {
+    handleViewFamilyMembers();
+  }, []);
 
   useEffect(() => {
     fetchAvailableSlots();
@@ -83,7 +113,7 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
             {availableSlots.map((slot, index) => (
               <li key={index}>
                 <button
-                  onClick={() => handleSlotClick(slot , index)}
+                  onClick={() => handleSlotClick(slot, index)}
                   className="btn btn-primary"
                 >
                   Click to book
@@ -101,11 +131,31 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
         <Modal.Header closeButton>
           <Modal.Title>Make Appointment</Modal.Title>
         </Modal.Header>
+        <Form.Group>
+            <Form.Label>Reserve for: (Myself/Family Member)</Form.Label>
+            <Form.Control
+              as="select"
+              value={selectedFamilyMember}
+              onChange={(e) => setSelectedFamilyMember(e.target.value)}
+            >
+              <option value="">...</option>
+              <option value="myself">Myself</option>
+              {familyMembers.map((familyMember) => (
+                <option value={familyMember.username}>
+                  {`Family Member: ${familyMember.username}`}
+                </option>
+              ))}
+            </Form.Control>
+          </Form.Group>
         <Modal.Body>
           {selectedSlot && (
             <div>
-              <p>Date: {new Date(selectedSlot.datetime).toLocaleDateString()} </p>
-              <p>Time: {new Date(selectedSlot.datetime).toLocaleTimeString()}</p>
+              <p>
+                Date: {new Date(selectedSlot.datetime).toLocaleDateString()}{" "}
+              </p>
+              <p>
+                Time: {new Date(selectedSlot.datetime).toLocaleTimeString()}
+              </p>
               <Button onClick={handleMakeAppointment}>
                 Confirm Appointment
               </Button>

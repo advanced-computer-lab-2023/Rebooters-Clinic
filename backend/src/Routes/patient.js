@@ -6,7 +6,7 @@ const {requestFollowUp,rescheduleAppointment,viewAvailableDoctorSlots, unsubscri
     createPrescription,viewAllPrescriptions, selectDoctor,filterPrescriptions, addMedicalHistory,
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
     viewMyAppointments, viewWallet , filterByPastDate , viewMedicalHistory, deleteMedicalHistory,
-    filterByUpcomingDate , viewHealthRecords, makeAppointment,
+    filterByUpcomingDate , viewHealthRecords, makeAppointment, viewFamilyMembersHealthPackages, viewFamilyAppointments,
      logout, changePassword} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 
@@ -99,7 +99,9 @@ router.post('/requestFollowUp', requireAuth, requestFollowUp);
 
 router.post('/rescheduleAppointment', requireAuth, rescheduleAppointment);
 
+router.get("/viewFamilyMembersHealthPackages", requireAuth, viewFamilyMembersHealthPackages);
 
+router.post('/viewFamilyAppointments', requireAuth, viewFamilyAppointments);
 
 
 module.exports = router //we need to export that router at the end so that server.js can access it

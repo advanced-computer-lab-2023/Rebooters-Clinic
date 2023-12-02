@@ -8,6 +8,8 @@ const SubscribeToHealthPackage = () => {
   const [paymentMessage, setPaymentMessage] = useState("");
   const [paymentError, setPaymentError] = useState("");
   const [packages, setPackages] = useState([]);
+  const [selectedFamilyMember, setSelectedFamilyMember] = useState("");
+  const [familyMembers, setFamilyMembers] = useState([]);
 
   const handlePackageSelection = (event) => {
     setSelectedPackage(event.target.value);
@@ -15,6 +17,26 @@ const SubscribeToHealthPackage = () => {
 
   const handlePaymentSelection = (event) => {
     setSelectedPaymentMethod(event.target.value);
+  };
+
+  const handleViewFamilyMembers = async () => {
+    try {
+      const response = await fetch("/api/patient/viewRegisteredFamilyMembers", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setFamilyMembers(data);
+      } else {
+        console.error("Error fetching registered family members.");
+      }
+    } catch (error) {
+      console.error(
+        "An error occurred while fetching registered family members:",
+        error
+      );
+    }
   };
 
   const handleSubscribeAndPay = async () => {
@@ -50,6 +72,7 @@ const SubscribeToHealthPackage = () => {
               },
               body: JSON.stringify({
                 packageName: selectedPackage,
+                subscribingUser: selectedFamilyMember,
               }),
             }
           );
@@ -69,6 +92,7 @@ const SubscribeToHealthPackage = () => {
               },
               body: JSON.stringify({
                 packageName: selectedPackage,
+                subscribingUser: selectedFamilyMember,
               }),
             }
           );
@@ -132,6 +156,10 @@ const SubscribeToHealthPackage = () => {
     handleViewPackages();
   }, []);
 
+  useEffect(() => {
+    handleViewFamilyMembers();
+  }, []);
+
   return (
     <div>
       <h1>Health Package Subscription</h1>
@@ -145,6 +173,22 @@ const SubscribeToHealthPackage = () => {
           <option value="">Select Health Package</option>
           {packages.map((packageOption) => (
             <option value={packageOption.name}>{packageOption.name}</option>
+          ))}
+        </Form.Control>
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>Subscription for: (Myself/Family Member)</Form.Label>
+        <Form.Control
+          as="select"
+          value={selectedFamilyMember}
+          onChange={(e) => setSelectedFamilyMember(e.target.value)}
+        >
+          <option value="">...</option>
+          <option value="myself">Myself</option>
+          {familyMembers.map((familyMember) => (
+            <option value={familyMember.username}>
+              {`Family Member: ${familyMember.username}`}
+            </option>
           ))}
         </Form.Control>
       </Form.Group>

@@ -833,13 +833,74 @@ const viewHealthPackage = async (req, res) => {
   }
 };
 
+const viewFamilyMembersHealthPackages = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    // Initialize response object
+    const familyMembersHealthPackages = [];
+
+    // Loop through family members
+    for (const familyMember of patient.familyMembers) {
+      let familyMemberPatient = await Patient.findOne({ username: familyMember.username });
+      const familyMemberResponse = {
+        familyMemberUsername: familyMemberPatient.username,
+        statusOfHealthPackage: familyMemberPatient.statusOfHealthPackage,
+      };
+
+      if (familyMemberPatient.statusOfHealthPackage === "Subscribed") {
+        // Calculate the current date
+        const currentDate = new Date();
+
+        // Calculate the renewal date by adding 1 year to the MongoDB-generated 'createdAt' date
+        const renewalDate = new Date(familyMemberPatient.healthPackageCreatedAt);
+        renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+
+        // Calculate the remaining time in months and days
+        const monthsRemaining = differenceInMonths(renewalDate, currentDate);
+        renewalDate.setMonth(renewalDate.getMonth() - monthsRemaining); // Subtract months from the renewalDate
+        const daysRemaining = differenceInDays(renewalDate, currentDate);
+
+        // Create a human-readable string for remaining time
+        familyMemberResponse.timeShown = `${monthsRemaining} months and ${daysRemaining} days`;
+      }
+
+      if (familyMemberPatient.statusOfHealthPackage === "Cancelled") {
+        familyMemberResponse.timeShown = `Cancelled at ${familyMemberPatient.healthPackageCreatedAt}`;
+      }
+
+      if (familyMemberPatient.healthPackage) {
+        familyMemberResponse.healthPackage = familyMemberPatient.healthPackage;
+      }
+
+      familyMembersHealthPackages.push(familyMemberResponse);
+    }
+
+    res.status(200).json(familyMembersHealthPackages);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching family members' health packages" });
+  }
+};
+
+
 const subscribeToHealthPackage = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
-    const { packageName } = req.body;
+    const { packageName, subscribingUser } = req.body;
 
-    // Find the patient by name
-    const patient = await Patient.findOne({ username: patientUsername });
+    let patient;
+    if (subscribingUser !== "myself"){
+      patient = await Patient.findOne({ username: subscribingUser });
+    }
+    else {
+      patient = await Patient.findOne({ username: patientUsername });
+
+    }
 
     if (!packageName) {
       return res
@@ -899,9 +960,16 @@ const subscribeToHealthPackage = async (req, res) => {
 const unsubscribeToHealthPackage = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
+    const { unsubscribingUser } = req.body;
 
-    // Find the patient by name
-    const patient = await Patient.findOne({ username: patientUsername });
+    let patient;
+    if (unsubscribingUser !== "myself"){
+      patient = await Patient.findOne({ username: unsubscribingUser });
+    }
+    else {
+      patient = await Patient.findOne({ username: patientUsername });
+
+    }
 
     if (!patient) {
       return res.status(404).json({ error: "Patient not found." });
@@ -964,9 +1032,17 @@ const viewAvailableDoctorSlots = async (req, res) => {
 const makeAppointment = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
-    const { doctorUsername, chosenSlot, index } = req.body;
+    const { doctorUsername, chosenSlot, index, reservingUser } = req.body;
 
-    const patient = await Patient.findOne({ username: patientUsername });
+    let patient;
+    if (reservingUser !== "myself"){
+      patient = await Patient.findOne({ username: reservingUser });
+    }
+    else {
+      patient = await Patient.findOne({ username: patientUsername });
+
+    }
+
     const doctor = await Doctor.findOne({
       username: doctorUsername,
       acceptedContract: true,
@@ -989,19 +1065,19 @@ const makeAppointment = async (req, res) => {
     }
     const appointment = new Appointment({
       doctor: doctorUsername,
-      patient: patientUsername,
+      patient: patient.username,
       datetime: combinedDateTime,
       status: "Upcoming",
       price: appointmentPrice,
     });
 
-    doctor.availableSlots[index].reservingPatientUsername = patientUsername;
+    doctor.availableSlots[index].reservingPatientUsername = patient.username;
 
     await doctor.save();
     await appointment.save();
 
     const prescription = new Prescription({
-      patientName: patientUsername,
+      patientName: patient.username,
       doctorName: doctorUsername,
       date: combinedDateTime,
     });
@@ -1022,7 +1098,7 @@ const makeAppointment = async (req, res) => {
       from: "Rebooters",
       to: patient.email,
       subject: 'Appointment Confirmation',
-      text: `Dear ${patientUsername},\n\nYour appointment with Dr. ${doctorUsername} is confirmed on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
+      text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} is confirmed on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
     };
 
     // Email content for the doctor
@@ -1030,7 +1106,7 @@ const makeAppointment = async (req, res) => {
       from: "Rebooters",
       to: doctor.email,
       subject: 'New Appointment',
-      text: `Dear Dr. ${doctorUsername},\n\nYou have a new appointment with ${patientUsername} on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
+      text: `Dear Dr. ${doctorUsername},\n\nYou have a new appointment with ${patient.username} on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
     };
 
     // Send emails
@@ -1249,6 +1325,36 @@ const requestFollowUp = async (req, res) => {
       .json({ error: "An error occurred while requesting a follow-up." });
   }
 };
+
+const viewFamilyAppointments = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+
+    // Fetch the patient and their family members
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    const familyMembers = patient.familyMembers;
+
+    // Fetch appointments for each family member
+    const familyAppointments = [];
+    for (const familyMember of familyMembers) {
+      const appointments = await Appointment.find({ patient: familyMember.username });
+      familyAppointments.push({ appointments });
+    }
+        const flattenedAppointments = familyAppointments.reduce(
+      (acc, family) => [...acc, ...family.appointments],
+      []
+    );
+
+    res.status(200).json(flattenedAppointments);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while fetching family appointments" });
+  }
+};
+
 module.exports = {
   requestFollowUp,
   rescheduleAppointment,
@@ -1282,4 +1388,6 @@ module.exports = {
   logout,
   changePassword,
   addMedicalHistory,
+  viewFamilyMembersHealthPackages,
+  viewFamilyAppointments,
 };
