@@ -79,7 +79,7 @@ const DoctorMyAppointments = () => {
 
   useEffect(() => {
     fetchAppointments();
-  }, [appointmentsData]);
+  }, []);
 
   const fetchAppointments = async () => {
     try {

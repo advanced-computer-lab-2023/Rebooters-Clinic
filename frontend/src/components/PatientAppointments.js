@@ -271,7 +271,7 @@ const PatientAppointments = () => {
   useEffect(() => {
     // Fetch appointments when the component mounts
     fetchAppointments();
-  }, [appointmentsData]);
+  }, []);
 
   return (
     <div className="container">
