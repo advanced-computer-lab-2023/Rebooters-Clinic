@@ -18,6 +18,7 @@ import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointme
 import ChangePassword from "../components/ChangePassword";
 import MedicalHistoryComponent from "../components/MedicalHistory";
 import ViewFamilyHealthPackage from "../components/ViewFamilyHealthPackage";
+import PatientFamilyAppointments from "../components/PatientFamilyAppointments";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -204,6 +205,11 @@ const PatientHome = () => {
       {activeTab === "appointments" && (
         <div className="card mt-4">
           <PatientAppointments />
+        </div>
+      )}
+            {activeTab === "appointments" && (
+        <div className="card mt-4">
+          <PatientFamilyAppointments />
         </div>
       )}
       {activeTab === "doctors" && (

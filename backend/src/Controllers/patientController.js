@@ -228,10 +228,16 @@ const viewRegisteredFamilyMembers = async (req, res) => {
 const filterAppointmentsByDate = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
-    const { startDate, endDate } = req.body;
+    const { startDate, endDate , familyUsername } = req.body;
 
-    // Find the patient by name
-    const patient = await Patient.findOne({ username: patientUsername });
+    let patient;
+    if (familyUsername !== "" && familyUsername !== undefined){
+      patient = await Patient.findOne({ username: familyUsername });
+    }
+    else {
+      patient = await Patient.findOne({ username: patientUsername });
+
+    }
 
     if (!patient) {
       return res.status(404).json({ error: "Patient not found." });
@@ -239,7 +245,7 @@ const filterAppointmentsByDate = async (req, res) => {
 
     // Find all appointments for the patient between the specified dates
     const appointments = await Appointment.find({
-      patient: patientUsername,
+      patient: patient.username,
       datetime: {
         $gte: new Date(startDate).setHours(0, 0, 0, 0), // Greater than or equal to the start date
         $lte: new Date(endDate).setHours(23, 59, 59, 999), // Less than or equal to the end date
@@ -264,10 +270,16 @@ const filterAppointmentsByDate = async (req, res) => {
 const filterAppointmentsByStatus = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
-    const { appointmentStatus } = req.body;
+    const { appointmentStatus, familyUsername } = req.body;
 
-    // Find the patient by name
-    const patient = await Patient.findOne({ username: patientUsername });
+    let patient;
+    if (familyUsername !== "" && familyUsername !== undefined){
+      patient = await Patient.findOne({ username: familyUsername });
+    }
+    else {
+      patient = await Patient.findOne({ username: patientUsername });
+
+    }
 
     if (!patient) {
       return res.status(404).json({ error: "Patient not found." });
@@ -275,7 +287,7 @@ const filterAppointmentsByStatus = async (req, res) => {
 
     // Find all appointments for the patient with the specified status
     const appointments = await Appointment.find({
-      patient: patientUsername,
+      patient: patient.username,
       $expr: {
         $eq: [{ $toLower: "$status" }, appointmentStatus.toLowerCase()],
       },
@@ -707,9 +719,19 @@ const viewWallet = async (req, res) => {
 const filterByPastDate = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
+    const { familyUsername } = req.body;
+
+    let patient;
+    if (familyUsername !== "" && familyUsername !== undefined){
+      patient = await Patient.findOne({ username: familyUsername });
+    }
+    else {
+      patient = await Patient.findOne({ username: patientUsername });
+
+    }
     const currentDateTime = new Date();
     const pastAppointments = await Appointment.find({
-      patient: patientUsername,
+      patient: patient.username,
     });
 
     const filteredAppointments = pastAppointments.filter((appointment) => {
@@ -734,9 +756,19 @@ const filterByPastDate = async (req, res) => {
 const filterByUpcomingDate = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
+    const { familyUsername } = req.body;
+
+    let patient;
+    if (familyUsername !== "" && familyUsername !== undefined){
+      patient = await Patient.findOne({ username: familyUsername });
+    }
+    else {
+      patient = await Patient.findOne({ username: patientUsername });
+
+    }
     const currentDateTime = new Date();
     const upcomingAppointments = await Appointment.find({
-      patient: patientUsername,
+      patient: patient.username,
     });
     const filteredAppointments = upcomingAppointments.filter((appointment) => {
       const appointmentDateTime = new Date(appointment.datetime);
@@ -1329,6 +1361,16 @@ const requestFollowUp = async (req, res) => {
 const viewFamilyAppointments = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
+    const { familyUsername } = req.body; //view for a specific family user if its not empty string
+
+    if (familyUsername !== ""){
+      const patient = await Patient.findOne({ username: familyUsername });
+      if (!patient) {
+        return res.status(404).json({ error: "Patient not found" });
+      }
+      const FamilyAppointments = await Appointment.find({ patient: familyUsername });
+      return res.status(200).json(FamilyAppointments);
+    }
 
     // Fetch the patient and their family members
     const patient = await Patient.findOne({ username: patientUsername });
