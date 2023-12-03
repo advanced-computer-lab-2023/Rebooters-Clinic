@@ -87,6 +87,7 @@ const PatientSchema = new Schema({
     type: String,
     required: true,
   },
+  deliveryAddresses:[String],
   dateOfBirth: {
     type: Date,
     required: true,
@@ -105,6 +106,7 @@ const PatientSchema = new Schema({
     lastName: String,
     mobile_number: String
     },
+    selectedDoctors: [String],
 
 
   healthPackage: { // Add patient's health package
@@ -112,6 +114,28 @@ const PatientSchema = new Schema({
     default: null,
   },
   familyMembers: [FamilyMemberSchema],
+  cart: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      price: {
+        type: Number,
+        required: true,
+      },
+      quantity: {
+        type: Number,
+        required: true,
+      },
+    },
+  ],
+orders: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order',
+    },
+  ],
 
   wallet: {
     type: Number,

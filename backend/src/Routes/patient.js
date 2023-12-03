@@ -7,7 +7,7 @@ const {requestFollowUp,rescheduleAppointment,viewAvailableDoctorSlots, unsubscri
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
     viewMyAppointments, viewWallet , filterByPastDate , viewMedicalHistory, deleteMedicalHistory,
     filterByUpcomingDate , viewHealthRecords, makeAppointment, viewFamilyMembersHealthPackages, viewFamilyAppointments,
-     logout, changePassword} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
+     logout, changePassword,getAvailableDoctors} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 
 const Patient = require('../Models/patientModel'); 
@@ -102,6 +102,8 @@ router.post('/rescheduleAppointment', requireAuth, rescheduleAppointment);
 router.get("/viewFamilyMembersHealthPackages", requireAuth, viewFamilyMembersHealthPackages);
 
 router.post('/viewFamilyAppointments', requireAuth, viewFamilyAppointments);
+
+router.get("/getAvailableDoctors",getAvailableDoctors);
 
 
 module.exports = router //we need to export that router at the end so that server.js can access it
