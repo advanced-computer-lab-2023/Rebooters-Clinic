@@ -19,9 +19,16 @@ const storeItems = new Map([
   [2, { priceInCents: 20000, name: "Learn CSS Today" }],
 ]); //database json file
 
+const corsOptions = {
+  origin: ['http://localhost:3000', 'http://localhost:8000'], // Update with the actual URLs of your frontend and backend
+  credentials: true,
+};
+
+
 //App variables
 const app = express();
-const port = process.env.PORT || "8000";
+const port = process.env.PORT || "9000";
+app.use(cors(corsOptions));
 
 
 

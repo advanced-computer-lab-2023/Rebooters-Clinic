@@ -6,6 +6,8 @@ const Contract = require("../Models/contractModel");
 const DoctorRequest = require("../Models/newDoctorRequestModel");
 const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor password
 const { logout, changePassword } = require("./authController");
+const Chat = require('../Models/chatModel');
+const PatientController = require("../Controllers/patientController");
 
 const { default: mongoose } = require("mongoose");
 
@@ -901,6 +903,83 @@ const cancelAppointment = async (req, res) => {
     res.status(500).json({ message: "Error removing Appointment from the system" });
   }
 };
+
+// Add a new API endpoint in the DoctorController
+const sendMessageToPharmacist = async (req, res) => {
+
+  try {
+    const doctorUsername = req.cookies.username;
+    const { chatId, messageContent } = req.body;
+
+    // Find the chat based on the provided chat ID
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    // Check if the doctor is assigned to the chat
+    if (chat.doctor !== '' && chat.doctor !== doctorUsername) {
+      return res.status(403).json({ message: 'There is another Doctor already assigned to this chat' });
+    } 
+    
+    if (chat.doctor === '') {
+      chat.doctor = doctorUsername;
+    }
+
+    // Add the doctor's message to the messages array in the chat
+    chat.messages.push({
+      username: doctorUsername,
+      userType: 'doctor',
+      content: messageContent,
+    });
+
+    // Save the updated chat to the database
+    const updatedChat = await chat.save();
+
+    res.status(200).json(updatedChat);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error sending message to the doctor' });
+  }
+};
+
+const viewAllChats = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username; // Get the doctor's username from the cookies
+
+    // Find all chats where the doctor is either an empty string or matches the doctor's username
+    const chats = await Chat.find({
+      $or: [
+        { doctor: '' },
+        { doctor: doctorUsername },
+      ],
+    });
+
+    if (!chats || chats.length === 0) {
+      return res.status(404).json({ message: 'No chats found.' });
+    }
+
+    // Check the status of each chat and update the doctor's ability to send messages
+    const updatedChats = chats.map(chat => {
+      const isClosed = chat.closed || false; // If 'closed' is not defined, default to false
+      const canSendMessages = !isClosed; // If the chat is closed, the doctor can't send messages
+
+      return {
+        ...chat.toObject(), // Convert Mongoose document to plain JavaScript object
+        canSendMessages,
+      };
+    });
+
+    res.status(200).json(updatedChats);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching chats' });
+  }
+};
+
+
+
 module.exports = {
   cancelAppointment,
   viewProfile,
@@ -931,4 +1010,6 @@ module.exports = {
   removeFromPrescription,
   addToPrescription,
   editPrescription,
+  sendMessageToPharmacist,
+  viewAllChats,
 };

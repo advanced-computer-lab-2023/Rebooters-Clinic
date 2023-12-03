@@ -1355,6 +1355,17 @@ const viewFamilyAppointments = async (req, res) => {
   }
 };
 
+const getAvailableDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({});
+    res.status(200).json(doctors);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching available doctors' });
+  }
+};
+
+
 module.exports = {
   requestFollowUp,
   rescheduleAppointment,
@@ -1390,4 +1401,5 @@ module.exports = {
   addMedicalHistory,
   viewFamilyMembersHealthPackages,
   viewFamilyAppointments,
+  getAvailableDoctors
 };

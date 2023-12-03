@@ -10,6 +10,7 @@ import ChangePassword from "../components/ChangePassword";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Contract from "../components/Contract";
 import TimeSlots from "../components/TimeSlots";
+import DoctorChats from "../components/DoctorChats";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -136,6 +137,16 @@ const DoctorHome = () => {
                   Patients
                 </button>
               </li>
+              <li
+                className={`nav-item ${activeTab === "chat" ? "active" : ""}`}
+              >
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={() => handleTabClick("chat")}
+                >
+                  Chat
+                </button>
+              </li>
             </ul>
           </div>
         </nav>
@@ -200,6 +211,11 @@ const DoctorHome = () => {
           )}
         </>
       )}
+      {activeTab === "chat" && (
+            <div className="card mt-4">
+              <DoctorChats />
+            </div>
+          )}
     </div>
   );
 };
