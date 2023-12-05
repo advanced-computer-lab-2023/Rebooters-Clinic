@@ -978,6 +978,149 @@ const viewAllChats = async (req, res) => {
   }
 };
 
+const startNewChat = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { messageContent } = req.body;
+
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    const newChat = new Chat({
+      doctor: doctorUsername,
+      pharmacist: '',
+      messages: [
+        {
+          username: doctorUsername,
+          userType: 'doctor',
+          content: messageContent,
+        },
+      ],
+    });
+
+    const savedChat = await newChat.save();
+    // Update the patient's chats array with the new chat ID
+    await doctor.save();
+
+    res.status(201).json(savedChat);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error starting a new chat' });
+  }
+};
+
+const continueChat = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { chatId, messageContent } = req.body;
+
+    // Fetch the chat from the database
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      console.error('Chat not found');
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    // Check if the pharmacist is the owner of the chat
+    if (chat.doctor !== doctorUsername) {
+      console.error('Unauthorized to continue this chat');
+      return res.status(403).json({ message: 'Unauthorized to continue this chat' });
+    }
+
+    // Add the pharmacist's message to the messages array in the chat
+    chat.messages.push({
+      username: doctorUsername,
+      userType: 'doctor',
+      content: messageContent,
+    });
+
+    // Save the updated chat to the database
+    const updatedChat = await chat.save();
+
+    // Notify the clinic about the new message
+    const clinicApiUrl = 'http://localhost:8000'; // Replace with the actual backend URL
+    const clinicEndpoint = '/api/sendMessageToDoctor';
+    const clinicResponse = await fetch(`${clinicApiUrl}${clinicEndpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        chatId: chatId,
+        messageContent: messageContent,
+        doctorUsername: doctorUsername,
+      }),
+    });
+
+    if (!clinicResponse.ok) {
+      console.error('Failed to send message to the pharmacy:', clinicResponse.status, clinicResponse.statusText);
+      throw new Error('Failed to send message to the pharmacy');
+    }
+
+    // Respond with the updated chat
+    res.status(200).json(updatedChat);
+  } catch (error) {
+    console.error('Error continuing the chat:', error);
+    res.status(500).json({ message: 'Error continuing the chat' });
+  }
+};
+
+
+const viewMyChats = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+
+    // Find all chats where the patient is the same as the logged-in patient's username
+    const chats = await Chat.find({
+      $and: [
+        {
+          $or: [
+            { doctorUsername: '' },
+            { doctor: doctorUsername },
+          ],
+        },
+        { patient: "" }, 
+      ],
+    });    
+    if (!chats || chats.length === 0) {
+      return res.status(404).json({ message: 'No chats found.' });
+    }
+
+    res.status(200).json(chats);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching chats' });
+  }
+};
+
+
+const deleteChat = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+
+    // Find the chat based on the provided chat ID
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    // Update the chat to mark it as closed
+    chat.closed = true;
+    await chat.save();
+
+    res.status(200).json({ message: 'Chat closed successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error closing chat' });
+  }
+};
+
+
 
 
 module.exports = {
@@ -1011,5 +1154,5 @@ module.exports = {
   addToPrescription,
   editPrescription,
   sendMessageToPharmacist,
-  viewAllChats,
+  viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat
 };

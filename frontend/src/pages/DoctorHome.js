@@ -11,6 +11,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Contract from "../components/Contract";
 import TimeSlots from "../components/TimeSlots";
 import DoctorChats from "../components/DoctorChats";
+import DoctorSendsToPharm from "../components/DoctorSendsToPharm";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -214,8 +215,10 @@ const DoctorHome = () => {
       {activeTab === "chat" && (
             <div className="card mt-4">
               <DoctorChats />
+              <DoctorSendsToPharm/>
             </div>
           )}
+          
     </div>
   );
 };
