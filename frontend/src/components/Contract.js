@@ -74,7 +74,7 @@ const Contract = () => {
             <p>End Date: {contract.endDate}</p>
             <p>Salary: {contract.salary}</p>
             <p>Status: {contract.status}</p>
-            {contract.status === "N/A" && (
+            {contract.status === "pending" && (
               <>
                 <button
                   type="button"

@@ -3,6 +3,7 @@ const Doctor = require("../Models/doctorModel");
 const Patient = require("../Models/patientModel");
 const NewDoctorRequest = require("../Models/newDoctorRequestModel");
 const HealthPackage = require("../Models/healthPackageModel");
+const Contract = require("../Models/contractModel");
 const bcrypt = require("bcrypt");
 const { logout, changePassword, createToken } = require("./authController");
 const mongoose = require("mongoose");
@@ -207,6 +208,24 @@ const approveDoctorRequest = async (req, res) => {
     await newDoctor.save();
 
     await NewDoctorRequest.findOneAndRemove({ username: username });
+
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + 2);
+
+    // Calculate salary with a 10% markup
+    const salary = request.hourlyRate * 40 * 1.1;
+
+    const newContract = new Contract({
+      doctorName: request.username,
+      employerName: req.cookies.username, 
+      startDate: new Date(), 
+      endDate: endDate, 
+      salary: salary, 
+      status: 'pending',
+    });
+
+    // Save the new contract
+    await newContract.save();
 
     const emailInfo = await sendApprovalEmail(request.email);
 

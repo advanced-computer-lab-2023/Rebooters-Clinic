@@ -25,8 +25,8 @@ const contractSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ['accepted', 'rejected', 'N/A'],
-    default: 'N/A',
+    enum: ['accepted', 'rejected', 'pending'],
+    default: 'pending',
   }
 });
 
