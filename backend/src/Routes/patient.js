@@ -1,7 +1,7 @@
 const express = require('express') //require or import express
 const { requireAuth } = require('../Middleware/authMiddleware');
 const jwt = require('jsonwebtoken');
-const {requestFollowUp,rescheduleAppointment,viewAvailableDoctorSlots, unsubscribeToHealthPackage, viewHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
+const {payWithWallet,viewMedicines,requestFollowUp,rescheduleAppointment,viewAvailableDoctorSlots, unsubscribeToHealthPackage, viewHealthPackage, subscribeToHealthPackage, viewHealthPackageOptions,createNotFoundPatient, 
     viewRegisteredFamilyMembers, addFamilyMember, payForAppointment, payForHealthPackage,
     createPrescription,viewAllPrescriptions, selectDoctor,filterPrescriptions, addMedicalHistory,
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
@@ -105,8 +105,10 @@ router.post('/requestFollowUp', requireAuth, requestFollowUp);
 router.post('/rescheduleAppointment', requireAuth, rescheduleAppointment);
 
 router.get("/viewFamilyMembersHealthPackages", requireAuth, viewFamilyMembersHealthPackages);
+router.get('/viewMedicines',requireAuth, viewMedicines);
 
 router.post('/viewFamilyAppointments', requireAuth, viewFamilyAppointments);
+router.put('/payWithWallet', requireAuth, payWithWallet);
 
 router.get("/getAvailableDoctors",getAvailableDoctors);
 

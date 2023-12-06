@@ -7,14 +7,47 @@ function Prescription() {
   const [prescriptions, setPrescriptions] = useState([]);
   const [viewMessage, setViewMessage] = useState("");
   const [filterMessage, setFilterMessage] = useState("");
+  const [medicines, setMedicines] = useState([]);
+  const [subTotal, setsubTotal] = useState(0);
+
   const [prescriptionDetails, setPrescriptionDetails] = useState(null);
   const [filterParams, setFilterParams] = useState({
     date: "",
     doctorName: "",
     filled: undefined,
   });
-  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  useEffect(() => {
+    const fetchMedicines = async () => {
+      try {
+        const response = await fetch(`/api/patient/viewMedicines`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const data = await response.json();
+        setMedicines(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+  
+    fetchMedicines();
+  }, []);
+  
 
+  const calculateNewValue = (index) => {
+    let sum = 0;
+    for (let i = 0; i < prescriptions[index].medicationInfo.length; i++) {
+      for(let j=0;j<medicines.length;j++){   
+      if(  medicines[j].name==prescriptions[index].medicationInfo[i].medicine){
+        sum+=medicines[j].price
+      }
+    }
+  }
+      setsubTotal(sum)
+  };
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
   const handleViewPrescriptions = async () => {
     try {
       const response = await fetch("/api/patient/viewAllPrescriptions", {
@@ -143,9 +176,10 @@ function Prescription() {
       setPrescriptions([]);
     }
   };
-  const handleShowPrescriptionDetails = (prescription) => {
+  const handleShowPrescriptionDetails = (prescription,index) => {
     setPrescriptionDetails(prescription);
-  };
+    calculateNewValue(index)
+ };
   const handleClosePrescriptionDetails = () => {
     setPrescriptionDetails(null);
   };
@@ -158,7 +192,56 @@ function Prescription() {
   useEffect(() => {
     handleViewPrescriptions();
   }, []);
+  const pay = async (prescription,index) => {
+    if(document.getElementById("payMethod").value=="wallet"){
+    const response = await fetch(`/api/patient/payWithWallet`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({value:subTotal}),
+    });
+    const data = await response.json();
+    if(data=="insufficient"){
+      alert("insufficient funds")
+    }
+    else{
+      setsubTotal(0)
+      alert("successful Payment")
+    }
+  }
+  else{
+    try {
+      const stripeResponse = await fetch(
+        "http://localhost:4000/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            items: [
+              { id: 1, quantity: 3 },
+              { id: 2, quantity: 1 },
+            ],
+          }),
+        }
+      );
 
+      if (stripeResponse.ok) {
+
+        const { url } = await stripeResponse.json();
+        window.location = url;
+        console.log(url);
+      } else {
+        throw new Error("Network response from Stripe was not ok");
+      }
+    } catch (stripeError) {
+      console.error("Stripe Error:", stripeError);
+    }
+  
+  }
+}
   return (
     <div>
       <h2>Prescriptions:</h2>
@@ -213,13 +296,14 @@ function Prescription() {
                   </p>
                 </div>
                 <button
-                  onClick={() => handleShowPrescriptionDetails(prescription)}
+                  onClick={() => handleShowPrescriptionDetails(prescription,index)}
                 >
                   Select
                 </button>
                 <button onClick={() => handleClosePrescription(index)}>
                   Close
                 </button>
+              
               </li>
             ))}
           </ul>
@@ -252,6 +336,10 @@ function Prescription() {
             {new Date(prescriptionDetails.date).toLocaleDateString()}{" "}
             {new Date(prescriptionDetails.date).toLocaleTimeString()}{" "}
           </p>
+          <p>
+            <strong>Total Cost:</strong>
+            {subTotal}
+          </p>
           <div>
             <button onClick={handleClosePrescriptionDetails}>
               Close Details
@@ -259,6 +347,13 @@ function Prescription() {
             <button onClick={handleDownloadPDF}>
               Download PDF
             </button>
+            <select id ="payMethod">
+       <option value="wallet">wallet</option>
+       <option value="credit card">credit card</option>
+       </select>
+            <button onClick={pay} >
+              Pay        
+    </button>
           </div>
         </div>
       )}

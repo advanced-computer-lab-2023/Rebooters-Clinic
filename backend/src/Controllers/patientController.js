@@ -2,6 +2,8 @@ const express = require("express");
 const Patient = require("../Models/patientModel"); // Import the Patient model
 const Doctor = require("../Models/doctorModel");
 const Chat = require("../Models/chatModel");
+const medicineModel = require("../Models/medicineModel");
+
 const Prescription = require("../Models/prescriptionModel");
 const Appointment = require("../Models/appointmentModel");
 const HealthPackage = require("../Models/healthPackageModel");
@@ -1707,13 +1709,53 @@ const createZoomMeetingNotification = async (req, res) => {
       res.status(500).json({ error: 'An error occurred while fetching notifications.' });
     }
   };
-  
+  const viewMedicines = async (req, res) => {
+    try {
+      const patientName = req.cookies.username;
+      const medicines = await medicineModel.find({  });
+      res.json(medicines);
+     
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while fetching medicines." });
+    }
+  };
+  const payWithWallet = async (req, res) => {
+    try {
+      const patientUsername = req.cookies.username; // Assuming you store the patient's username in cookies
+      const { value } = req.body;
+    
+      const patient = await Patient.findOne({ username: patientUsername });
+      if (!patient) {
+        return res.status(404).json({ error: "Patient not found." });
+      }
+          if (patient.wallet >= value) {
+            patient.wallet -= value;
+            await patient.save();
+            return res
+              .status(200)
+              .json({ message: "Payment from wallet successful." });
+          
+      } else {
+        return res.status(400).json({ error: "insufficient" });
+      }
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while processing the payment." });
+    }
+  };
 
 
 
 
 
 module.exports = {
+  payWithWallet,
+  viewMedicines,
   requestFollowUp,
   rescheduleAppointment,
   viewMedicalHistory,
