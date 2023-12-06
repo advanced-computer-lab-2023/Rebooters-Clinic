@@ -6,7 +6,7 @@ const {cancelAppointment,viewProfile, updateProfile, viewMyPatients ,
     searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , 
     viewContract ,acceptContract , rejectContract , addAvailableSlots , scheduleAppointment , addHealthRecord, 
     logout, changePassword, addPrescription, removeFromPrescription, addToPrescription, editPrescription,sendMessageToPharmacist,
-     viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+     viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat , acceptFollowUpRequest , revokeFollowUpRequest , rescheduleAppointment , getDoctorFollowUpRequests } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
 
 const router = express.Router() //create a router
 
@@ -52,5 +52,10 @@ router.get('/viewMyChats',requireAuth, viewMyChats);
 router.post('/continueChat',requireAuth, continueChat);
 router.delete('/deleteChat/:chatId', requireAuth, deleteChat);
 
+
+router.post("/acceptFollowUpRequest", requireAuth ,acceptFollowUpRequest);
+router.post("/revokeFollowUpRequest", requireAuth ,revokeFollowUpRequest);
+router.post("/rescheduleAppointment", requireAuth ,rescheduleAppointment);
+router.get("/getDoctorFollowUpRequests", requireAuth ,getDoctorFollowUpRequests);
 
 module.exports = router;

@@ -1200,7 +1200,133 @@ const deleteChat = async (req, res) => {
   }
 };
 
+const acceptFollowUpRequest = async (req, res) => {
+  try {
+    const { datetime } = req.body;
 
+    // Check if the follow-up request has been revoked
+    const existingAppointment = await Appointment.findOne({ datetime });
+
+    if (existingAppointment.FollowUpRequest.status === 'Revoked') {
+      return res.status(400).json({ error: 'Cannot accept a revoked follow-up request.' });
+    }
+
+    // Update the status of the follow-up request to 'Accepted'
+    await Appointment.updateOne(
+      { datetime },
+      { $set: { 'FollowUpRequest.status': 'Accepted' } }
+    );
+
+    // Fetch the details of the existing appointment
+    const { patient, doctor, FollowUpRequest } = existingAppointment;
+    const { reason, preferredDate } = FollowUpRequest;
+
+    // Create a new appointment with the preferred date
+    const newAppointment = new Appointment({
+      doctor,
+      patient,
+      datetime: new Date(preferredDate),
+      status: 'Upcoming',
+      price: existingAppointment.price,
+      payment: 'Unpaid',
+    });
+
+    // Save the new appointment to the database
+    await newAppointment.save();
+
+    res.json({ message: 'Follow-up request accepted successfully. New appointment created.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while accepting the follow-up request.' });
+  }
+};
+
+
+
+const revokeFollowUpRequest = async (req, res) => {
+  try {
+    const { datetime } = req.body;
+
+    // Check if the follow-up request has been accepted
+    const existingAppointment = await Appointment.findOne({ datetime });
+
+    if (existingAppointment.FollowUpRequest.status === 'Accepted') {
+      return res.status(400).json({ error: 'Cannot revoke an already accepted follow-up request.' });
+    }
+
+    // Update the status of the follow-up request to 'Revoked'
+    await Appointment.updateOne(
+      { datetime },
+      { $set: { 'FollowUpRequest.status': 'Revoked' } }
+    );
+
+    res.json({ message: 'Follow-up request revoked successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while revoking the follow-up request.' });
+  }
+};
+
+
+// const rescheduleAppointment = async (req, res) => {
+//   try {
+//     const { appointmentID, newDatetime } = req.body;
+
+//     // Check if the newDatetime is not older than the current date and time
+//     const currentDate = new Date();
+//     const proposedDate = new Date(newDatetime);
+
+//     if (proposedDate < currentDate) {
+//       return res.status(400).json({ error: 'Cannot reschedule to an earlier date.' });
+//     }
+
+//     // Assuming you want to update the appointment's datetime
+//     await Appointment.updateOne(
+//       { _id: appointmentID },
+//       { $set: { datetime: newDatetime } }
+//     );
+
+//     res.json({ message: 'Appointment rescheduled successfully.' });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: 'An error occurred while rescheduling the appointment.' });
+//   }
+// };
+
+const rescheduleAppointment = async (req, res) => {
+  try {
+    const { datetime, newDatetime } = req.body;
+
+    // Assuming you want to update the appointment's datetime
+    await Appointment.updateOne(
+      { datetime },
+      { $set: { datetime: newDatetime } }
+    );
+
+    res.json({ message: 'Appointment rescheduled successfully.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while rescheduling the appointment.' });
+  }
+};
+
+const getDoctorFollowUpRequests = async (req, res) => {
+  try {
+    // Retrieve the doctor's username from the cookies
+    const doctorUsername = req.cookies.username;
+
+    // Retrieve all appointments where the doctor is the assigned doctor
+    const followUpRequests = await Appointment.find({
+      'doctor': doctorUsername,
+      'FollowUpRequest.status': { $in: ['Pending', 'Accepted', 'Revoked'] } // Optional: Filter by status if needed
+    });
+
+    res.json({ followUpRequests });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while fetching follow-up requests.' });
+  }
+};
 
 
 module.exports = {
@@ -1234,5 +1360,9 @@ module.exports = {
   addToPrescription,
   editPrescription,
   sendMessageToPharmacist,
-  viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat
+  viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat,
+  acceptFollowUpRequest,
+  revokeFollowUpRequest,
+  rescheduleAppointment,
+  getDoctorFollowUpRequests
 };

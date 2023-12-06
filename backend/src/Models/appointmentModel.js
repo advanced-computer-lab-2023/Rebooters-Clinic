@@ -33,7 +33,12 @@ const appointmentSchema = new Schema({
   },
   FollowUpRequest:{
     reason: String,
-    preferredDate: String
+    preferredDate: String,
+    status: {
+      type: String,
+      enum: ['Pending', 'Accepted', 'Revoked', 'N/A'],
+      default: 'N/A',
+    },
   }
 });
 

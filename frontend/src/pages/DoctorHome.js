@@ -12,6 +12,7 @@ import Contract from "../components/Contract";
 import TimeSlots from "../components/TimeSlots";
 import DoctorChats from "../components/DoctorChats";
 import DoctorSendsToPharm from "../components/DoctorSendsToPharm";
+import FollowUpRequests from "../components/FollowUpRequests";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -210,6 +211,10 @@ const DoctorHome = () => {
               <TimeSlots />
             </div>
           )}
+          {activeTab === "appointments" && (
+            <div className="card mt-4">
+            <FollowUpRequests />
+          </div>)}
         </>
       )}
       {activeTab === "chat" && (

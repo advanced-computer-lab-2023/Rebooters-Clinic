@@ -27,6 +27,11 @@ const DoctorMyAppointments = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showAddHealthRecord, setShowAddHealthRecord] = useState(false);
   const [showScheduleFollowup, setShowScheduleFollowup] = useState(false);
+  const [rescheduleDatetime, setRescheduleDatetime] = useState("");
+  const [oldDatetime, setOldDatetime] = useState("");
+  const [showRescheduleAppointment, setShowRescheduleAppointment] = useState(false);
+  const [rescheduleSuccess, setRescheduleSuccess] = useState(false);
+
 
   const handleAddPrescription = (patient) => {
     setShowAddPrescription(true);
@@ -75,6 +80,16 @@ const DoctorMyAppointments = () => {
 
   const handleCloseScheduleFollowup = () => {
     setShowScheduleFollowup(false);
+  };
+
+  const handleShowRescheduleAppointment = (appointment) => {
+    setOldDatetime(appointment.datetime);
+    setShowRescheduleAppointment(true);
+  };
+
+  const handleCloseRescheduleAppointment = () => {
+    setOldDatetime("");
+    setShowRescheduleAppointment(false);
   };
 
   useEffect(() => {
@@ -150,6 +165,40 @@ const DoctorMyAppointments = () => {
     }
 
   } 
+
+  const handleRescheduleAppointment = async () => {
+    try {
+      // Check if rescheduleDatetime is empty
+      if (!rescheduleDatetime || rescheduleDatetime === null) {
+        // Optionally display an error message or handle it as needed
+        console.error('Reschedule date and time cannot be empty.');
+        return;
+      }
+  
+      const response = await fetch("/api/doctor/rescheduleAppointment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          newDatetime: rescheduleDatetime,
+          datetime: oldDatetime,
+        }),
+      });
+  
+      if (response.ok) {
+        setRescheduleSuccess(true);
+      } else {
+        setRescheduleSuccess(false);
+        // Optionally handle other error cases
+      }
+    } catch (error) {
+      console.error('Error rescheduling appointment:', error);
+      setRescheduleSuccess(false);
+    }
+  };
+  
+
   const filterAppointmentsByDate = async () => {
     try {
       const response = await fetch(
@@ -358,6 +407,34 @@ const DoctorMyAppointments = () => {
             >
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+{showRescheduleAppointment && (
+        <div className="modal-overlay">
+          <div className="card">
+            <div className="">
+              <label htmlFor="followUpDatetime">Choose new date and time:</label>
+              <input
+                type="datetime-local"
+                id="followUpDatetime"
+                value={rescheduleDatetime}
+                onChange={(e) => setRescheduleDatetime(e.target.value)}
+              />
+            </div>
+            {rescheduleSuccess ? (
+              <p>Appointment rescheduled successfully!</p>
+            ) : (
+              <>
+                <button className="btn btn-danger" onClick={handleRescheduleAppointment}>
+                  Reschedule
+                </button>
+              </>
+            )}
+            <button className="btn btn-danger" onClick={handleCloseRescheduleAppointment}>
+                  Close
+                </button>
           </div>
         </div>
       )}
@@ -611,6 +688,14 @@ const DoctorMyAppointments = () => {
                      Cancel Appointment
                     </button>
                     )}
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleShowRescheduleAppointment(appointment);
+                      }}
+                    >
+                     Reschedule Appointment
+                    </button>
                   </td>
                 </tr>
               ))
@@ -680,6 +765,14 @@ const DoctorMyAppointments = () => {
                      Cancel Appointment
                     </button>
                     )}
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleShowRescheduleAppointment(appointment);
+                      }}
+                    >
+                     Reschedule Appointment
+                    </button>
                   </td>
                 </tr>
               ))
@@ -748,6 +841,14 @@ const DoctorMyAppointments = () => {
                      Cancel Appointment
                     </button>
                     )}
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleShowRescheduleAppointment(appointment);
+                      }}
+                    >
+                     Reschedule Appointment
+                    </button>
                   </td>
                 </tr>
               ))
@@ -816,6 +917,14 @@ const DoctorMyAppointments = () => {
                      Cancel Appointment
                     </button>
                     )}
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleShowRescheduleAppointment(appointment);
+                      }}
+                    >
+                     Reschedule Appointment
+                    </button>
                   </td>
                 </tr>
               ))
@@ -883,6 +992,14 @@ const DoctorMyAppointments = () => {
                      Cancel Appointment
                     </button>
                     )}
+                     <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleShowRescheduleAppointment(appointment);
+                      }}
+                    >
+                     Reschedule Appointment
+                    </button>
                   </td>
                 </tr>
               ))}
