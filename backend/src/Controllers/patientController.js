@@ -1,6 +1,7 @@
 const express = require("express");
 const Patient = require("../Models/patientModel"); // Import the Patient model
 const Doctor = require("../Models/doctorModel");
+const Chat = require("../Models/chatModel");
 const Prescription = require("../Models/prescriptionModel");
 const Appointment = require("../Models/appointmentModel");
 const HealthPackage = require("../Models/healthPackageModel");
@@ -1407,6 +1408,244 @@ const getAvailableDoctors = async (req, res) => {
   }
 };
 
+const cancelAppointment = async (req, res) => {
+  try {
+    const { appointmentGiven } = req.body;
+
+    
+
+    const appointment = await Appointment.findOne({
+      _id : appointmentGiven._id
+    })
+
+    const patientUsername = appointment.patient;
+    const patient = await Patient.findOne({username : patientUsername })
+
+    const doctorUsername = appointment.doctor;
+    const doctor = await Doctor.findOne({username : doctorUsername })
+
+    const combinedDateTime = new Date(appointment.datetime);
+
+    const currentDate = new Date();
+    const timeDifference = combinedDateTime - currentDate;
+
+    
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found." });
+    }
+
+    let i=0
+    for(i;i<doctor.availableSlots.length;i++){
+      if(doctor.availableSlots[i].datetime.getTime() === combinedDateTime.getTime()){
+        doctor.availableSlots[i].reservingPatientUsername = null
+      }
+    }
+
+    appointment.status = 'Cancelled';
+    if(timeDifference > 24 * 60 * 60 * 1000){
+      patient.wallet += appointment.price;}
+
+
+    await doctor.save();
+    await appointment.save(); 
+    await patient.save();
+
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+
+    // Email content for the patient
+    const patientEmailOptions = {
+      from: "Rebooters",
+      to: patient.email,
+      subject: 'Appointment Cancellation',
+      text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} that was scheduled on ${combinedDateTime} has been cancelled.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Email content for the doctor
+    const doctorEmailOptions = {
+      from: "Rebooters",
+      to: doctor.email,
+      subject: 'Cancelled Appointment',
+      text: `Dear Dr. ${doctorUsername},\n\n Your appointment with ${patient.username} on ${combinedDateTime} has been cancelled.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Send emails
+    await transporter.sendMail(patientEmailOptions);
+    await transporter.sendMail(doctorEmailOptions);
+
+    
+    res
+      .status(200)
+      .json({ message: "Appointment cancelled" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while cancelling the appointment." });
+  }
+};
+
+const startNewChatWithDoctor = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+    const { messageContent, selectedDoctor } = req.body;
+
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    const newChat = new Chat({
+      patient: patientUsername,
+      doctor: selectedDoctor,
+      messages: [
+        {
+          username: patientUsername,
+          userType: 'patient',
+          content: messageContent,
+        },
+      ],
+    });
+
+    const savedChat = await newChat.save();
+
+    console.log('savedChat:', savedChat);
+
+    res.status(201).json({ savedChat });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error starting a new chat' });
+  }
+};
+
+
+const continueChatWithDoctor = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+    const { chatId, messageContent } = req.body;
+
+    // Fetch the chat from the database
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      console.error('Chat not found');
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    // Check if the patient is the owner of the chat
+    if (chat.patient !== patientUsername) {
+      console.error('Unauthorized to continue this chat');
+      return res.status(403).json({ message: 'Unauthorized to continue this chat' });
+    }
+
+    // Add the patient's message to the messages array in the chat
+    chat.messages.push({
+      username: patientUsername,
+      userType: 'patient',
+      content: messageContent,
+    });
+
+    // Save the updated chat to the database
+    const updatedChat = await chat.save();
+
+    // Respond with the updated chat
+    res.status(200).json(updatedChat);
+  } catch (error) {
+    console.error('Error continuing the chat:', error);
+    res.status(500).json({ message: 'Error continuing the chat' });
+  }
+};
+
+const viewMyChats = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+
+    // Find all chats where the patient is the same as the logged-in patient's username
+    /*const chats = await Chat.find({
+      $and: [
+        {
+          $or: [
+            { pharmacist: '' },
+            { pharmacist: pharmacistUsername },
+          ],
+        },
+        { patient: "" }, 
+      ],
+    });*/
+    const chats = await Chat.find({
+      'patient': patientUsername,
+    });    
+    if (!chats || chats.length === 0) {
+      return res.status(404).json({ message: 'No chats found.' });
+    }
+
+    res.status(200).json(chats);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching chats' });
+  }
+};
+
+const deleteChatWithDoctor = async (req, res) => {
+  try {
+    const { chatId } = req.body;
+
+    // Find the chat based on the provided chat ID
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    // Update the chat to mark it as closed
+    chat.closed = true;
+    await chat.save();
+
+    res.status(200).json({ message: 'Chat closed successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error closing chat' });
+  }
+};
+
+const viewLinkedDoctors = async (req,res) =>{
+    try {
+      const  patientUsername  = req.cookies.username;
+      // Query the Appointment model to find all distinct doctors for the given patient
+      const doctors = await Appointment.distinct('doctor', { 'patient': patientUsername });
+  
+      res.status(200).json({ doctors: doctors });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error finding doctors' });
+    }
+  
+  };
+  
+
+
+
+
+
+
 
 module.exports = {
   requestFollowUp,
@@ -1443,5 +1682,11 @@ module.exports = {
   addMedicalHistory,
   viewFamilyMembersHealthPackages,
   viewFamilyAppointments,
-  getAvailableDoctors
+  getAvailableDoctors,
+  cancelAppointment,
+  startNewChatWithDoctor,
+  continueChatWithDoctor,
+  viewMyChats,
+  deleteChatWithDoctor,
+  viewLinkedDoctors
 };

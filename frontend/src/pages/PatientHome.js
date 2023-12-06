@@ -19,6 +19,7 @@ import ChangePassword from "../components/ChangePassword";
 import MedicalHistoryComponent from "../components/MedicalHistory";
 import ViewFamilyHealthPackage from "../components/ViewFamilyHealthPackage";
 import PatientFamilyAppointments from "../components/PatientFamilyAppointments";
+import PatientChats from "../components/PatientChats";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -174,6 +175,16 @@ const PatientHome = () => {
                 View Doctors/Reserve
               </button>
             </li>
+            <li
+              className={`nav-item ${activeTab === "chat" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("chat")}
+              >
+                Chat
+              </button>
+            </li>
           </ul>
         </div>
       </nav>
@@ -250,6 +261,11 @@ const PatientHome = () => {
       {activeTab === "subscription" && (
         <div className="mt-4">
           <SubscribeToHealthPackage />
+        </div>
+      )}
+      {activeTab === "chat" && (
+        <div className="mt-4">
+          <PatientChats />
         </div>
       )}
     </div>

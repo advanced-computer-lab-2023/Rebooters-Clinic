@@ -74,7 +74,10 @@ const DoctorChats = () => {
         <p>There are no chats</p>
       ) : (
         <div>
-          {chats.map((chat) => (
+          {chats
+          .filter((chat) => chat.patient === "false")
+          .map((chat) => (
+             /*!chat.patient &&(*/
             <div key={chat._id}>
               <h4>Chat ID: {chat._id}</h4>
               <div>
@@ -114,6 +117,7 @@ const DoctorChats = () => {
                 </div>
               )}
             </div>
+            /*)*/
           ))}
         </div>
       )}

@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor pa
 const { logout, changePassword } = require("./authController");
 const Chat = require('../Models/chatModel');
 const PatientController = require("../Controllers/patientController");
+const nodemailer = require('nodemailer');
 
 const { default: mongoose } = require("mongoose");
 
@@ -890,19 +891,98 @@ const editPrescription = async (req, res) => {
 };
 const cancelAppointment = async (req, res) => {
   try {
-    const {datetime,patientUsername} = req.body;
-    const appointment= await Appointment.findOneAndDelete({datetime});
-    if(appointment.payment=="Paid"){
-    const patient=await Patient.findOne({ username:patientUsername});
-    patient.wallet=appointment.price+patient.wallet;
-    await patient.save();
+    const { appointmentGiven } = req.body;
+
+    
+
+    const appointment = await Appointment.findOne({
+      _id : appointmentGiven._id
+    })
+
+    const patientUsername = appointment.patient;
+    const patient = await Patient.findOne({username : patientUsername })
+
+    const doctorUsername = appointment.doctor;
+    const doctor = await Doctor.findOne({username : doctorUsername })
+
+    const combinedDateTime = new Date(appointment.datetime);
+
+    const currentDate = new Date();
+    const timeDifference = combinedDateTime - currentDate;
+
+    
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
     }
-    res.status(200).json({ message: "Appointment removed successfully" });
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found." });
+    }
+
+    let i=0
+    for(i;i<doctor.availableSlots.length;i++){
+      if(doctor.availableSlots[i].datetime.getTime() === combinedDateTime.getTime()){
+        doctor.availableSlots[i].reservingPatientUsername = null
+      }
+    }
+
+    appointment.status = 'Cancelled';
+    if(timeDifference > 24 * 60 * 60 * 1000){
+      patient.wallet += appointment.price;}
+
+
+    await doctor.save();
+    await appointment.save(); 
+    await patient.save();
+
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+
+    // Email content for the patient
+    const patientEmailOptions = {
+      from: "Rebooters",
+      to: patient.email,
+      subject: 'Appointment Cancellation',
+      text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} that was scheduled on ${combinedDateTime} has been cancelled.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Email content for the doctor
+    const doctorEmailOptions = {
+      from: "Rebooters",
+      to: doctor.email,
+      subject: 'Cancelled Appointment',
+      text: `Dear Dr. ${doctorUsername},\n\n Your appointment with ${patient.username} on ${combinedDateTime} has been cancelled.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Send emails
+    await transporter.sendMail(patientEmailOptions);
+    await transporter.sendMail(doctorEmailOptions);
+
+    
+    res
+      .status(200)
+      .json({ message: "Appointment cancelled" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Error removing Appointment from the system" });
+    res
+      .status(500)
+      .json({ error: "An error occurred while cancelling the appointment." });
   }
 };
+
 
 // Add a new API endpoint in the DoctorController
 const sendMessageToPharmacist = async (req, res) => {

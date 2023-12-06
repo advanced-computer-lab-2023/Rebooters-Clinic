@@ -7,7 +7,9 @@ const {requestFollowUp,rescheduleAppointment,viewAvailableDoctorSlots, unsubscri
     viewDoctors, findDoctor, filterDoctor, filterAppointmentsByDate, filterAppointmentsByStatus, 
     viewMyAppointments, viewWallet , filterByPastDate , viewMedicalHistory, deleteMedicalHistory,
     filterByUpcomingDate , viewHealthRecords, makeAppointment, viewFamilyMembersHealthPackages, viewFamilyAppointments,
-     logout, changePassword,getAvailableDoctors} = require('../Controllers/patientController'); //we're destructuring so we need curly braces
+     logout, changePassword,getAvailableDoctors, cancelAppointment, startNewChatWithDoctor,
+     continueChatWithDoctor, viewMyChats, deleteChatWithDoctor, viewLinkedDoctors
+    } = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 
 const Patient = require('../Models/patientModel'); 
@@ -54,6 +56,8 @@ router.delete('/deleteMedicalHistory/:filename', requireAuth, deleteMedicalHisto
 router.post("/addPrescription", requireAuth, createPrescription);  
 
 router.post("/viewAllPrescriptions", requireAuth, viewAllPrescriptions); 
+
+router.post("/cancelAppointment", requireAuth, cancelAppointment); 
 
 router.get("/viewHealthPackageOptions", requireAuth, viewHealthPackageOptions);
 
@@ -105,6 +109,15 @@ router.post('/viewFamilyAppointments', requireAuth, viewFamilyAppointments);
 
 router.get("/getAvailableDoctors",getAvailableDoctors);
 
+router.post('/startNewChatWithDoctor',requireAuth, startNewChatWithDoctor);
+
+router.post('/continueChatWithDoctor',requireAuth, continueChatWithDoctor);
+
+router.get('/viewMyChats', requireAuth, viewMyChats);
+
+router.post('/deleteChatWithDoctor',requireAuth, deleteChatWithDoctor);
+
+router.get('/viewLinkedDoctors', requireAuth, viewLinkedDoctors);
 
 module.exports = router //we need to export that router at the end so that server.js can access it
 

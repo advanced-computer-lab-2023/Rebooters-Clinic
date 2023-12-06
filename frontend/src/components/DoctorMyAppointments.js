@@ -134,34 +134,22 @@ const DoctorMyAppointments = () => {
     }
   };
   
-  const cancelAppointment = async (datetime,patientUsername) => {
+  const handleCancelAppointment = async (appointment) => {
     try {
-      const response = await fetch(
-        "/api/doctor/cancelAppointment",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            datetime,
-            patientUsername
-          })
-        }
-      );
-     
-      if (response.ok) {
-        setAppointmentsData(appointmentsData.filter(appointment => appointment.datetime !== datetime))
-      } else {
-        setError(
-          "An error occurred while cancelling appointment"
-        );
-      }
-    } catch (error) {
-      setError("An error occurred while filtering appointments by date");
-    }
-  };
+      const response = await fetch("/api/doctor/cancelAppointment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          appointmentGiven: appointment
+        }),
+      })
 
+    }catch(error){
+    }
+
+  } 
   const filterAppointmentsByDate = async () => {
     try {
       const response = await fetch(
@@ -603,6 +591,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
+                    {appointment.status == "Completed" && (
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -611,6 +600,17 @@ const DoctorMyAppointments = () => {
                     >
                       Schedule Followup
                     </button>
+                    )}
+                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleCancelAppointment(appointment);
+                      }}
+                    >
+                     Cancel Appointment
+                    </button>
+                    )}
                   </td>
                 </tr>
               ))
@@ -660,6 +660,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
+                    {appointment.status == "Completed" && (
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -668,6 +669,17 @@ const DoctorMyAppointments = () => {
                     >
                       Schedule Followup
                     </button>
+                    )}
+                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleCancelAppointment(appointment);
+                      }}
+                    >
+                     Cancel Appointment
+                    </button>
+                    )}
                   </td>
                 </tr>
               ))
@@ -716,6 +728,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
+                    {appointment.status == "Completed" && (
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -724,14 +737,17 @@ const DoctorMyAppointments = () => {
                     >
                       Schedule Followup
                     </button>
+                    )}
+                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
-                        cancelAppointment(appointment.datetime,appointment.patient);
+                        handleCancelAppointment(appointment);
                       }}
                     >
                      Cancel Appointment
                     </button>
+                    )}
                   </td>
                 </tr>
               ))
@@ -780,6 +796,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
+                    {appointment.status == "Completed" && (
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -788,6 +805,17 @@ const DoctorMyAppointments = () => {
                     >
                       Schedule Followup
                     </button>
+                    )}
+                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleCancelAppointment(appointment);
+                      }}
+                    >
+                     Cancel Appointment
+                    </button>
+                    )}
                   </td>
                 </tr>
               ))
@@ -835,6 +863,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
+                    {appointment.status == "Completed" &&(
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
@@ -843,6 +872,17 @@ const DoctorMyAppointments = () => {
                     >
                       Schedule Followup
                     </button>
+                    )}
+                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
+                    <button
+                      className="btn btn-primary"
+                      onClick={(e) => {
+                        handleCancelAppointment(appointment);
+                      }}
+                    >
+                     Cancel Appointment
+                    </button>
+                    )}
                   </td>
                 </tr>
               ))}
