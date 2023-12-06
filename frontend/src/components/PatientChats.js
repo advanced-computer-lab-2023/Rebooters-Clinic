@@ -65,6 +65,30 @@ const PatientChats = () => {
 
   console.log(doctors);
 
+
+  const startVideoChatWithDoctor = async (doctorUsername) => {
+    try {
+      const response = await fetch("/api/patient/createZoomMeetingNotification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ doctorUsername }),
+      });
+      
+
+
+      if (response.ok) {
+        // Handle success, e.g., show a success message
+      } else {
+        // Handle error, e.g., show an error message
+      }
+    } catch (error) {
+      console.error("Error starting video chat:", error);
+    }
+  };
+
+
   const startNewChatWithDoctor = async () => {
     try {
       if (!newChatContent.trim()) {
@@ -216,6 +240,9 @@ const PatientChats = () => {
             <br />
             <button className='btn btn-primary' onClick={startNewChatWithDoctor}>
               Start Chat
+            </button>
+            <button className='btn btn-success' onClick={() => startVideoChatWithDoctor(selectedDoctor)}>
+              Start Video Chat
             </button>
           </div>
       </div>

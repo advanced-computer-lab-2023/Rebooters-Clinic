@@ -13,6 +13,8 @@ import TimeSlots from "../components/TimeSlots";
 import DoctorChats from "../components/DoctorChats";
 import DoctorSendsToPharm from "../components/DoctorSendsToPharm";
 import FollowUpRequests from "../components/FollowUpRequests";
+import DoctorChatsPatients from "../components/DoctorChatsPatients";
+import NotificationsDoctor from "../components/NotificationsDoctor";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -149,6 +151,16 @@ const DoctorHome = () => {
                   Chat
                 </button>
               </li>
+              <li
+                className={`nav-item ${activeTab === "notifications" ? "active" : ""}`}
+              >
+                <button
+                  className="nav-link btn btn-link"
+                  onClick={() => handleTabClick("notifications")}
+                >
+                  Notifications
+                </button>
+              </li>
             </ul>
           </div>
         </nav>
@@ -221,8 +233,14 @@ const DoctorHome = () => {
             <div className="card mt-4">
               <DoctorChats />
               <DoctorSendsToPharm/>
+              <DoctorChatsPatients/>
             </div>
           )}
+      {activeTab === "notifications" && (
+            <div className="card mt-4">
+              <NotificationsDoctor/>
+            </div>
+          )} 
           
     </div>
   );

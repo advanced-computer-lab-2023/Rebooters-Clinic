@@ -20,6 +20,7 @@ import MedicalHistoryComponent from "../components/MedicalHistory";
 import ViewFamilyHealthPackage from "../components/ViewFamilyHealthPackage";
 import PatientFamilyAppointments from "../components/PatientFamilyAppointments";
 import PatientChats from "../components/PatientChats";
+import NotificationsPatient from "../components/NotificationsPatient";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
@@ -185,6 +186,16 @@ const PatientHome = () => {
                 Chat
               </button>
             </li>
+            <li
+              className={`nav-item ${activeTab === "notifications" ? "active" : ""}`}
+            >
+              <button
+                className="nav-link btn btn-link"
+                onClick={() => handleTabClick("notifications")}
+              >
+                Notifications
+              </button>
+            </li>
           </ul>
         </div>
       </nav>
@@ -266,6 +277,11 @@ const PatientHome = () => {
       {activeTab === "chat" && (
         <div className="mt-4">
           <PatientChats />
+        </div>
+      )}
+      {activeTab === "notifications" && (
+        <div className="mt-4">
+          <NotificationsPatient />
         </div>
       )}
     </div>

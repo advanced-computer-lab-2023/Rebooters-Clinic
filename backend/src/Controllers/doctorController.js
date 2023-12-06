@@ -3,6 +3,7 @@ const Patient = require("../Models/patientModel");
 const Appointment = require("../Models/appointmentModel");
 const Prescription = require("../Models/prescriptionModel");
 const Contract = require("../Models/contractModel");
+const Notification = require("../Models/notificationModel");
 const DoctorRequest = require("../Models/newDoctorRequestModel");
 const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor password
 const { logout, changePassword } = require("./authController");
@@ -940,6 +941,17 @@ const cancelAppointment = async (req, res) => {
     await appointment.save(); 
     await patient.save();
 
+    // Create a new notification
+    const appointmentNotification = new Notification({
+      recipients: [doctor.username, patient.username],
+      content: `Appointment for ${patient.username} with Dr. ${doctor.username} that was scheduled on ${combinedDateTime} has been cancelled.`,
+    });
+
+    // Save the notification in the database
+    await appointmentNotification.save();
+
+    
+
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -1329,6 +1341,182 @@ const getDoctorFollowUpRequests = async (req, res) => {
 };
 
 
+
+const viewMyChatsWithPatients = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+
+    const chats = await Chat.find({
+      'doctor': doctorUsername,
+    });    
+    if (!chats || chats.length === 0) {
+      return res.status(404).json({ message: 'No chats found.' });
+    }
+
+    res.status(200).json(chats);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching chats' });
+  }
+};
+
+const startNewChatWithPatient = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { messageContent, selectedPatient } = req.body;
+
+    const doctor = await Patient.findOne({ username: doctorUsername });
+
+    if (!doctor) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+
+    const newChat = new Chat({
+      patient: selectedPatient,
+      doctor: doctorUsername,
+      messages: [
+        {
+          username: doctorUsername,
+          userType: 'doctor',
+          content: messageContent,
+        },
+      ],
+    });
+
+    const savedChat = await newChat.save();
+
+
+    res.status(201).json({ savedChat });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error starting a new chat' });
+  }
+};
+
+
+const continueChatWithPatient = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { chatId, messageContent } = req.body;
+
+    // Fetch the chat from the database
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      console.error('Chat not found');
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    // Check if the doctor is the owner of the chat
+    if (chat.doctor !== doctorUsername) {
+      console.error('Unauthorized to continue this chat');
+      return res.status(403).json({ message: 'Unauthorized to continue this chat' });
+    }
+
+    // Add the doctor's message to the messages array in the chat
+    chat.messages.push({
+      username: doctorUsername,
+      userType: 'doctor',
+      content: messageContent,
+    });
+
+    // Save the updated chat to the database
+    const updatedChat = await chat.save();
+
+    // Respond with the updated chat
+    res.status(200).json(updatedChat);
+  } catch (error) {
+    console.error('Error continuing the chat:', error);
+    res.status(500).json({ message: 'Error continuing the chat' });
+  }
+};
+
+const deleteChatWithPatient = async (req, res) => {
+  try {
+    const { chatId } = req.body;
+
+    // Find the chat based on the provided chat ID
+    const chat = await Chat.findById(chatId);
+
+    if (!chat) {
+      return res.status(404).json({ message: 'Chat not found' });
+    }
+
+    // Update the chat to mark it as closed
+    chat.closed = true;
+    await chat.save();
+
+    res.status(200).json({ message: 'Chat closed successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error closing chat' });
+  }
+};
+
+const viewLinkedPatients = async (req,res) =>{
+    try {
+      const  doctorUsername  = req.cookies.username;
+      // Query the Appointment model to find all distinct doctors for the given patient
+      const patients = await Appointment.distinct('patient', { 'doctor': doctorUsername });
+  
+      res.status(200).json({ patients: patients });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error finding patients' });
+    }
+  
+  };
+  
+
+  const createZoomMeetingNotification = async (req, res) => {
+    try {
+      const doctorUsername = req.cookies.username;
+      const { patientUsername} = req.body;
+  
+      const patient = await Patient.findOne({ username: patientUsername });
+      const doctor = await Doctor.findOne({ username: doctorUsername });
+  
+      if (!doctor || !patient) {
+        return res.status(404).json({ error: "Doctor or patient not found." });
+      }
+  
+      // Zoom URL scheme for starting a new meeting in the Zoom web app
+      const zoomMeetingLink = `https://zoom.us/start?confno=`;
+  
+      // Create a new notification
+      const zoomMeetingNotification = new Notification({
+        recipients: [doctorUsername, patientUsername],
+        content: `New Zoom meeting scheduled with ${patientUsername}. Click [here](${zoomMeetingLink}) to create the meeting.`,
+      });
+  
+      // Save the notification in the database
+      await zoomMeetingNotification.save();
+  
+      
+      res.status(200).json({ message: "Zoom meeting notification created successfully." });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "An error occurred while creating the Zoom meeting notification." });
+    }
+  };
+  
+  const getDoctorNotifications = async (req, res) => {
+    try {
+      const doctorUsername = req.cookies.username;
+  
+      // Fetch notifications where the doctor username is in the recipients list
+      const notifications = await Notification.find({ recipients: { $in: [doctorUsername] } });
+  
+      res.status(200).json(notifications);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching notifications.' });
+    }
+  };
+ 
+
+
+
 module.exports = {
   cancelAppointment,
   viewProfile,
@@ -1364,5 +1552,14 @@ module.exports = {
   acceptFollowUpRequest,
   revokeFollowUpRequest,
   rescheduleAppointment,
-  getDoctorFollowUpRequests
+  getDoctorFollowUpRequests,
+  viewMyChatsWithPatients, 
+  startNewChatWithPatient,
+  continueChatWithPatient,
+  deleteChatWithPatient,
+  viewLinkedPatients,
+  createZoomMeetingNotification,
+  getDoctorNotifications
+
+
 };

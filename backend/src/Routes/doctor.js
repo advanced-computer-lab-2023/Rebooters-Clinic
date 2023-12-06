@@ -6,7 +6,9 @@ const {cancelAppointment,viewProfile, updateProfile, viewMyPatients ,
     searchPatientPrescriptionsByName , viewWallet, filterByPastDate ,viewHealthRecords , 
     viewContract ,acceptContract , rejectContract , addAvailableSlots , scheduleAppointment , addHealthRecord, 
     logout, changePassword, addPrescription, removeFromPrescription, addToPrescription, editPrescription,sendMessageToPharmacist,
-     viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat , acceptFollowUpRequest , revokeFollowUpRequest , rescheduleAppointment , getDoctorFollowUpRequests } = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+     viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat , acceptFollowUpRequest , revokeFollowUpRequest , rescheduleAppointment , getDoctorFollowUpRequests , viewMyChatsWithPatients, startNewChatWithPatient, continueChatWithPatient, deleteChatWithPatient,
+     viewLinkedPatients, createZoomMeetingNotification, getDoctorNotifications} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+     
 
 const router = express.Router() //create a router
 
@@ -46,7 +48,6 @@ router.post("/cancelAppointment", requireAuth ,cancelAppointment);
 
 router.post('/sendMessageToPharmacist', requireAuth, sendMessageToPharmacist);
 router.get("/viewAllChats", requireAuth ,viewAllChats);
-
 router.post('/startNewChat',requireAuth, startNewChat);
 router.get('/viewMyChats',requireAuth, viewMyChats);
 router.post('/continueChat',requireAuth, continueChat);
@@ -58,4 +59,11 @@ router.post("/revokeFollowUpRequest", requireAuth ,revokeFollowUpRequest);
 router.post("/rescheduleAppointment", requireAuth ,rescheduleAppointment);
 router.get("/getDoctorFollowUpRequests", requireAuth ,getDoctorFollowUpRequests);
 
+router.get("/viewMyChatsWithPatients", requireAuth ,viewMyChatsWithPatients);
+router.get("/viewLinkedPatients", requireAuth ,viewLinkedPatients);
+router.post('/startNewChatWithPatient',requireAuth, startNewChatWithPatient);
+router.post('/continueChatWithPatient',requireAuth, continueChatWithPatient);
+router.post('/deleteChatWithPatient',requireAuth, deleteChatWithPatient);
+router.post('/createZoomMeetingNotification',requireAuth, createZoomMeetingNotification);
+router.get("/getDoctorNotifications", requireAuth ,getDoctorNotifications);
 module.exports = router;

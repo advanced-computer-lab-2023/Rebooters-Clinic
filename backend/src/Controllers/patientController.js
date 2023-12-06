@@ -5,6 +5,7 @@ const Chat = require("../Models/chatModel");
 const Prescription = require("../Models/prescriptionModel");
 const Appointment = require("../Models/appointmentModel");
 const HealthPackage = require("../Models/healthPackageModel");
+const Notification = require("../Models/notificationModel");
 const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor password
 const { logout, changePassword } = require("./authController");
 const { createToken } = require("./authController");
@@ -1109,6 +1110,15 @@ const makeAppointment = async (req, res) => {
     await doctor.save();
     await appointment.save();
 
+    // Create a new notification
+    const appointmentNotification = new Notification({
+      recipients: [doctorUsername, patient.username],
+      content: `New appointment for ${patient.username} with Dr. ${doctor.username} scheduled on ${combinedDateTime}.`,
+    });
+
+    // Save the notification in the database
+    await appointmentNotification.save();
+
     const prescription = new Prescription({
       patientName: patient.username,
       doctorName: doctorUsername,
@@ -1459,6 +1469,15 @@ const cancelAppointment = async (req, res) => {
     await appointment.save(); 
     await patient.save();
 
+    // Create a new notification
+    const appointmentNotification = new Notification({
+      recipients: [doctorUsername, patient.username],
+      content: `Appointment for ${patient.username} with Dr. ${doctor.username} that was scheduled on ${combinedDateTime} has been cancelled.`
+    });
+
+    // Save the notification in the database
+    await appointmentNotification.save();
+
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -1641,7 +1660,54 @@ const viewLinkedDoctors = async (req,res) =>{
   };
   
 
-
+const createZoomMeetingNotification = async (req, res) => {
+    try {
+      const patientUsername = req.cookies.username;
+      const { doctorUsername } = req.body;
+  
+      const patient = await Patient.findOne({ username: patientUsername });
+      const doctor = await Doctor.findOne({ username: doctorUsername });
+  
+      if (!doctor || !patient) {
+        return res.status(404).json({ error: "Doctor or patient not found." });
+      }
+  
+      // Zoom URL scheme for starting a new meeting in the Zoom web app
+      const zoomMeetingLink = `https://zoom.us/start?confno=`;
+  
+      // Create a new notification
+      const zoomMeetingNotification = new Notification({
+        recipients: [doctorUsername, patientUsername],
+        content: `New Zoom meeting scheduled with ${patientUsername}. Click <a href="${zoomMeetingLink}" target="_blank">here</a> to create the meeting.`,
+      });
+  
+      // Save the notification in the database
+      await zoomMeetingNotification.save();
+      
+  
+      
+      res.status(200).json({ message: "Zoom meeting notification created successfully." });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "An error occurred while creating the Zoom meeting notification." });
+    }
+  };
+  
+ 
+  const getPatientNotifications = async (req, res) => {
+    try {
+      const patientUsername = req.cookies.username;
+  
+      // Fetch notifications where the patient username is in the recipients list
+      const notifications = await Notification.find({ recipients: { $in: [patientUsername] } });
+  
+      res.status(200).json(notifications);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while fetching notifications.' });
+    }
+  };
+  
 
 
 
@@ -1688,5 +1754,7 @@ module.exports = {
   continueChatWithDoctor,
   viewMyChats,
   deleteChatWithDoctor,
-  viewLinkedDoctors
+  viewLinkedDoctors,
+  createZoomMeetingNotification,
+  getPatientNotifications
 };
