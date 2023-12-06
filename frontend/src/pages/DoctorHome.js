@@ -152,7 +152,9 @@ const DoctorHome = () => {
                 </button>
               </li>
               <li
-                className={`nav-item ${activeTab === "notifications" ? "active" : ""}`}
+                className={`nav-item ${
+                  activeTab === "notifications" ? "active" : ""
+                }`}
               >
                 <button
                   className="nav-link btn btn-link"
@@ -194,30 +196,36 @@ const DoctorHome = () => {
         </div>
       ) : (
         <>
-        {activeTab === "home" && (
-          <div className="card mt-4">
-            {activeTab === "home" && <DoctorWallet />}
-          </div>)}
+          {activeTab === "home" && (
+            <div className="card mt-4">
+              {activeTab === "home" && <DoctorWallet />}
+            </div>
+          )}
           {activeTab === "settings" && (
-          <div className="card mt-4">
-            {activeTab === "settings" && <DoctorUpdateProfile />}
-          </div>)}
+            <div className="card mt-4">
+              {activeTab === "settings" && <DoctorUpdateProfile />}
+            </div>
+          )}
           {activeTab === "settings" && (
-          <div className="card mt-4">
-            {activeTab === "settings" && <ChangePassword userType="doctor" />}
-          </div>)}
+            <div className="card mt-4">
+              {activeTab === "settings" && <ChangePassword userType="doctor" />}
+            </div>
+          )}
           {activeTab === "appointments" && (
-          <div className="card mt-4">
-            {activeTab === "appointments" && <DoctorMyAppointments />}
-          </div> )}
+            <div className="card mt-4">
+              {activeTab === "appointments" && <DoctorMyAppointments />}
+            </div>
+          )}
           {activeTab === "patients" && (
-          <div className="card mt-4">
-             <DoctorMyPatients />
-          </div> )}
+            <div className="card mt-4">
+              <DoctorMyPatients />
+            </div>
+          )}
           {activeTab === "patients" && (
-          <div className="card mt-4">
-            <SearchForPatient />
-          </div> )}
+            <div className="card mt-4">
+              <SearchForPatient />
+            </div>
+          )}
           {activeTab === "appointments" && (
             <div className="card mt-4">
               <TimeSlots />
@@ -225,23 +233,29 @@ const DoctorHome = () => {
           )}
           {activeTab === "appointments" && (
             <div className="card mt-4">
-            <FollowUpRequests />
-          </div>)}
+              <FollowUpRequests />
+            </div>
+          )}
         </>
       )}
       {activeTab === "chat" && (
-            <div className="card mt-4">
-              <DoctorChats />
-              <DoctorSendsToPharm/>
-              <DoctorChatsPatients/>
-            </div>
-          )}
+        <div>
+          <div className="card mt-4">
+            <DoctorSendsToPharm />
+          </div>
+          <div className="card mt-4">
+            <DoctorChatsPatients />
+          </div>
+          <div className="card mt-4">
+            <DoctorChats />
+          </div>
+        </div>
+      )}
       {activeTab === "notifications" && (
-            <div className="card mt-4">
-              <NotificationsDoctor/>
-            </div>
-          )} 
-          
+        <div className="card mt-4">
+          <NotificationsDoctor />
+        </div>
+      )}
     </div>
   );
 };

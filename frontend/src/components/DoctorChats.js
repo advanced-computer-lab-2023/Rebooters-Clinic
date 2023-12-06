@@ -4,7 +4,7 @@ const DoctorChats = () => {
   const [chats, setChats] = useState([]);
   const [messageContents, setMessageContents] = useState({});
   const [pollingInterval, setPollingInterval] = useState(null);
-
+  const [showChats, setShowChats] = useState(false);
 
   const fetchChats = async () => {
     try {
@@ -57,9 +57,7 @@ const DoctorChats = () => {
       const json = await response.json();
 
       // Refresh the chat list
-      setChats(
-        chats.map((chat) => (chat._id === chatId ? json : chat))
-      );
+      setChats(chats.map((chat) => (chat._id === chatId ? json : chat)));
       // Clear the content for the specific chatId
       setMessageContents({ ...messageContents, [chatId]: "" });
     } catch (error) {
@@ -69,56 +67,68 @@ const DoctorChats = () => {
 
   return (
     <div className="card">
-      <h2 className="card-header">All Chats</h2>
-      {chats.length === 0 ? (
+      <h2 className="card-header">
+        All Chats{" "}
+        <div>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowChats(!showChats)}
+          >
+            Toggle Chats
+          </button>
+        </div>
+      </h2>
+      {showChats && chats.length === 0 ? (
         <p>There are no chats</p>
       ) : (
         <div>
-          {chats
-          .filter((chat) => chat.patient === "false")
-          .map((chat) => (
-             /*!chat.patient &&(*/
-            <div key={chat._id}>
-              <h4>Chat ID: {chat._id}</h4>
-              <div>
-                {chat.messages.length > 0 &&
-                  chat.messages.map((message, index) => (
-                    <div key={index}>
-                      <strong>{message.userType}: </strong> {message.content}
-                      <span style={{ marginLeft: "10px", color: "gray" }}>
-                        {new Date(message.timestamp).toLocaleString()}
-                      </span>
+          {showChats &&
+            chats
+              // .filter((chat) => chat.patient === "false")
+              .map((chat) => (
+                /*!chat.patient &&(*/
+                <div key={chat._id}>
+                  <h4>Chat ID: {chat._id}</h4>
+                  <div>
+                    {chat.messages.length > 0 &&
+                      chat.messages.map((message, index) => (
+                        <div key={index}>
+                          <strong>{message.userType}: </strong>{" "}
+                          {message.content}
+                          <span style={{ marginLeft: "10px", color: "gray" }}>
+                            {new Date(message.timestamp).toLocaleString()}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                  {chat.closed ? (
+                    <p>This chat is closed.</p>
+                  ) : (
+                    <div>
+                      <textarea
+                        rows="1"
+                        cols="25"
+                        placeholder="Type your reply here..."
+                        value={messageContents[chat._id] || ""}
+                        onChange={(e) =>
+                          setMessageContents({
+                            ...messageContents,
+                            [chat._id]: e.target.value,
+                          })
+                        }
+                      ></textarea>
+                      <br />
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => sendMessageToPharmacist(chat._id)}
+                      >
+                        Send
+                      </button>
                     </div>
-                  ))}
-              </div>
-              {chat.closed ? (
-                <p>This chat is closed.</p>
-              ) : (
-                <div>
-                  <textarea
-                    rows="1"
-                    cols="25"
-                    placeholder="Type your reply here..."
-                    value={messageContents[chat._id] || ""}
-                    onChange={(e) =>
-                      setMessageContents({
-                        ...messageContents,
-                        [chat._id]: e.target.value,
-                      })
-                    }
-                  ></textarea>
-                  <br />
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => sendMessageToPharmacist(chat._id)}
-                  >
-                    Send
-                  </button>
+                  )}
                 </div>
-              )}
-            </div>
-            /*)*/
-          ))}
+                /*)*/
+              ))}
         </div>
       )}
     </div>

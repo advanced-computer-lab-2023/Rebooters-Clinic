@@ -60,10 +60,9 @@ const FollowUpRequests = () => {
   return (
     <div>
       <h2>Follow-up Requests</h2>
-      <table>
+      <table className="table table-bordered">
         <thead>
           <tr>
-            <th>Doctor</th>
             <th>Patient</th>
             <th>Reason</th>
             <th>Preferred Date</th>
@@ -73,15 +72,14 @@ const FollowUpRequests = () => {
         <tbody>
           {followUpRequests.map((request, index) => (
             <tr key={request.datetime}>
-              <td>{request.doctor}</td>
               <td>{request.patient}</td>
               <td>{request.FollowUpRequest.reason}</td>
-              <td>{request.FollowUpRequest.preferredDate}</td>
+              <td>{new Date(request.FollowUpRequest.preferredDate).toLocaleString()}</td>
               <td>
                 {!request.accepted && !request.revoked && (
                   <>
-                    <button onClick={() => handleAccept(request.datetime, index)}>Accept</button>
-                    <button onClick={() => handleRevoke(request.datetime, index)}>Revoke</button>
+                    <button className='btn btn-primary' onClick={() => handleAccept(request.datetime, index)}>Accept</button>
+                    <button className='btn btn-danger' onClick={() => handleRevoke(request.datetime, index)}>Revoke</button>
                   </>
                 )}
                 {request.accepted && <p>Follow-up request accepted!</p>}

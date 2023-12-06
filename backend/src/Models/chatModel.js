@@ -4,19 +4,19 @@ const Schema = mongoose.Schema;
 const chatSchema = new Schema({
   patient: {
      type: String, 
-     default: false,
+     default: "false",
      },
   pharmacist: { 
      type: String, 
-     default: "",
+     default: "false",
     },
     doctor: { 
       type: String, 
-      default: "",
+      default: "false",
      },
      closed: {
       type: Boolean,
-      default: false,
+      default: "false",
     },
   messages: [
     {

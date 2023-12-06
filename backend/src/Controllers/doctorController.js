@@ -1175,7 +1175,8 @@ const viewMyChats = async (req, res) => {
             { doctor: doctorUsername },
           ],
         },
-        { patient: "" }, 
+        { patient: "false" }, 
+        { closed: false }, 
       ],
     });    
     if (!chats || chats.length === 0) {
@@ -1348,6 +1349,7 @@ const viewMyChatsWithPatients = async (req, res) => {
 
     const chats = await Chat.find({
       'doctor': doctorUsername,
+      'pharmacist' : "false"
     });    
     if (!chats || chats.length === 0) {
       return res.status(404).json({ message: 'No chats found.' });
@@ -1365,7 +1367,7 @@ const startNewChatWithPatient = async (req, res) => {
     const doctorUsername = req.cookies.username;
     const { messageContent, selectedPatient } = req.body;
 
-    const doctor = await Patient.findOne({ username: doctorUsername });
+    const doctor = await Doctor.findOne({ username: doctorUsername });
 
     if (!doctor) {
       return res.status(404).json({ message: 'Doctor not found' });

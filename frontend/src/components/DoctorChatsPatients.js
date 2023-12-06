@@ -63,7 +63,7 @@ const DoctorChatsPatients = () => {
     };
   }, []);
 
-  console.log(patients);
+  //console.log(patients);
 
   const startVideoChatWithPatient = async (patientUsername) => {
     try {
@@ -88,7 +88,7 @@ const DoctorChatsPatients = () => {
   };
 
 
-  const startNewChatWithPatient = async () => {
+  const startNewChatWithPatient = async (patientUsername) => {
     try {
       if (!newChatContent.trim()) {
         setErrorMessage('You have to type something');
@@ -100,7 +100,7 @@ const DoctorChatsPatients = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messageContent: newChatContent , selectedPatient: selectedPatient}),
+        body: JSON.stringify({ messageContent: newChatContent , selectedPatient: patientUsername}),
       });
       const json = await response.json();
       // Refresh the chat list
@@ -232,7 +232,7 @@ const DoctorChatsPatients = () => {
               onChange={(e) => setNewChatContent(e.target.value)}
             ></textarea>
             <br />
-            <button className='btn btn-primary' onClick={startNewChatWithPatient}>
+            <button className='btn btn-primary' onClick={() =>startNewChatWithPatient(selectedPatient)}>
               Start Chat
             </button>
             <button className='btn btn-success' onClick={() => startVideoChatWithPatient(selectedPatient)}>

@@ -29,9 +29,14 @@ const DoctorMyAppointments = () => {
   const [showScheduleFollowup, setShowScheduleFollowup] = useState(false);
   const [rescheduleDatetime, setRescheduleDatetime] = useState("");
   const [oldDatetime, setOldDatetime] = useState("");
-  const [showRescheduleAppointment, setShowRescheduleAppointment] = useState(false);
+  const [showRescheduleAppointment, setShowRescheduleAppointment] =
+    useState(false);
   const [rescheduleSuccess, setRescheduleSuccess] = useState(false);
+  const [showActions, setShowActions] = useState(false);
 
+  const handleToggleActions = () => {
+    setShowActions(!showActions);
+  };
 
   const handleAddPrescription = (patient) => {
     setShowAddPrescription(true);
@@ -148,7 +153,7 @@ const DoctorMyAppointments = () => {
       setError("An error occurred while filtering appointments by status");
     }
   };
-  
+
   const handleCancelAppointment = async (appointment) => {
     try {
       const response = await fetch("/api/doctor/cancelAppointment", {
@@ -157,24 +162,21 @@ const DoctorMyAppointments = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          appointmentGiven: appointment
+          appointmentGiven: appointment,
         }),
-      })
-
-    }catch(error){
-    }
-
-  } 
+      });
+    } catch (error) {}
+  };
 
   const handleRescheduleAppointment = async () => {
     try {
       // Check if rescheduleDatetime is empty
       if (!rescheduleDatetime || rescheduleDatetime === null) {
         // Optionally display an error message or handle it as needed
-        console.error('Reschedule date and time cannot be empty.');
+        console.error("Reschedule date and time cannot be empty.");
         return;
       }
-  
+
       const response = await fetch("/api/doctor/rescheduleAppointment", {
         method: "POST",
         headers: {
@@ -185,7 +187,7 @@ const DoctorMyAppointments = () => {
           datetime: oldDatetime,
         }),
       });
-  
+
       if (response.ok) {
         setRescheduleSuccess(true);
       } else {
@@ -193,11 +195,10 @@ const DoctorMyAppointments = () => {
         // Optionally handle other error cases
       }
     } catch (error) {
-      console.error('Error rescheduling appointment:', error);
+      console.error("Error rescheduling appointment:", error);
       setRescheduleSuccess(false);
     }
   };
-  
 
   const filterAppointmentsByDate = async () => {
     try {
@@ -411,11 +412,13 @@ const DoctorMyAppointments = () => {
         </div>
       )}
 
-{showRescheduleAppointment && (
+      {showRescheduleAppointment && (
         <div className="modal-overlay">
           <div className="card">
             <div className="">
-              <label htmlFor="followUpDatetime">Choose new date and time:</label>
+              <label htmlFor="followUpDatetime">
+                Choose new date and time:
+              </label>
               <input
                 type="datetime-local"
                 id="followUpDatetime"
@@ -427,14 +430,20 @@ const DoctorMyAppointments = () => {
               <p>Appointment rescheduled successfully!</p>
             ) : (
               <>
-                <button className="btn btn-danger" onClick={handleRescheduleAppointment}>
+                <button
+                  className="btn btn-danger"
+                  onClick={handleRescheduleAppointment}
+                >
                   Reschedule
                 </button>
               </>
             )}
-            <button className="btn btn-danger" onClick={handleCloseRescheduleAppointment}>
-                  Close
-                </button>
+            <button
+              className="btn btn-danger"
+              onClick={handleCloseRescheduleAppointment}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
@@ -637,65 +646,76 @@ const DoctorMyAppointments = () => {
                   <td>{appointment.status}</td>
                   <td>
                     <button
-                      className="btn btn-info"
-                      onClick={(e) => {
-                        handleViewProfile(appointment.patient);
-                      }}
-                    >
-                      View Patient Profile
-                    </button>
-                    <button
                       className="btn btn-primary"
-                      onClick={(e) => {
-                        handleAddPrescription(appointment.patient);
-                      }}
+                      onClick={handleToggleActions}
                     >
-                      Add Prescription
+                      {showActions ? "Hide Actions" : "Show Actions"}
                     </button>
-                    <button
-                      className="btn btn-success"
-                      onClick={(e) => {
-                        handleEditPrescription(appointment.patient);
-                      }}
-                    >
-                      Manage Prescriptions
-                    </button>
-                    <button
-                      className="btn btn-warning"
-                      onClick={(e) => {
-                        handleAddHealthRecord(appointment.patient);
-                      }}
-                    >
-                      Add Health Record
-                    </button>
-                    {appointment.status == "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleScheduleFollowup(appointment.patient);
-                      }}
-                    >
-                      Schedule Followup
-                    </button>
+                    {showActions && (
+                      <>
+                        <button
+                          className="btn btn-info"
+                          onClick={(e) => {
+                            handleViewProfile(appointment.patient);
+                          }}
+                        >
+                          View Patient Profile
+                        </button>
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            handleAddPrescription(appointment.patient);
+                          }}
+                        >
+                          Add Prescription
+                        </button>
+                        <button
+                          className="btn btn-success"
+                          onClick={(e) => {
+                            handleEditPrescription(appointment.patient);
+                          }}
+                        >
+                          Manage Prescriptions
+                        </button>
+                        <button
+                          className="btn btn-warning"
+                          onClick={(e) => {
+                            handleAddHealthRecord(appointment.patient);
+                          }}
+                        >
+                          Add Health Record
+                        </button>
+                        {appointment.status == "Completed" && (
+                          <button
+                            className="btn btn-primary"
+                            onClick={(e) => {
+                              handleScheduleFollowup(appointment.patient);
+                            }}
+                          >
+                            Schedule Followup
+                          </button>
+                        )}
+                        {appointment.status !== "Cancelled" &&
+                          appointment.status !== "Completed" && (
+                            <button
+                              className="btn btn-primary"
+                              onClick={(e) => {
+                                handleCancelAppointment(appointment);
+                              }}
+                            >
+                              Cancel Appointment
+                            </button>
+                          )}
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            handleShowRescheduleAppointment(appointment);
+                          }}
+                        >
+                          Reschedule Appointment
+                        </button>
+                      </>
                     )}
-                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleCancelAppointment(appointment);
-                      }}
-                    >
-                     Cancel Appointment
-                    </button>
-                    )}
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleShowRescheduleAppointment(appointment);
-                      }}
-                    >
-                     Reschedule Appointment
-                    </button>
                   </td>
                 </tr>
               ))
@@ -713,6 +733,14 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
+                  <button
+                      className="btn btn-primary"
+                      onClick={handleToggleActions}
+                    >
+                      {showActions ? 'Hide Actions' : 'Show Actions'}
+                    </button>
+                    {showActions && (
+                      <>
                     <button
                       className="btn btn-info"
                       onClick={(e) => {
@@ -746,34 +774,38 @@ const DoctorMyAppointments = () => {
                       Add Health Record
                     </button>
                     {appointment.status == "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleScheduleFollowup(appointment.patient);
-                      }}
-                    >
-                      Schedule Followup
-                    </button>
+                      <button
+                        className="btn btn-primary"
+                        onClick={(e) => {
+                          handleScheduleFollowup(appointment.patient);
+                        }}
+                      >
+                        Schedule Followup
+                      </button>
                     )}
-                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleCancelAppointment(appointment);
-                      }}
-                    >
-                     Cancel Appointment
-                    </button>
-                    )}
+                    {appointment.status !== "Cancelled" &&
+                      appointment.status !== "Completed" && (
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            handleCancelAppointment(appointment);
+                          }}
+                        >
+                          Cancel Appointment
+                        </button>
+                      )}
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
                         handleShowRescheduleAppointment(appointment);
                       }}
                     >
-                     Reschedule Appointment
+                      Reschedule Appointment
                     </button>
+                    </>
+                    )}
                   </td>
+
                 </tr>
               ))
             : sortedAppointments.length > 0
@@ -789,6 +821,14 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
+                  <button
+                      className="btn btn-primary"
+                      onClick={handleToggleActions}
+                    >
+                      {showActions ? 'Hide Actions' : 'Show Actions'}
+                    </button>
+                    {showActions && (
+                      <>
                     <button
                       className="btn btn-info"
                       onClick={(e) => {
@@ -822,33 +862,36 @@ const DoctorMyAppointments = () => {
                       Add Health Record
                     </button>
                     {appointment.status == "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleScheduleFollowup(appointment.patient);
-                      }}
-                    >
-                      Schedule Followup
-                    </button>
+                      <button
+                        className="btn btn-primary"
+                        onClick={(e) => {
+                          handleScheduleFollowup(appointment.patient);
+                        }}
+                      >
+                        Schedule Followup
+                      </button>
                     )}
-                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleCancelAppointment(appointment);
-                      }}
-                    >
-                     Cancel Appointment
-                    </button>
-                    )}
+                    {appointment.status !== "Cancelled" &&
+                      appointment.status !== "Completed" && (
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            handleCancelAppointment(appointment);
+                          }}
+                        >
+                          Cancel Appointment
+                        </button>
+                      )}
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
                         handleShowRescheduleAppointment(appointment);
                       }}
                     >
-                     Reschedule Appointment
+                      Reschedule Appointment
                     </button>
+                    </>
+                    )}
                   </td>
                 </tr>
               ))
@@ -865,6 +908,14 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
+                  <button
+                      className="btn btn-primary"
+                      onClick={handleToggleActions}
+                    >
+                      {showActions ? 'Hide Actions' : 'Show Actions'}
+                    </button>
+                    {showActions && (
+                      <>
                     <button
                       className="btn btn-info"
                       onClick={(e) => {
@@ -898,33 +949,36 @@ const DoctorMyAppointments = () => {
                       Add Health Record
                     </button>
                     {appointment.status == "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleScheduleFollowup(appointment.patient);
-                      }}
-                    >
-                      Schedule Followup
-                    </button>
+                      <button
+                        className="btn btn-primary"
+                        onClick={(e) => {
+                          handleScheduleFollowup(appointment.patient);
+                        }}
+                      >
+                        Schedule Followup
+                      </button>
                     )}
-                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleCancelAppointment(appointment);
-                      }}
-                    >
-                     Cancel Appointment
-                    </button>
-                    )}
+                    {appointment.status !== "Cancelled" &&
+                      appointment.status !== "Completed" && (
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            handleCancelAppointment(appointment);
+                          }}
+                        >
+                          Cancel Appointment
+                        </button>
+                      )}
                     <button
                       className="btn btn-primary"
                       onClick={(e) => {
                         handleShowRescheduleAppointment(appointment);
                       }}
                     >
-                     Reschedule Appointment
+                      Reschedule Appointment
                     </button>
+                    </>
+                    )}
                   </td>
                 </tr>
               ))
@@ -941,65 +995,76 @@ const DoctorMyAppointments = () => {
                   <td>{appointment.status}</td>
                   <td>
                     <button
-                      className="btn btn-info"
-                      onClick={(e) => {
-                        handleViewProfile(appointment.patient);
-                      }}
-                    >
-                      View Patient Profile
-                    </button>
-                    <button
                       className="btn btn-primary"
-                      onClick={(e) => {
-                        handleAddPrescription(appointment.patient);
-                      }}
+                      onClick={handleToggleActions}
                     >
-                      Add Prescription
+                      {showActions ? 'Hide Actions' : 'Show Actions'}
                     </button>
-                    <button
-                      className="btn btn-success"
-                      onClick={(e) => {
-                        handleEditPrescription(appointment.patient);
-                      }}
-                    >
-                      Manage Prescriptions
-                    </button>
-                    <button
-                      className="btn btn-warning"
-                      onClick={(e) => {
-                        handleAddHealthRecord(appointment.patient);
-                      }}
-                    >
-                      Add Health Record
-                    </button>
-                    {appointment.status == "Completed" &&(
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleScheduleFollowup(appointment.patient);
-                      }}
-                    >
-                      Schedule Followup
-                    </button>
+                    {showActions && (
+                      <>
+                        <button
+                          className="btn btn-info"
+                          onClick={(e) => {
+                            handleViewProfile(appointment.patient);
+                          }}
+                        >
+                          View Patient Profile
+                        </button>
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            handleAddPrescription(appointment.patient);
+                          }}
+                        >
+                          Add Prescription
+                        </button>
+                        <button
+                          className="btn btn-success"
+                          onClick={(e) => {
+                            handleEditPrescription(appointment.patient);
+                          }}
+                        >
+                          Manage Prescriptions
+                        </button>
+                        <button
+                          className="btn btn-warning"
+                          onClick={(e) => {
+                            handleAddHealthRecord(appointment.patient);
+                          }}
+                        >
+                          Add Health Record
+                        </button>
+                        {appointment.status == "Completed" && (
+                          <button
+                            className="btn btn-primary"
+                            onClick={(e) => {
+                              handleScheduleFollowup(appointment.patient);
+                            }}
+                          >
+                            Schedule Followup
+                          </button>
+                        )}
+                        {appointment.status !== "Cancelled" &&
+                          appointment.status !== "Completed" && (
+                            <button
+                              className="btn btn-primary"
+                              onClick={(e) => {
+                                handleCancelAppointment(appointment);
+                              }}
+                            >
+                              Cancel Appointment
+                            </button>
+                          )}
+                        <button
+                          className="btn btn-primary"
+                          onClick={(e) => {
+                            handleShowRescheduleAppointment(appointment);
+                          }}
+                        >
+                          Reschedule Appointment
+                        </button>
+                      </>
                     )}
-                    {appointment.status !=="Cancelled" && appointment.status !== "Completed" && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleCancelAppointment(appointment);
-                      }}
-                    >
-                     Cancel Appointment
-                    </button>
-                    )}
-                     <button
-                      className="btn btn-primary"
-                      onClick={(e) => {
-                        handleShowRescheduleAppointment(appointment);
-                      }}
-                    >
-                     Reschedule Appointment
-                    </button>
                   </td>
                 </tr>
               ))}

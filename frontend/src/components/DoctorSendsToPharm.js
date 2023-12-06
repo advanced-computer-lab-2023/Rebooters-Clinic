@@ -62,23 +62,18 @@ const DoctorSendsToPharm = () => {
         body: JSON.stringify({ messageContent: newChatContent})
       });
 
-      console.log('Response:', response);
+      // console.log('Response:', response);
       if (response.ok) {
         const json = await response.json();
 
-        console.log('json.savedChat:', json.savedChat);
-        console.log('json.savedChat._id:', json.savedChat._id);
-
-        if (json.savedChat && json.savedChat._id) {
-          setActiveChat(json.savedChat._id);
+        // console.log('json.savedChat:', json);
+        // console.log('json.savedChat._id:', json._id);
+          setActiveChat(json._id);
           // Refresh the chat list
-          setChats([...chats, json.savedChat]);
+          setChats([...chats, json]);
           // Clear the newChatContent and error message
           setNewChatContent('');
           setErrorMessage('');
-        } else {
-          console.error('Error starting a new chat: savedChat or savedChat._id is undefined');
-        }
       } else {
         // Handle error response
         console.error('Error starting a new chat:', response.status, response.statusText);
@@ -110,7 +105,7 @@ const DoctorSendsToPharm = () => {
         await fetchChats();
   
         // Clear the content for the specific chatId and error message
-        setMessageContents({ ...messageContents, [chatId]: '' });
+        setMessageContents({ ...messageContents, [chatId]: "" });
         setErrorMessage('');
       } else {
         console.error('Error continuing the chat:', response.status, response.statusText);
@@ -146,46 +141,14 @@ const DoctorSendsToPharm = () => {
     <div className='container'>
       <h2>Chats With Pharmacists</h2>
       <div>
-        {/* Start a New Chat */}
-        {activeChat === null && (
-          <div>
-            <h3>Start a New Chat</h3>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-            <textarea
-              rows="1"
-              cols="25"
-              placeholder="Type your message here..."
-              value={newChatContent}
-              onChange={(e) => setNewChatContent(e.target.value)}
-            ></textarea>
-            <br />
-            <br />
-            <button className='btn btn-primary' onClick={startNewChat}>
-              Start Chat
-            </button>
-          </div>
-        )}
+
 
         {/* Existing Chats */}
         <div>
-          {chats.map((chat) => (
+          {chats.length>0 ? chats.map((chat) => (
             <div key={chat._id}>
-              {chat.closed && (
-                <p>This chat is closed.</p>
-              )}
               {!chat.closed && (
                 <div>
-                  <h4>
-                    {activeChat !== chat._id && (
-                      <button
-                        className='btn btn-danger'
-                        style={{ marginLeft: '10px' }}
-                        onClick={() => deleteChat(chat._id)}
-                      >
-                        Close Chat
-                      </button>
-                    )}
-                  </h4>
                   <div>
                     {chat.messages && chat.messages.map((message, index) => (
                       <div key={index}>
@@ -196,7 +159,6 @@ const DoctorSendsToPharm = () => {
                       </div>
                     ))}
                   </div>
-                  {activeChat === chat._id && (
                     <div>
                       {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                       <textarea
@@ -220,11 +182,28 @@ const DoctorSendsToPharm = () => {
                         Close Chat
                       </button>
                     </div>
-                  )}
+                
                 </div>
               )}
             </div>
-          ))}
+          )): (
+            <div>
+            <h3>Start a New Chat</h3>
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            <textarea
+              rows="1"
+              cols="25"
+              placeholder="Type your message here..."
+              value={newChatContent}
+              onChange={(e) => setNewChatContent(e.target.value)}
+            ></textarea>
+            <br />
+            <br />
+            <button className='btn btn-primary' onClick={startNewChat}>
+              Start Chat
+            </button>
+          </div>
+          )}
         </div>
       </div>
     </div>
