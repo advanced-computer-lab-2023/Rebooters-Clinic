@@ -19,6 +19,7 @@ import NotificationsDoctor from "../components/NotificationsDoctor";
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
   const [contractStatus, setContractStatus] = useState(null);
+  const [hasNewNotification, setHasNewNotification] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const navigate = useNavigate();
 
@@ -152,17 +153,17 @@ const DoctorHome = () => {
                 </button>
               </li>
               <li
-                className={`nav-item ${
-                  activeTab === "notifications" ? "active" : ""
-                }`}
-              >
-                <button
-                  className="nav-link btn btn-link"
-                  onClick={() => handleTabClick("notifications")}
+              className={`nav-item ${
+              activeTab === "notifications" ? "active" : ""
+              }`}
                 >
-                  Notifications
-                </button>
-              </li>
+           <button
+             className={`nav-link btn btn-link ${hasNewNotification ? "font-weight-bold" : ""}`} // Apply bold style if new notifications exist
+                onClick={() => handleTabClick("notifications")}
+            >
+             Notifications
+           </button>
+            </li>
             </ul>
           </div>
         </nav>
@@ -252,8 +253,8 @@ const DoctorHome = () => {
         </div>
       )}
       {activeTab === "notifications" && (
-        <div className="card mt-4">
-          <NotificationsDoctor />
+          <div className="card mt-4">
+          <NotificationsDoctor setNewNotification={setHasNewNotification} />
         </div>
       )}
     </div>

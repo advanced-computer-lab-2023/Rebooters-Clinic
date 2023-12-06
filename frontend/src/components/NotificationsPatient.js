@@ -17,6 +17,10 @@ const NotificationsPatient = () => {
       .catch((error) => console.error('Error fetching notifications:', error));
   }, []);
 
+  const createMarkup = (content) => {
+    return { __html: content };
+  };
+
   return (
     <div className="container">
       <h2>Notifications</h2>
@@ -25,7 +29,8 @@ const NotificationsPatient = () => {
           <li key={index} className="list-group-item">
             <strong>Recipients:</strong> {notification.recipients.join(', ')}
             <br />
-            <strong>Content:</strong> {notification.content}
+            <strong>Content:</strong>{' '}
+            <div dangerouslySetInnerHTML={createMarkup(notification.content)} />
           </li>
         ))}
       </ul>

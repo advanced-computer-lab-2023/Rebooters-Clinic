@@ -1488,7 +1488,7 @@ const viewLinkedPatients = async (req,res) =>{
       // Create a new notification
       const zoomMeetingNotification = new Notification({
         recipients: [doctorUsername, patientUsername],
-        content: `New Zoom meeting scheduled with ${patientUsername}. Click [here](${zoomMeetingLink}) to create the meeting.`,
+        content: `New Zoom meeting scheduled with ${patientUsername}. Click <a href="${zoomMeetingLink}" target="_blank">here</a> to create the meeting.`,
       });
   
       // Save the notification in the database

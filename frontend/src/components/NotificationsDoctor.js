@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const NotificationsDoctor = () => {
+const NotificationsDoctor = ({ setNewNotification }) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
@@ -13,9 +13,17 @@ const NotificationsDoctor = () => {
       credentials: 'include', // Include cookies in the request
     })
       .then((response) => response.json())
-      .then((data) => setNotifications(data))
+      .then((data) => {
+        setNotifications(data);
+        // Notify DoctorHome about new notifications
+        setNewNotification(data.length > 0);
+      })
       .catch((error) => console.error('Error fetching notifications:', error));
-  }, []);
+  }, [setNewNotification]);
+
+  const createMarkup = (content) => {
+    return { __html: content };
+  };
 
   return (
     <div className="container">
@@ -25,7 +33,8 @@ const NotificationsDoctor = () => {
           <li key={index} className="list-group-item">
             <strong>Recipients:</strong> {notification.recipients.join(', ')}
             <br />
-            <strong>Content:</strong> {notification.content}
+            <strong>Content:</strong>{' '}
+            <div dangerouslySetInnerHTML={createMarkup(notification.content)} />
           </li>
         ))}
       </ul>
