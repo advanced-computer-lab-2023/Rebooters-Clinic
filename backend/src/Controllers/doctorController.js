@@ -1281,42 +1281,72 @@ const revokeFollowUpRequest = async (req, res) => {
 };
 
 
-// const rescheduleAppointment = async (req, res) => {
-//   try {
-//     const { appointmentID, newDatetime } = req.body;
-
-//     // Check if the newDatetime is not older than the current date and time
-//     const currentDate = new Date();
-//     const proposedDate = new Date(newDatetime);
-
-//     if (proposedDate < currentDate) {
-//       return res.status(400).json({ error: 'Cannot reschedule to an earlier date.' });
-//     }
-
-//     // Assuming you want to update the appointment's datetime
-//     await Appointment.updateOne(
-//       { _id: appointmentID },
-//       { $set: { datetime: newDatetime } }
-//     );
-
-//     res.json({ message: 'Appointment rescheduled successfully.' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'An error occurred while rescheduling the appointment.' });
-//   }
-// };
-
 const rescheduleAppointment = async (req, res) => {
   try {
     const { datetime, newDatetime } = req.body;
 
     // Assuming you want to update the appointment's datetime
-    await Appointment.updateOne(
-      { datetime },
-      { $set: { datetime: newDatetime } }
-    );
+    const oldAppointment = await Appointment.findOne({datetime});
+    oldAppointment.datetime = newDatetime;
+    oldAppointment.status = "Rescheduled";
+
+
+    const combinedDateTime = new Date(newDatetime);
+    const appointment = await Appointment.findOne({datetime: newDatetime});
+    const doctorUsername = appointment.doctor;
+    const patientUsername = appointment.patient;
+
+    const doctor = await Doctor.findOne({username: doctorUsername});
+    const patient = await Patient.findOne({username: patientUsername});
+
+
+    // Create a new notification
+    const appointmentNotification = new Notification({
+      recipients: [doctorUsername, patientUsername],
+      content: `Appointment for ${patientUsername} with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime}`,
+    });
+
+    // Save the notification in the database
+    await appointmentNotification.save();
+    
+    
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+
+    // Email content for the patient
+    const patientEmailOptions = {
+      from: "Rebooters",
+      to: patient.email,
+      subject: 'Appointment Reschedule',
+      text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime} .\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Email content for the doctor
+    const doctorEmailOptions = {
+      from: "Rebooters",
+      to: doctor.email,
+      subject: 'Appointment Reschedule',
+      text: `Dear Dr. ${doctorUsername},\n\n Your appointment with ${patient.username} has been rescheduled to ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Send emails
+    await transporter.sendMail(patientEmailOptions);
+    await transporter.sendMail(doctorEmailOptions);
+
+    
+
 
     res.json({ message: 'Appointment rescheduled successfully.' });
+
+
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred while rescheduling the appointment.' });

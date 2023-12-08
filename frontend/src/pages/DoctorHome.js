@@ -15,13 +15,52 @@ import DoctorSendsToPharm from "../components/DoctorSendsToPharm";
 import FollowUpRequests from "../components/FollowUpRequests";
 import DoctorChatsPatients from "../components/DoctorChatsPatients";
 import NotificationsDoctor from "../components/NotificationsDoctor";
+import { useNotificationContext } from "../context/NotificationsContext";
 
 const DoctorHome = () => {
+  const { notifications, incrementNotifications } = useNotificationContext();
+  const [prevNotifications, setPrevNotifications] = useState(0);
   const [doctorData, setDoctorData] = useState(null);
-  const [contractStatus, setContractStatus] = useState(null);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const navigate = useNavigate();
+
+
+  const getDoctorNotifications = async () => {
+    try {
+      const response = await fetch('/api/doctor/getDoctorNotifications', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Include cookies in the request
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Check if the count of notifications increased
+        if (data.length > notifications) {
+          incrementNotifications();
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch notifications initially
+    getDoctorNotifications();
+
+    
+
+    // Set up an interval to fetch notifications periodically
+    const intervalId = setInterval(getDoctorNotifications, 5000); // Fetch every 0.5 seconds, for example
+
+    // Clean up the interval when the component unmounts
+    return () => clearInterval(intervalId);
+  }, [notifications, incrementNotifications]);
+
 
   useEffect(() => {
     const checkUserType = async () => {
@@ -81,6 +120,9 @@ const DoctorHome = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+    if (tab === 'notifications') {
+      setPrevNotifications(notifications); // Reset notifications when clicking on the Notifications tab
+    }
   };
   return (
     <div className="container">
@@ -158,10 +200,10 @@ const DoctorHome = () => {
               }`}
                 >
            <button
-             className={`nav-link btn btn-link ${hasNewNotification ? "font-weight-bold" : ""}`} // Apply bold style if new notifications exist
+             className={`nav-link btn btn-link`} // Apply bold style if new notifications exist
                 onClick={() => handleTabClick("notifications")}
             >
-             Notifications
+             Notifications {notifications > prevNotifications && <strong>({notifications - prevNotifications})</strong>}
            </button>
             </li>
             </ul>
@@ -254,7 +296,7 @@ const DoctorHome = () => {
       )}
       {activeTab === "notifications" && (
           <div className="card mt-4">
-          <NotificationsDoctor setNewNotification={setHasNewNotification} />
+          <NotificationsDoctor/>
         </div>
       )}
     </div>

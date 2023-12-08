@@ -241,7 +241,7 @@ const PatientAppointments = () => {
       if (selectedPaymentMethod === "pay with credit card") {
         try {
           const stripeResponse = await fetch(
-            "http://localhost:3000/create-checkout-session",
+            "http://localhost:4000/create-checkout-session",
             {
               method: "POST",
               headers: {

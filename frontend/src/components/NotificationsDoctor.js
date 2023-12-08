@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+
 const NotificationsDoctor = ({ setNewNotification }) => {
   const [notifications, setNotifications] = useState([]);
 

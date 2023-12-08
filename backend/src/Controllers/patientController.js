@@ -1338,6 +1338,8 @@ const rescheduleAppointment = async (req, res) => {
    const{datetime,doctorUsername,newdate}=req.body;
    const appointment = await Appointment.findOne({ datetime,doctor:doctorUsername});
    appointment.datetime=newdate;
+   appointment.status = "Rescheduled";
+   const patient = await Patient.findOne({username: req.cookies.username})
 
    const doctor = await Doctor.findOne({username:doctorUsername});
   
@@ -1346,8 +1348,56 @@ const rescheduleAppointment = async (req, res) => {
     doctor.availableSlots[i].reservingPatientUsername=req.cookies.username;
   }
 }
+
+   const combinedDateTime = new Date(newdate);
+
    appointment.save();
    doctor.save();
+
+
+   // Create a new notification
+   const appointmentNotification = new Notification({
+    recipients: [doctorUsername, patient.username],
+    content: `Appointment for ${patient.username} with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime}`,
+  });
+
+  // Save the notification in the database
+  await appointmentNotification.save();
+  
+  
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PASS,
+    },
+  });
+
+  // Email content for the patient
+  const patientEmailOptions = {
+    from: "Rebooters",
+    to: patient.email,
+    subject: 'Appointment Reschedule',
+    text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime} .\n\nRegards,\nThe Rebooters Clinic`,
+  };
+
+  // Email content for the doctor
+  const doctorEmailOptions = {
+    from: "Rebooters",
+    to: doctor.email,
+    subject: 'Appointment Reschedule',
+    text: `Dear Dr. ${doctorUsername},\n\n Your appointment with ${patient.username} has been rescheduled to ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
+  };
+
+  // Send emails
+  await transporter.sendMail(patientEmailOptions);
+  await transporter.sendMail(doctorEmailOptions);
+
+  
+
+
   } catch (error) {
     console.error(error);
     res

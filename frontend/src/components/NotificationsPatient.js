@@ -1,22 +1,36 @@
 import React, { useState, useEffect } from 'react';
 
+
 const NotificationsPatient = () => {
   const [notifications, setNotifications] = useState([]);
+  
 
   useEffect(() => {
-    // Fetch notifications when the component mounts
-    fetch('/api/patient/getPatientNotifications', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Include cookies in the request
-    })
-      .then((response) => response.json())
-      .then((data) => setNotifications(data))
-      .catch((error) => console.error('Error fetching notifications:', error));
-  }, []);
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch('/api/patient/getPatientNotifications', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', // Include cookies in the request
+        });
 
+        if (response.ok) {
+          const data = await response.json();
+
+          setNotifications(data);
+        }
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    // Fetch notifications initially
+    fetchNotifications();
+
+
+}, [notifications]);
   const createMarkup = (content) => {
     return { __html: content };
   };

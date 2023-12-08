@@ -63,7 +63,6 @@ const PatientChats = () => {
     };
   }, []);
 
-  console.log(doctors);
 
 
   const startVideoChatWithDoctor = async (doctorUsername) => {
@@ -79,7 +78,6 @@ const PatientChats = () => {
 
 
       if (response.ok) {
-        // Handle success, e.g., show a success message
       } else {
         // Handle error, e.g., show an error message
       }

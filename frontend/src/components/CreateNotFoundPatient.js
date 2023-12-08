@@ -16,8 +16,9 @@ const CreateNotFoundPatient  = () => {
       mobile_number: "",
     },
   });
-
+  const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false); 
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -64,7 +65,8 @@ const CreateNotFoundPatient  = () => {
       });
 
       if (response.ok) {
-        setErrorMessage("Patient added successfully!");
+        setSuccessMessage("Patient added successfully!");
+        setIsSuccess(true);
         setNewPatient({
           username: "",
           name: "",
@@ -97,6 +99,13 @@ const CreateNotFoundPatient  = () => {
         {errorMessage && (
           <div className="alert alert-danger">{errorMessage}</div>
         )}
+        {successMessage && (
+          <div className="alert alert-success mt-3" role="alert">
+            {successMessage}
+          </div>
+        )}
+        {!isSuccess && (
+          <>
         <div className="mb-3">
           <label htmlFor="username" className="form-label">
             Username:
@@ -247,6 +256,8 @@ const CreateNotFoundPatient  = () => {
         <button className="btn btn-primary" onClick={handleAddPatient}>
           Add Patient
         </button>
+        </>
+        )}
       </div>
     </div>
   );
