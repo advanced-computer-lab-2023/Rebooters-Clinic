@@ -32,11 +32,7 @@ const DoctorMyAppointments = () => {
   const [showRescheduleAppointment, setShowRescheduleAppointment] =
     useState(false);
   const [rescheduleSuccess, setRescheduleSuccess] = useState(false);
-  const [showActions, setShowActions] = useState(false);
-
-  const handleToggleActions = () => {
-    setShowActions(!showActions);
-  };
+  const [rowActionsVisibility, setRowActionsVisibility] = useState({});
 
   const handleAddPrescription = (patient) => {
     setShowAddPrescription(true);
@@ -63,6 +59,13 @@ const DoctorMyAppointments = () => {
 
   const handleCloseEditPrescription = () => {
     setShowEditPrescription(false);
+  };
+
+  const handleToggleRowActions = (appointmentId) => {
+    setRowActionsVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [appointmentId]: !prevVisibility[appointmentId],
+    }));
   };
 
   const handleToggleFilters = () => {
@@ -645,13 +648,15 @@ const DoctorMyAppointments = () => {
                   <td>{new Date(appointment.datetime).toLocaleString()}</td>
                   <td>{appointment.status}</td>
                   <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleToggleActions}
-                    >
-                      {showActions ? "Hide Actions" : "Show Actions"}
-                    </button>
-                    {showActions && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleToggleRowActions(appointment._id)}
+                  >
+                    {rowActionsVisibility[appointment._id]
+                      ? "Hide Actions"
+                      : "Show Actions"}
+                  </button>
+                    {rowActionsVisibility[appointment._id] && (
                       <>
                         <button
                           className="btn btn-info"
@@ -734,12 +739,14 @@ const DoctorMyAppointments = () => {
                   <td>{appointment.status}</td>
                   <td>
                   <button
-                      className="btn btn-primary"
-                      onClick={handleToggleActions}
-                    >
-                      {showActions ? 'Hide Actions' : 'Show Actions'}
-                    </button>
-                    {showActions && (
+                    className="btn btn-primary"
+                    onClick={() => handleToggleRowActions(appointment._id)}
+                  >
+                    {rowActionsVisibility[appointment._id]
+                      ? "Hide Actions"
+                      : "Show Actions"}
+                  </button>
+                    {rowActionsVisibility[appointment._id] && (
                       <>
                     <button
                       className="btn btn-info"
@@ -822,12 +829,14 @@ const DoctorMyAppointments = () => {
                   <td>{appointment.status}</td>
                   <td>
                   <button
-                      className="btn btn-primary"
-                      onClick={handleToggleActions}
-                    >
-                      {showActions ? 'Hide Actions' : 'Show Actions'}
-                    </button>
-                    {showActions && (
+                    className="btn btn-primary"
+                    onClick={() => handleToggleRowActions(appointment._id)}
+                  >
+                    {rowActionsVisibility[appointment._id]
+                      ? "Hide Actions"
+                      : "Show Actions"}
+                  </button>
+                    {rowActionsVisibility[appointment._id] && (
                       <>
                     <button
                       className="btn btn-info"
@@ -909,12 +918,14 @@ const DoctorMyAppointments = () => {
                   <td>{appointment.status}</td>
                   <td>
                   <button
-                      className="btn btn-primary"
-                      onClick={handleToggleActions}
-                    >
-                      {showActions ? 'Hide Actions' : 'Show Actions'}
-                    </button>
-                    {showActions && (
+                    className="btn btn-primary"
+                    onClick={() => handleToggleRowActions(appointment._id)}
+                  >
+                    {rowActionsVisibility[appointment._id]
+                      ? "Hide Actions"
+                      : "Show Actions"}
+                  </button>
+                    {rowActionsVisibility[appointment._id] && (
                       <>
                     <button
                       className="btn btn-info"
@@ -994,13 +1005,15 @@ const DoctorMyAppointments = () => {
                   </td>
                   <td>{appointment.status}</td>
                   <td>
-                    <button
-                      className="btn btn-primary"
-                      onClick={handleToggleActions}
-                    >
-                      {showActions ? 'Hide Actions' : 'Show Actions'}
-                    </button>
-                    {showActions && (
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleToggleRowActions(appointment._id)}
+                  >
+                    {rowActionsVisibility[appointment._id]
+                      ? "Hide Actions"
+                      : "Show Actions"}
+                  </button>
+                    {rowActionsVisibility[appointment._id] && (
                       <>
                         <button
                           className="btn btn-info"

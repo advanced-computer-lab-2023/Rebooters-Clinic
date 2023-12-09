@@ -32,27 +32,40 @@ const ViewHealthPackageOptions = () => {
 
   return (
     <div>
-      <h3>Not Subscribed?</h3>
+      <h1>Not Subscribed?</h1>
       <button className="btn btn-primary" onClick={handleViewOptions}>
         {showOptions
           ? "Hide Health Package Options"
           : "View Health Package Options"}
       </button>
+      <br/>
       {showOptions && (
-        <div>
-          <h2>Health Package Options</h2>
-          <ul>
-            {options.map((option, index) => (
-              <li key={index}>
-                <strong>Name: {option.name}</strong>
-                <p>Price: {option.price}</p>
-                <p>Discount on Subscription: {option.discountOnSubscription}</p>
-                <p>Discount on Session: {option.discountOnSession}</p>
-                <p>Discount on Medicine: {option.discountOnMedicine}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <table className="table table-bordered">
+          <tbody>
+            <tr>
+              {options.map((option, index) => (
+                <td key={index}>
+                  <h2>{option.name}</h2>
+                  <p>
+                    <strong>Price:</strong> {option.price}
+                  </p>
+                  <p>
+                    <strong>Discount on Subscription:</strong>{" "}
+                    {option.discountOnSubscription}
+                  </p>
+                  <p>
+                    <strong>Discount on Session:</strong>{" "}
+                    {option.discountOnSession}
+                  </p>
+                  <p>
+                    <strong>Discount on Medicine:</strong>{" "}
+                    {option.discountOnMedicine}
+                  </p>
+                </td>
+              ))}
+            </tr>
+          </tbody>
+        </table>
       )}
     </div>
   );

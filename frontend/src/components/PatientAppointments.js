@@ -488,7 +488,8 @@ const PatientAppointments = () => {
                          </button>
                      )}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
-                    <button onClick={() => handleCancelAppointment(appointment)}>
+                    <button className="btn btn-danger"
+                    onClick={() => handleCancelAppointment(appointment)}>
                        Cancel Appointment
                        </button>
                      )}
@@ -534,7 +535,8 @@ const PatientAppointments = () => {
                          </button>
                      )}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
-                    <button onClick={() => handleCancelAppointment(appointment)}>
+                    <button className="btn btn-danger"
+                    onClick={() => handleCancelAppointment(appointment)}>
                        Cancel Appointment
                        </button>
                      )}
@@ -579,7 +581,8 @@ const PatientAppointments = () => {
                          </button>
                      )}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
-                    <button onClick={() => handleCancelAppointment(appointment)}>
+                    <button className="btn btn-danger"
+                    onClick={() => handleCancelAppointment(appointment)}>
                        Cancel Appointment
                        </button>
                      )}
@@ -624,7 +627,8 @@ const PatientAppointments = () => {
                          </button>
                      )}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
-                    <button onClick={() => handleCancelAppointment(appointment)}>
+                    <button className="btn btn-danger"
+                    onClick={() => handleCancelAppointment(appointment)}>
                        Cancel Appointment
                        </button>
                      )}
@@ -668,7 +672,8 @@ const PatientAppointments = () => {
                         </button>
                     )}
                     {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
-                   <button onClick={() => handleCancelAppointment(appointment)}>
+                   <button className="btn btn-danger"
+                   onClick={() => handleCancelAppointment(appointment)}>
                       Cancel Appointment
                       </button>
                     )}

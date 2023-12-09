@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import Dropdown from "react-bootstrap/Dropdown";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 const SubscribeToHealthPackage = () => {
   const [selectedPackage, setSelectedPackage] = useState("");
@@ -11,12 +13,12 @@ const SubscribeToHealthPackage = () => {
   const [selectedFamilyMember, setSelectedFamilyMember] = useState("");
   const [familyMembers, setFamilyMembers] = useState([]);
 
-  const handlePackageSelection = (event) => {
-    setSelectedPackage(event.target.value);
+  const handlePackageSelection = (packageOption) => {
+    setSelectedPackage(packageOption);
   };
 
-  const handlePaymentSelection = (event) => {
-    setSelectedPaymentMethod(event.target.value);
+  const handlePaymentSelection = (paymentMethod) => {
+    setSelectedPaymentMethod(paymentMethod);
   };
 
   const handleViewFamilyMembers = async () => {
@@ -42,6 +44,12 @@ const SubscribeToHealthPackage = () => {
   const handleSubscribeAndPay = async () => {
     if (!selectedPackage || !selectedPaymentMethod) {
       setPaymentError("Please select a package and payment method.");
+
+      // Clear the error message after 5 seconds
+      setTimeout(() => {
+        setPaymentError("");
+      }, 5000);
+
       return;
     }
 
@@ -128,6 +136,12 @@ const SubscribeToHealthPackage = () => {
     } catch (error) {
       console.error("Error subscribing and paying:", error);
       setPaymentError("An error occurred while processing the payment.");
+
+      // Clear the error message after 5 seconds
+      setTimeout(() => {
+        setPaymentError("");
+      }, 5000);
+
       setPaymentMessage("");
     }
   };
@@ -163,50 +177,96 @@ const SubscribeToHealthPackage = () => {
   return (
     <div>
       <h1>Health Package Subscription</h1>
-      <Form.Group>
-        <Form.Label>Select Health Package:</Form.Label>
-        <Form.Control
-          as="select"
-          value={selectedPackage}
-          onChange={handlePackageSelection}
-        >
-          <option value="">Select Health Package</option>
-          {packages.map((packageOption) => (
-            <option value={packageOption.name}>{packageOption.name}</option>
-          ))}
-        </Form.Control>
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Subscription for: (Myself/Family Member)</Form.Label>
-        <Form.Control
-          as="select"
-          value={selectedFamilyMember}
-          onChange={(e) => setSelectedFamilyMember(e.target.value)}
-        >
-          <option value="">...</option>
-          <option value="myself">Myself</option>
-          {familyMembers.map((familyMember) => (
-            <option value={familyMember.username}>
-              {`Family Member: ${familyMember.username}`}
-            </option>
-          ))}
-        </Form.Control>
-      </Form.Group>
-      <Form.Group>
-        <Form.Label>Select Payment Method:</Form.Label>
-        <Form.Control
-          as="select"
-          value={selectedPaymentMethod}
-          onChange={handlePaymentSelection}
-        >
-          <option value="">Select Payment Method</option>
-          <option value="pay with my wallet">Pay with my wallet</option>
-          <option value="pay with credit card">Pay with credit card</option>
-        </Form.Control>
-      </Form.Group>
-      <Button onClick={handleSubscribeAndPay}>Subscribe and Pay</Button>
+
+      <Row>
+        <Col>
+          <Dropdown>
+            <Dropdown.Toggle variant="secondary" id="dropdownHealthPackage">
+              {selectedPackage || "Select Health Package"}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {packages.map((packageOption) => (
+                <Dropdown.Item
+                  key={packageOption.name}
+                  onSelect={() => handlePackageSelection(packageOption.name)}
+                >
+                  {packageOption.name}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        </Col>
+
+        <Col>
+          <Dropdown>
+            <Dropdown.Toggle variant="secondary" id="dropdownFamilyMember">
+              {selectedFamilyMember
+                ? `Family Member: ${selectedFamilyMember}`
+                : "Select Patient"}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item
+                key="myself"
+                onSelect={() => setSelectedFamilyMember("myself")}
+              >
+                Myself
+              </Dropdown.Item>
+              {familyMembers.map((familyMember) => (
+                <Dropdown.Item
+                  key={familyMember.username}
+                  onSelect={() =>
+                    setSelectedFamilyMember(familyMember.username)
+                  }
+                >
+                  {`Family Member: ${familyMember.username}`}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        </Col>
+
+        <Col>
+          <Dropdown>
+            <Dropdown.Toggle variant="secondary" id="dropdownPaymentMethod">
+              {selectedPaymentMethod || "Select Payment Method"}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item
+                key="payWithWallet"
+                onSelect={() =>
+                  handlePaymentSelection("pay with my wallet")
+                }
+              >
+                Pay with my wallet
+              </Dropdown.Item>
+              <Dropdown.Item
+                key="payWithCard"
+                onSelect={() =>
+                  handlePaymentSelection("pay with credit card")
+                }
+              >
+                Pay with credit card
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </Col>
+
+        <Col>
+          <Button
+            onClick={handleSubscribeAndPay}
+            variant="outline-secondary" // Set to the default gray color of Bootstrap
+          >
+            Subscribe and Pay
+          </Button>
+        </Col>
+      </Row>
+
       {paymentMessage && <p className="text-success">{paymentMessage}</p>}
       {paymentError && <p className="text-danger">{paymentError}</p>}
+      <br />
+      <br />
+      <br />
+      <br />
     </div>
   );
 };

@@ -143,7 +143,10 @@ function Prescription() {
       filterParams.filled === undefined
     ) {
       setFilterMessage("Please fill the text");
-      setPrescriptions([]);
+      setTimeout(() => {
+          setFilterMessage("");
+        }, 5000);
+      //setPrescriptions([]);
       return;
     }
 
@@ -242,123 +245,139 @@ function Prescription() {
   
   }
 }
-  return (
+return (
+  <div>
+    <h2>Prescriptions:</h2>
+    <div>{viewMessage && <p style={errorStyle}>{viewMessage}</p>}</div>
     <div>
-      <h2>Prescriptions:</h2>
-      <div>{viewMessage && <p style={errorStyle}>{viewMessage}</p>}</div>
-      <div>
-        <h3>Filter Prescriptions</h3>
+      <h3>Filter Prescriptions</h3>
 
+      <div className="mb-3 d-flex align-items-center">
         <input
           type="date"
+          id="filterDate"
+          className="form-control me-2"
           name="date"
-          placeholder="Enter Date (YYYY-MM-DD)"
           value={filterParams.date}
           onChange={handleFilterChange}
+          placeholder="Enter Date (YYYY-MM-DD)"
         />
+
         <input
           type="text"
+          id="filterDoctorName"
+          className="form-control me-2"
           name="doctorName"
-          placeholder="Enter Doctor's Name"
           value={filterParams.doctorName}
           onChange={handleFilterChange}
+          placeholder="Enter Doctor's Name"
         />
+
         <select
           name="filled"
           value={filterParams.filled}
           onChange={handleFilterChange}
-          className="btn btn-secondary dropdown-toggle"
+          className="form-select me-2"
         >
           <option value={undefined}>Select Filled Status</option>
           <option value={true}>Filled</option>
           <option value={false}>Unfilled</option>
         </select>
-        <button onClick={handleFilterPrescriptions} className="btn btn-primary">Filter</button>
+
+        <button onClick={handleFilterPrescriptions} className="btn btn-primary me-2">
+          Filter
+        </button>
         <button className="btn btn-danger" onClick={handleViewPrescriptions}>
           Remove Filters
         </button>
-        {filterMessage && <p style={errorStyle}>{filterMessage}</p>}
       </div>
-      {prescriptions.length > 0 && !prescriptionDetails && (
-        <div>
-          <ul>
-            {prescriptions.map((prescription, index) => (
-              <li key={index}>
-                <div className="card">
-                  <h3>Prescription {index + 1}</h3>
-                  <p>
-                    <strong>Doctor:</strong> {prescription.doctorName}
-                  </p>
-                  <p>
-                    <strong>Date:</strong>{" "}
-                    {new Date(prescription.date).toLocaleDateString()}{" "}
-                    {new Date(prescription.date).toLocaleTimeString()}{" "}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleShowPrescriptionDetails(prescription,index)}
-                >
-                  Select
-                </button>
-                <button onClick={() => handleClosePrescription(index)}>
-                  Close
-                </button>
-              
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-      {prescriptionDetails && (
-        <div className="card">
-          <h3>Prescription Details:</h3>
-          <p>
-            <strong>Doctor:</strong> {prescriptionDetails.doctorName}
-          </p>
-          {prescriptionDetails.medicationInfo.map((medicine, index) => (
-            <div key={index}>
-              <p>
-                <strong>Medicine {index + 1}:</strong> {medicine.medicine}
-              </p>
-              <p style={{ marginLeft: "20px" }}>
-                <strong>Dosage:</strong> {medicine.dosage}
-              </p>
-              <p style={{ marginLeft: "20px" }}>
-                <strong>Instructions:</strong> {medicine.instructions}
-              </p>
-            </div>
-          ))}
-          <p>
-            <strong>Filled:</strong> {prescriptionDetails.filled ? "Yes" : "No"}
-          </p>
-          <p>
-            <strong>Date:</strong>
-            {new Date(prescriptionDetails.date).toLocaleDateString()}{" "}
-            {new Date(prescriptionDetails.date).toLocaleTimeString()}{" "}
-          </p>
-          <p>
-            <strong>Total Cost:</strong>
-            {subTotal}
-          </p>
-          <div>
-            <button onClick={handleClosePrescriptionDetails}>
-              Close Details
-            </button>
-            <button onClick={handleDownloadPDF}>
-              Download PDF
-            </button>
-            <select id ="payMethod">
-       <option value="wallet">wallet</option>
-       <option value="credit card">credit card</option>
-       </select>
-            <button onClick={pay} >
-              Pay        
-    </button>
-          </div>
-        </div>
-      )}
+
+      {filterMessage && <p style={errorStyle}>{filterMessage}</p>}
     </div>
-  );
+
+    {prescriptions.length > 0 && !prescriptionDetails && (
+      <div>
+        <ul>
+          {prescriptions.map((prescription, index) => (
+            <li key={index}>
+              <div className="card">
+                <h3>Prescription {index + 1}</h3>
+                <p>
+                  <strong>Doctor:</strong> {prescription.doctorName}
+                </p>
+                <p>
+                  <strong>Date:</strong>{" "}
+                  {new Date(prescription.date).toLocaleDateString()}{" "}
+                  {new Date(prescription.date).toLocaleTimeString()}{" "}
+                </p>
+              </div>
+              <button
+                onClick={() => handleShowPrescriptionDetails(prescription, index)}
+              >
+                Select
+              </button>
+              <button onClick={() => handleClosePrescription(index)}>
+                Close
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {prescriptionDetails && (
+      <div className="card">
+        <h3>Prescription Details:</h3>
+        <p>
+          <strong>Doctor:</strong> {prescriptionDetails.doctorName}
+        </p>
+        {prescriptionDetails.medicationInfo.map((medicine, index) => (
+          <div key={index}>
+            <p>
+              <strong>Medicine {index + 1}:</strong> {medicine.medicine}
+            </p>
+            <p style={{ marginLeft: "20px" }}>
+              <strong>Dosage:</strong> {medicine.dosage}
+            </p>
+            <p style={{ marginLeft: "20px" }}>
+              <strong>Instructions:</strong> {medicine.instructions}
+            </p>
+          </div>
+        ))}
+        <p>
+          <strong>Filled:</strong> {prescriptionDetails.filled ? "Yes" : "No"}
+        </p>
+        <p>
+          <strong>Date:</strong>
+          {new Date(prescriptionDetails.date).toLocaleDateString()}{" "}
+          {new Date(prescriptionDetails.date).toLocaleTimeString()}{" "}
+        </p>
+        <p>
+          <strong>Total Cost:</strong>
+          {subTotal}
+        </p>
+        <div className="d-flex">
+          <button onClick={handleClosePrescriptionDetails}>
+            Close Details
+          </button>
+          <button onClick={handleDownloadPDF}>
+            Download PDF
+          </button>
+          <select id="payMethod" className="form-select me-2">
+            <option value="wallet">wallet</option>
+            <option value="credit card">credit card</option>
+          </select>
+          <button onClick={() => pay(prescriptionDetails, selectedPrescription)}>
+            Pay
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
+);
+
+
+
 }
 
 export default Prescription;

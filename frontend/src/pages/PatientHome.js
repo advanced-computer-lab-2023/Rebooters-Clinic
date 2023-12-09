@@ -4,24 +4,20 @@ import { Link } from "react-router-dom"; // Import Link for navigation
 import "bootstrap/dist/css/bootstrap.min.css";
 import DoctorSelection from "../components/DoctorSelection";
 import Prescription from "../components/Prescription";
-import AddFamilyMember from "../components/AddFamilyMember";
 import PatientAppointments from "../components/PatientAppointments";
 import ViewDoctors from "../components/ViewDoctors";
-import ViewFamilyMembers from "../components/ViewFamilyMembers";
 import PatientWallet from "../components/PatientWallet";
 import PatientHealthRecords from "../components/PatientHealthRecords";
 import ViewHealthPackageOptions from "../components/ViewHealthPackageOptions";
 import SubscribeToHealthPackage from "../components/SubscribeToHealthPackage";
-import ViewHealthPackage from "../components/ViewHealthPackage";
-import UnsubscribeToHealthPackage from "../components/UnsubscribeToHealthPackage";
-import ViewSlotsAndMakeAppointment from "../components/ViewSlotsAndMakeAppointment";
 import ChangePassword from "../components/ChangePassword";
 import MedicalHistoryComponent from "../components/MedicalHistory";
-import ViewFamilyHealthPackage from "../components/ViewFamilyHealthPackage";
 import PatientFamilyAppointments from "../components/PatientFamilyAppointments";
 import PatientChats from "../components/PatientChats";
 import NotificationsPatient from "../components/NotificationsPatient";
 import { useNotificationContext } from "../context/NotificationsContext";
+import FamilyMembers from "../components/FamilyMembers";
+import PatientsHealthPackages from "../components/PatientsHealthPackages";
 
 
 const PatientHome = () => {
@@ -266,11 +262,6 @@ const PatientHome = () => {
           <MedicalHistoryComponent />
         </div>
       )}
-      {activeTab === "family" && (
-        <div className="mt-4">
-          <AddFamilyMember />
-        </div>
-      )}
       {activeTab === "appointments" && (
         <div className="card mt-4">
           <PatientAppointments />
@@ -288,7 +279,7 @@ const PatientHome = () => {
       )}
       {activeTab === "family" && (
         <div className="mt-4">
-          <ViewFamilyMembers />
+          <FamilyMembers />
         </div>
       )}
       {activeTab === "home" && (
@@ -298,17 +289,7 @@ const PatientHome = () => {
       )}
       {activeTab === "subscription" && (
         <div className="mt-4">
-          <ViewHealthPackage />
-        </div>
-      )}
-      {activeTab === "subscription" && (
-        <div className="mt-4">
-          <ViewFamilyHealthPackage />
-        </div>
-      )}
-      {activeTab === "subscription" && (
-        <div className="mt-4">
-          <UnsubscribeToHealthPackage />
+          <PatientsHealthPackages />
         </div>
       )}
       {activeTab === "subscription" && (

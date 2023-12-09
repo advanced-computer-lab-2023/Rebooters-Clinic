@@ -67,6 +67,13 @@ const addFamilyMember = async (req, res) => {
       return res.status(404).json({ message: "Current patient not found" });
     }
 
+    let i=0;
+   for(i;i<currentPatient.familyMembers.length;i++){
+    if(currentPatient.familyMembers[i].username === familyMemberUsername){
+      return res.status(400).json({ message: "Already a family member" });
+    }
+   }
+
     // Search the database to ensure that the family member's username exists
     const familyMember = await Patient.findOne({
       username: familyMemberUsername,
