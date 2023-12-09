@@ -31,7 +31,7 @@ const ViewHealthPackageOptions = () => {
   };
 
   return (
-    <div>
+    <div className="card">
       <h1>Not Subscribed?</h1>
       <button className="btn btn-primary" onClick={handleViewOptions}>
         {showOptions

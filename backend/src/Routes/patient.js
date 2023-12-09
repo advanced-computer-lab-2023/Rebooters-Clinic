@@ -9,7 +9,7 @@ const {payWithWallet,viewMedicines,requestFollowUp,rescheduleAppointment,viewAva
     filterByUpcomingDate , viewHealthRecords, makeAppointment, viewFamilyMembersHealthPackages, viewFamilyAppointments,
      logout, changePassword,getAvailableDoctors, cancelAppointment, startNewChatWithDoctor,
      continueChatWithDoctor, viewMyChats, deleteChatWithDoctor, viewLinkedDoctors, createZoomMeetingNotification,
-     getPatientNotifications
+     getPatientNotifications , viewProfile
     } = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 
@@ -125,6 +125,10 @@ router.get('/viewLinkedDoctors', requireAuth, viewLinkedDoctors);
 router.post('/createZoomMeetingNotification', requireAuth, createZoomMeetingNotification);
 
 router.get('/getPatientNotifications', requireAuth, getPatientNotifications);
+
+
+router.get('/viewProfile', requireAuth, viewProfile);
+
 
 module.exports = router //we need to export that router at the end so that server.js can access it
 

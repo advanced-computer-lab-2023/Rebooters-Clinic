@@ -3,8 +3,11 @@
 
 /* layout */
 :root {
-  --primary: #1aac83;
   --error: #e7195a;
+  --primary: #06A3DA;
+  --secondary: #F57E57;
+  --light: #EEF9FF;
+  --dark: #091E3E;
 }
 body {
   background: #f1f1f1;
@@ -84,4 +87,48 @@ header a {
 }
 
 
+:root {
+  --primary: #06A3DA;
+  --secondary: #F57E57;
+  --light: #EEF9FF;
+  --dark: #091E3E;
+}
+
+
+.btn-primary:hover {
+  background: var(--secondary);
+  border-color: var(--secondary);
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.text-primary {
+  color: #06A3DA !important;
+}
+
+.btn {
+  font-family: 'Jost', sans-serif;
+  font-weight: 600;
+  transition: .5s;
+}
+
+.navbar-light .navbar-nav .nav-link {
+  font-family: 'Jost', sans-serif;
+  padding: 35px 15px;
+  font-size: 18px;
+  color: var(--dark);
+  outline: none;
+  transition: .5s;
+}
+
+.navbar-nav {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-bottom: 0;
+  list-style: none;
+}
 

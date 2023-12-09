@@ -246,7 +246,7 @@ function Prescription() {
   }
 }
 return (
-  <div>
+  <div className="card">
     <h2>Prescriptions:</h2>
     <div>{viewMessage && <p style={errorStyle}>{viewMessage}</p>}</div>
     <div>

@@ -175,7 +175,7 @@ const SubscribeToHealthPackage = () => {
   }, []);
 
   return (
-    <div>
+    <div className="card">
       <h1>Health Package Subscription</h1>
 
       <Row>

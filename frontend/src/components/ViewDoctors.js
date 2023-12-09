@@ -135,8 +135,8 @@ const ViewDoctors = () => {
           </div>
         </div>
       )}
-      <h2 style={{ textAlign: "center" }}>Available Doctors:</h2>
       <div className="card">
+      <h2 style={{ textAlign: "center" }}>Available Doctors:</h2>
         {error && <p className="text-danger">{error}</p>}
         <div>
           <button className="btn btn-secondary" onClick={handleToggleFilters}>

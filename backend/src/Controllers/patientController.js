@@ -12,7 +12,7 @@ const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor pa
 const { logout, changePassword } = require("./authController");
 const { createToken } = require("./authController");
 const maxAge = 3 * 24 * 60 * 60;
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
 //i put these here also instead of creating a model of familyMember
 const mongoose = require("mongoose");
@@ -67,12 +67,12 @@ const addFamilyMember = async (req, res) => {
       return res.status(404).json({ message: "Current patient not found" });
     }
 
-    let i=0;
-   for(i;i<currentPatient.familyMembers.length;i++){
-    if(currentPatient.familyMembers[i].username === familyMemberUsername){
-      return res.status(400).json({ message: "Already a family member" });
+    let i = 0;
+    for (i; i < currentPatient.familyMembers.length; i++) {
+      if (currentPatient.familyMembers[i].username === familyMemberUsername) {
+        return res.status(400).json({ message: "Already a family member" });
+      }
     }
-   }
 
     // Search the database to ensure that the family member's username exists
     const familyMember = await Patient.findOne({
@@ -239,15 +239,13 @@ const viewRegisteredFamilyMembers = async (req, res) => {
 const filterAppointmentsByDate = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
-    const { startDate, endDate , familyUsername } = req.body;
+    const { startDate, endDate, familyUsername } = req.body;
 
     let patient;
-    if (familyUsername !== "" && familyUsername !== undefined){
+    if (familyUsername !== "" && familyUsername !== undefined) {
       patient = await Patient.findOne({ username: familyUsername });
-    }
-    else {
+    } else {
       patient = await Patient.findOne({ username: patientUsername });
-
     }
 
     if (!patient) {
@@ -284,12 +282,10 @@ const filterAppointmentsByStatus = async (req, res) => {
     const { appointmentStatus, familyUsername } = req.body;
 
     let patient;
-    if (familyUsername !== "" && familyUsername !== undefined){
+    if (familyUsername !== "" && familyUsername !== undefined) {
       patient = await Patient.findOne({ username: familyUsername });
-    }
-    else {
+    } else {
       patient = await Patient.findOne({ username: patientUsername });
-
     }
 
     if (!patient) {
@@ -733,12 +729,10 @@ const filterByPastDate = async (req, res) => {
     const { familyUsername } = req.body;
 
     let patient;
-    if (familyUsername !== "" && familyUsername !== undefined){
+    if (familyUsername !== "" && familyUsername !== undefined) {
       patient = await Patient.findOne({ username: familyUsername });
-    }
-    else {
+    } else {
       patient = await Patient.findOne({ username: patientUsername });
-
     }
     const currentDateTime = new Date();
     const pastAppointments = await Appointment.find({
@@ -770,12 +764,10 @@ const filterByUpcomingDate = async (req, res) => {
     const { familyUsername } = req.body;
 
     let patient;
-    if (familyUsername !== "" && familyUsername !== undefined){
+    if (familyUsername !== "" && familyUsername !== undefined) {
       patient = await Patient.findOne({ username: familyUsername });
-    }
-    else {
+    } else {
       patient = await Patient.findOne({ username: patientUsername });
-
     }
     const currentDateTime = new Date();
     const upcomingAppointments = await Appointment.find({
@@ -890,7 +882,9 @@ const viewFamilyMembersHealthPackages = async (req, res) => {
 
     // Loop through family members
     for (const familyMember of patient.familyMembers) {
-      let familyMemberPatient = await Patient.findOne({ username: familyMember.username });
+      let familyMemberPatient = await Patient.findOne({
+        username: familyMember.username,
+      });
       const familyMemberResponse = {
         familyMemberUsername: familyMemberPatient.username,
         statusOfHealthPackage: familyMemberPatient.statusOfHealthPackage,
@@ -901,7 +895,9 @@ const viewFamilyMembersHealthPackages = async (req, res) => {
         const currentDate = new Date();
 
         // Calculate the renewal date by adding 1 year to the MongoDB-generated 'createdAt' date
-        const renewalDate = new Date(familyMemberPatient.healthPackageCreatedAt);
+        const renewalDate = new Date(
+          familyMemberPatient.healthPackageCreatedAt
+        );
         renewalDate.setFullYear(renewalDate.getFullYear() + 1);
 
         // Calculate the remaining time in months and days
@@ -926,10 +922,11 @@ const viewFamilyMembersHealthPackages = async (req, res) => {
 
     res.status(200).json(familyMembersHealthPackages);
   } catch (error) {
-    res.status(500).json({ error: "Error fetching family members' health packages" });
+    res
+      .status(500)
+      .json({ error: "Error fetching family members' health packages" });
   }
 };
-
 
 const subscribeToHealthPackage = async (req, res) => {
   try {
@@ -937,12 +934,10 @@ const subscribeToHealthPackage = async (req, res) => {
     const { packageName, subscribingUser } = req.body;
 
     let patient;
-    if (subscribingUser !== "myself"){
+    if (subscribingUser !== "myself") {
       patient = await Patient.findOne({ username: subscribingUser });
-    }
-    else {
+    } else {
       patient = await Patient.findOne({ username: patientUsername });
-
     }
 
     if (!packageName) {
@@ -1006,12 +1001,10 @@ const unsubscribeToHealthPackage = async (req, res) => {
     const { unsubscribingUser } = req.body;
 
     let patient;
-    if (unsubscribingUser !== "myself"){
+    if (unsubscribingUser !== "myself") {
       patient = await Patient.findOne({ username: unsubscribingUser });
-    }
-    else {
+    } else {
       patient = await Patient.findOne({ username: patientUsername });
-
     }
 
     if (!patient) {
@@ -1078,12 +1071,10 @@ const makeAppointment = async (req, res) => {
     const { doctorUsername, chosenSlot, index, reservingUser } = req.body;
 
     let patient;
-    if (reservingUser !== "myself"){
+    if (reservingUser !== "myself") {
       patient = await Patient.findOne({ username: reservingUser });
-    }
-    else {
+    } else {
       patient = await Patient.findOne({ username: patientUsername });
-
     }
 
     const doctor = await Doctor.findOne({
@@ -1149,7 +1140,7 @@ const makeAppointment = async (req, res) => {
     const patientEmailOptions = {
       from: "Rebooters",
       to: patient.email,
-      subject: 'Appointment Confirmation',
+      subject: "Appointment Confirmation",
       text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} is confirmed on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
     };
 
@@ -1157,17 +1148,13 @@ const makeAppointment = async (req, res) => {
     const doctorEmailOptions = {
       from: "Rebooters",
       to: doctor.email,
-      subject: 'New Appointment',
+      subject: "New Appointment",
       text: `Dear Dr. ${doctorUsername},\n\nYou have a new appointment with ${patient.username} on ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
     };
 
     // Send emails
     await transporter.sendMail(patientEmailOptions);
     await transporter.sendMail(doctorEmailOptions);
-
-
-
-
 
     res
       .status(200)
@@ -1342,201 +1329,40 @@ const deleteMedicalHistory = async (req, res) => {
 };
 const rescheduleAppointment = async (req, res) => {
   try {
-   const{datetime,doctorUsername,newdate}=req.body;
-   const appointment = await Appointment.findOne({ datetime,doctor:doctorUsername});
-   appointment.datetime=newdate;
-   appointment.status = "Rescheduled";
-   const patient = await Patient.findOne({username: req.cookies.username})
-
-   const doctor = await Doctor.findOne({username:doctorUsername});
-  
-  for(let i=0;i<doctor.availableSlots.length;i++){
-    if(doctor.availableSlots[i].datetime.getTime()==new Date(newdate).getTime()){
-    doctor.availableSlots[i].reservingPatientUsername=req.cookies.username;
-  }
-}
-
-   const combinedDateTime = new Date(newdate);
-
-   appointment.save();
-   doctor.save();
-
-
-   // Create a new notification
-   const appointmentNotification = new Notification({
-    recipients: [doctorUsername, patient.username],
-    content: `Appointment for ${patient.username} with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime}`,
-  });
-
-  // Save the notification in the database
-  await appointmentNotification.save();
-  
-  
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-    },
-  });
-
-  // Email content for the patient
-  const patientEmailOptions = {
-    from: "Rebooters",
-    to: patient.email,
-    subject: 'Appointment Reschedule',
-    text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime} .\n\nRegards,\nThe Rebooters Clinic`,
-  };
-
-  // Email content for the doctor
-  const doctorEmailOptions = {
-    from: "Rebooters",
-    to: doctor.email,
-    subject: 'Appointment Reschedule',
-    text: `Dear Dr. ${doctorUsername},\n\n Your appointment with ${patient.username} has been rescheduled to ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
-  };
-
-  // Send emails
-  await transporter.sendMail(patientEmailOptions);
-  await transporter.sendMail(doctorEmailOptions);
-
-  
-
-
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while rescheduling the appointment." });
-  }
-  
-};
-const requestFollowUp = async (req, res) => {
-  try {
-    const {reason,preferredDate,datetime}=req.body;
-     await Appointment.updateOne(
-      { datetime  },
-      { $set: { FollowUpRequest: {reason,preferredDate}}},
-    );
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while requesting a follow-up." });
-  }
-};
-
-const viewFamilyAppointments = async (req, res) => {
-  try {
-    const patientUsername = req.cookies.username;
-    const { familyUsername } = req.body; //view for a specific family user if its not empty string
-
-    if (familyUsername !== ""){
-      const patient = await Patient.findOne({ username: familyUsername });
-      if (!patient) {
-        return res.status(404).json({ error: "Patient not found" });
-      }
-      const FamilyAppointments = await Appointment.find({ patient: familyUsername });
-      return res.status(200).json(FamilyAppointments);
-    }
-
-    // Fetch the patient and their family members
-    const patient = await Patient.findOne({ username: patientUsername });
-    if (!patient) {
-      return res.status(404).json({ error: "Patient not found" });
-    }
-
-    const familyMembers = patient.familyMembers;
-
-    // Fetch appointments for each family member
-    const familyAppointments = [];
-    for (const familyMember of familyMembers) {
-      const appointments = await Appointment.find({ patient: familyMember.username });
-      familyAppointments.push({ appointments });
-    }
-        const flattenedAppointments = familyAppointments.reduce(
-      (acc, family) => [...acc, ...family.appointments],
-      []
-    );
-
-    res.status(200).json(flattenedAppointments);
-  } catch (error) {
-    res.status(500).json({ error: "An error occurred while fetching family appointments" });
-  }
-};
-
-const getAvailableDoctors = async (req, res) => {
-  try {
-    const doctors = await Doctor.find({});
-    res.status(200).json(doctors);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error fetching available doctors' });
-  }
-};
-
-const cancelAppointment = async (req, res) => {
-  try {
-    const { appointmentGiven } = req.body;
-
-    
-
+    const { datetime, doctorUsername, newdate } = req.body;
     const appointment = await Appointment.findOne({
-      _id : appointmentGiven._id
-    })
+      datetime,
+      doctor: doctorUsername,
+    });
+    appointment.datetime = newdate;
+    appointment.status = "Rescheduled";
+    const patient = await Patient.findOne({ username: req.cookies.username });
 
-    const patientUsername = appointment.patient;
-    const patient = await Patient.findOne({username : patientUsername })
+    const doctor = await Doctor.findOne({ username: doctorUsername });
 
-    const doctorUsername = appointment.doctor;
-    const doctor = await Doctor.findOne({username : doctorUsername })
-
-    const combinedDateTime = new Date(appointment.datetime);
-
-    const currentDate = new Date();
-    const timeDifference = combinedDateTime - currentDate;
-
-    
-
-    if (!doctor) {
-      return res.status(404).json({ error: "Doctor not found." });
-    }
-
-    if (!patient) {
-      return res.status(404).json({ error: "Patient not found." });
-    }
-
-    if (!appointment) {
-      return res.status(404).json({ error: "Appointment not found." });
-    }
-
-    let i=0
-    for(i;i<doctor.availableSlots.length;i++){
-      if(doctor.availableSlots[i].datetime.getTime() === combinedDateTime.getTime()){
-        doctor.availableSlots[i].reservingPatientUsername = null
+    for (let i = 0; i < doctor.availableSlots.length; i++) {
+      if (
+        doctor.availableSlots[i].datetime.getTime() ==
+        new Date(newdate).getTime()
+      ) {
+        doctor.availableSlots[i].reservingPatientUsername =
+          req.cookies.username;
       }
     }
 
-    appointment.status = 'Cancelled';
-    if(timeDifference > 24 * 60 * 60 * 1000){
-      patient.wallet += appointment.price;}
+    const combinedDateTime = new Date(newdate);
 
-
-    await doctor.save();
-    await appointment.save(); 
-    await patient.save();
+    appointment.save();
+    doctor.save();
 
     // Create a new notification
     const appointmentNotification = new Notification({
       recipients: [doctorUsername, patient.username],
-      content: `Appointment for ${patient.username} with Dr. ${doctor.username} that was scheduled on ${combinedDateTime} has been cancelled.`
+      content: `Appointment for ${patient.username} with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime}`,
     });
 
     // Save the notification in the database
     await appointmentNotification.save();
-
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -1552,7 +1378,172 @@ const cancelAppointment = async (req, res) => {
     const patientEmailOptions = {
       from: "Rebooters",
       to: patient.email,
-      subject: 'Appointment Cancellation',
+      subject: "Appointment Reschedule",
+      text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} has been rescheduled to ${combinedDateTime} .\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Email content for the doctor
+    const doctorEmailOptions = {
+      from: "Rebooters",
+      to: doctor.email,
+      subject: "Appointment Reschedule",
+      text: `Dear Dr. ${doctorUsername},\n\n Your appointment with ${patient.username} has been rescheduled to ${combinedDateTime}.\n\nRegards,\nThe Rebooters Clinic`,
+    };
+
+    // Send emails
+    await transporter.sendMail(patientEmailOptions);
+    await transporter.sendMail(doctorEmailOptions);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while rescheduling the appointment." });
+  }
+};
+const requestFollowUp = async (req, res) => {
+  try {
+    const { reason, preferredDate, datetime } = req.body;
+    await Appointment.updateOne(
+      { datetime },
+      { $set: { FollowUpRequest: { reason, preferredDate } } }
+    );
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while requesting a follow-up." });
+  }
+};
+
+const viewFamilyAppointments = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+    const { familyUsername } = req.body; //view for a specific family user if its not empty string
+
+    if (familyUsername !== "") {
+      const patient = await Patient.findOne({ username: familyUsername });
+      if (!patient) {
+        return res.status(404).json({ error: "Patient not found" });
+      }
+      const FamilyAppointments = await Appointment.find({
+        patient: familyUsername,
+      });
+      return res.status(200).json(FamilyAppointments);
+    }
+
+    // Fetch the patient and their family members
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found" });
+    }
+
+    const familyMembers = patient.familyMembers;
+
+    // Fetch appointments for each family member
+    const familyAppointments = [];
+    for (const familyMember of familyMembers) {
+      const appointments = await Appointment.find({
+        patient: familyMember.username,
+      });
+      familyAppointments.push({ appointments });
+    }
+    const flattenedAppointments = familyAppointments.reduce(
+      (acc, family) => [...acc, ...family.appointments],
+      []
+    );
+
+    res.status(200).json(flattenedAppointments);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching family appointments" });
+  }
+};
+
+const getAvailableDoctors = async (req, res) => {
+  try {
+    const doctors = await Doctor.find({});
+    res.status(200).json(doctors);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching available doctors" });
+  }
+};
+
+const cancelAppointment = async (req, res) => {
+  try {
+    const { appointmentGiven } = req.body;
+
+    const appointment = await Appointment.findOne({
+      _id: appointmentGiven._id,
+    });
+
+    const patientUsername = appointment.patient;
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    const doctorUsername = appointment.doctor;
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    const combinedDateTime = new Date(appointment.datetime);
+
+    const currentDate = new Date();
+    const timeDifference = combinedDateTime - currentDate;
+
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    if (!appointment) {
+      return res.status(404).json({ error: "Appointment not found." });
+    }
+
+    let i = 0;
+    for (i; i < doctor.availableSlots.length; i++) {
+      if (
+        doctor.availableSlots[i].datetime.getTime() ===
+        combinedDateTime.getTime()
+      ) {
+        doctor.availableSlots[i].reservingPatientUsername = null;
+      }
+    }
+
+    appointment.status = "Cancelled";
+    if (timeDifference > 24 * 60 * 60 * 1000) {
+      patient.wallet += appointment.price;
+    }
+
+    await doctor.save();
+    await appointment.save();
+    await patient.save();
+
+    // Create a new notification
+    const appointmentNotification = new Notification({
+      recipients: [doctorUsername, patient.username],
+      content: `Appointment for ${patient.username} with Dr. ${doctor.username} that was scheduled on ${combinedDateTime} has been cancelled.`,
+    });
+
+    // Save the notification in the database
+    await appointmentNotification.save();
+
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS,
+      },
+    });
+
+    // Email content for the patient
+    const patientEmailOptions = {
+      from: "Rebooters",
+      to: patient.email,
+      subject: "Appointment Cancellation",
       text: `Dear ${patient.username},\n\nYour appointment with Dr. ${doctorUsername} that was scheduled on ${combinedDateTime} has been cancelled.\n\nRegards,\nThe Rebooters Clinic`,
     };
 
@@ -1560,7 +1551,7 @@ const cancelAppointment = async (req, res) => {
     const doctorEmailOptions = {
       from: "Rebooters",
       to: doctor.email,
-      subject: 'Cancelled Appointment',
+      subject: "Cancelled Appointment",
       text: `Dear Dr. ${doctorUsername},\n\n Your appointment with ${patient.username} on ${combinedDateTime} has been cancelled.\n\nRegards,\nThe Rebooters Clinic`,
     };
 
@@ -1568,10 +1559,7 @@ const cancelAppointment = async (req, res) => {
     await transporter.sendMail(patientEmailOptions);
     await transporter.sendMail(doctorEmailOptions);
 
-    
-    res
-      .status(200)
-      .json({ message: "Appointment cancelled" });
+    res.status(200).json({ message: "Appointment cancelled" });
   } catch (error) {
     console.error(error);
     res
@@ -1588,7 +1576,7 @@ const startNewChatWithDoctor = async (req, res) => {
     const patient = await Patient.findOne({ username: patientUsername });
 
     if (!patient) {
-      return res.status(404).json({ message: 'Patient not found' });
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     const newChat = new Chat({
@@ -1597,7 +1585,7 @@ const startNewChatWithDoctor = async (req, res) => {
       messages: [
         {
           username: patientUsername,
-          userType: 'patient',
+          userType: "patient",
           content: messageContent,
         },
       ],
@@ -1605,15 +1593,14 @@ const startNewChatWithDoctor = async (req, res) => {
 
     const savedChat = await newChat.save();
 
-    console.log('savedChat:', savedChat);
+    console.log("savedChat:", savedChat);
 
     res.status(201).json({ savedChat });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error starting a new chat' });
+    res.status(500).json({ message: "Error starting a new chat" });
   }
 };
-
 
 const continueChatWithDoctor = async (req, res) => {
   try {
@@ -1624,20 +1611,22 @@ const continueChatWithDoctor = async (req, res) => {
     const chat = await Chat.findById(chatId);
 
     if (!chat) {
-      console.error('Chat not found');
-      return res.status(404).json({ message: 'Chat not found' });
+      console.error("Chat not found");
+      return res.status(404).json({ message: "Chat not found" });
     }
 
     // Check if the patient is the owner of the chat
     if (chat.patient !== patientUsername) {
-      console.error('Unauthorized to continue this chat');
-      return res.status(403).json({ message: 'Unauthorized to continue this chat' });
+      console.error("Unauthorized to continue this chat");
+      return res
+        .status(403)
+        .json({ message: "Unauthorized to continue this chat" });
     }
 
     // Add the patient's message to the messages array in the chat
     chat.messages.push({
       username: patientUsername,
-      userType: 'patient',
+      userType: "patient",
       content: messageContent,
     });
 
@@ -1647,8 +1636,8 @@ const continueChatWithDoctor = async (req, res) => {
     // Respond with the updated chat
     res.status(200).json(updatedChat);
   } catch (error) {
-    console.error('Error continuing the chat:', error);
-    res.status(500).json({ message: 'Error continuing the chat' });
+    console.error("Error continuing the chat:", error);
+    res.status(500).json({ message: "Error continuing the chat" });
   }
 };
 
@@ -1669,16 +1658,16 @@ const viewMyChats = async (req, res) => {
       ],
     });*/
     const chats = await Chat.find({
-      'patient': patientUsername,
-    });    
+      patient: patientUsername,
+    });
     if (!chats || chats.length === 0) {
-      return res.status(404).json({ message: 'No chats found.' });
+      return res.status(404).json({ message: "No chats found." });
     }
 
     res.status(200).json(chats);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching chats' });
+    res.status(500).json({ message: "Error fetching chats" });
   }
 };
 
@@ -1690,125 +1679,145 @@ const deleteChatWithDoctor = async (req, res) => {
     const chat = await Chat.findById(chatId);
 
     if (!chat) {
-      return res.status(404).json({ message: 'Chat not found' });
+      return res.status(404).json({ message: "Chat not found" });
     }
 
     // Update the chat to mark it as closed
     chat.closed = true;
     await chat.save();
 
-    res.status(200).json({ message: 'Chat closed successfully' });
+    res.status(200).json({ message: "Chat closed successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error closing chat' });
+    res.status(500).json({ message: "Error closing chat" });
   }
 };
 
-const viewLinkedDoctors = async (req,res) =>{
-    try {
-      const  patientUsername  = req.cookies.username;
-      // Query the Appointment model to find all distinct doctors for the given patient
-      const doctors = await Appointment.distinct('doctor', { 'patient': patientUsername });
-  
-      res.status(200).json({ doctors: doctors });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Error finding doctors' });
-    }
-  
-  };
-  
+const viewLinkedDoctors = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+    // Query the Appointment model to find all distinct doctors for the given patient
+    const doctors = await Appointment.distinct("doctor", {
+      patient: patientUsername,
+    });
+
+    res.status(200).json({ doctors: doctors });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error finding doctors" });
+  }
+};
 
 const createZoomMeetingNotification = async (req, res) => {
-    try {
-      const patientUsername = req.cookies.username;
-      const { doctorUsername } = req.body;
-  
-      const patient = await Patient.findOne({ username: patientUsername });
-      const doctor = await Doctor.findOne({ username: doctorUsername });
-  
-      if (!doctor || !patient) {
-        return res.status(404).json({ error: "Doctor or patient not found." });
-      }
-  
-      // Zoom URL scheme for starting a new meeting in the Zoom web app
-      const zoomMeetingLink = `https://zoom.us/start?confno=`;
-  
-      // Create a new notification
-      const zoomMeetingNotification = new Notification({
-        recipients: [doctorUsername, patientUsername],
-        content: `New Zoom meeting scheduled with ${patientUsername}. Click <a href="${zoomMeetingLink}" target="_blank">here</a> to create the meeting.`,
+  try {
+    const patientUsername = req.cookies.username;
+    const { doctorUsername } = req.body;
+
+    const patient = await Patient.findOne({ username: patientUsername });
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+
+    if (!doctor || !patient) {
+      return res.status(404).json({ error: "Doctor or patient not found." });
+    }
+
+    // Zoom URL scheme for starting a new meeting in the Zoom web app
+    const zoomMeetingLink = `https://zoom.us/start?confno=`;
+
+    // Create a new notification
+    const zoomMeetingNotification = new Notification({
+      recipients: [doctorUsername, patientUsername],
+      content: `New Zoom meeting scheduled with ${patientUsername}. Click <a href="${zoomMeetingLink}" target="_blank">here</a> to create the meeting.`,
+    });
+
+    // Save the notification in the database
+    await zoomMeetingNotification.save();
+
+    res
+      .status(200)
+      .json({ message: "Zoom meeting notification created successfully." });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        error:
+          "An error occurred while creating the Zoom meeting notification.",
       });
-  
-      // Save the notification in the database
-      await zoomMeetingNotification.save();
-      
-  
-      
-      res.status(200).json({ message: "Zoom meeting notification created successfully." });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "An error occurred while creating the Zoom meeting notification." });
-    }
-  };
-  
- 
-  const getPatientNotifications = async (req, res) => {
-    try {
-      const patientUsername = req.cookies.username;
-  
-      // Fetch notifications where the patient username is in the recipients list
-      const notifications = await Notification.find({ recipients: { $in: [patientUsername] } });
-  
-      res.status(200).json(notifications);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'An error occurred while fetching notifications.' });
-    }
-  };
-  const viewMedicines = async (req, res) => {
-    try {
-      const patientName = req.cookies.username;
-      const medicines = await medicineModel.find({  });
-      res.json(medicines);
-     
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ error: "An error occurred while fetching medicines." });
-    }
-  };
-  const payWithWallet = async (req, res) => {
-    try {
-      const patientUsername = req.cookies.username; // Assuming you store the patient's username in cookies
-      const { value } = req.body;
-    
-      const patient = await Patient.findOne({ username: patientUsername });
-      if (!patient) {
-        return res.status(404).json({ error: "Patient not found." });
-      }
-          if (patient.wallet >= value) {
-            patient.wallet -= value;
-            await patient.save();
-            return res
-              .status(200)
-              .json({ message: "Payment from wallet successful." });
-          
-      } else {
-        return res.status(400).json({ error: "insufficient" });
-      }
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ error: "An error occurred while processing the payment." });
-    }
-  };
+  }
+};
 
+const getPatientNotifications = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
 
+    // Fetch notifications where the patient username is in the recipients list
+    const notifications = await Notification.find({
+      recipients: { $in: [patientUsername] },
+    });
 
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching notifications." });
+  }
+};
+const viewMedicines = async (req, res) => {
+  try {
+    const patientName = req.cookies.username;
+    const medicines = await medicineModel.find({});
+    res.json(medicines);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching medicines." });
+  }
+};
+const payWithWallet = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username; // Assuming you store the patient's username in cookies
+    const { value } = req.body;
 
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+    if (patient.wallet >= value) {
+      patient.wallet -= value;
+      await patient.save();
+      return res
+        .status(200)
+        .json({ message: "Payment from wallet successful." });
+    } else {
+      return res.status(400).json({ error: "insufficient" });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing the payment." });
+  }
+};
+
+const viewProfile = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username; // Assuming you store the patient's username in cookies
+
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    return res.status(200).json(patient);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing the payment." });
+  }
+};
 
 module.exports = {
   payWithWallet,
@@ -1855,5 +1864,6 @@ module.exports = {
   deleteChatWithDoctor,
   viewLinkedDoctors,
   createZoomMeetingNotification,
-  getPatientNotifications
+  getPatientNotifications,
+  viewProfile
 };
