@@ -15,6 +15,7 @@ import DoctorSendsToPharm from "../components/DoctorSendsToPharm";
 import FollowUpRequests from "../components/FollowUpRequests";
 import DoctorChatsPatients from "../components/DoctorChatsPatients";
 import NotificationsDoctor from "../components/NotificationsDoctor";
+import CombinedDoctorMyPatientsAndSearch from "../components/CombinedDoctorMyPatientsAndSearch";
 import { useNotificationContext } from "../context/NotificationsContext";
 
 const DoctorHome = () => {
@@ -210,28 +211,95 @@ const DoctorHome = () => {
           </div>
         </nav>
       ) : null}
-      {activeTab === "home" ? (
-        <div className="card mt-4">
-          <div className="card-body">
-            <h2 className="card-title">Your Profile:</h2>
-            {doctorData ? (
-              <>
-                <p>ID: {doctorData._id}</p>
-                <p>Username: {doctorData.username}</p>
-                <p>Name: {doctorData.name}</p>
-                <p>Email: {doctorData.email}</p>
-                <p>Date of Birth: {doctorData.dateOfBirth}</p>
-                <p>Hourly Rate: {doctorData.hourlyRate}</p>
-                <p>Speciality: {doctorData.speciality}</p>
-                <p>Affiliation: {doctorData.affiliation}</p>
-                <p>
-                  Educational Background: {doctorData.educationalBackground}
-                </p>
-              </>
-            ) : null}
+      {activeTab === "home" && (
+          <div className="container">
+      <div className="row">
+        <div className="col-lg-4">
+          <div className="card">
+            <div className="card-body">
+              <div className="d-flex flex-column align-items-center text-center">
+                <img
+                  src="https://bootdey.com/img/Content/avatar/avatar7.png" // Replace this with the URL of a doctor's avatar image
+                  alt="Doctor"
+                  className="rounded-circle p-1 bg-primary"
+                  width="110"
+                />
+                <div className="mt-3">
+                  <h4>{doctorData.name}</h4>
+                  <p className="text-secondary mb-1">{doctorData.speciality}</p>
+                </div>
+              </div>
+              <hr className="my-4" />
+            </div>
           </div>
         </div>
-      ) : null}
+        <div className="col-lg-8">
+          <div className="card">
+            <div className="card-body">
+              <div className="row mb-3">
+                <div className="col-sm-3">
+                  <h6 className="mb-0">Full Name</h6>
+                </div>
+                <div className="col-sm-9 text-secondary">
+                  <span>{doctorData.name}</span>
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-sm-3">
+                  <h6 className="mb-0">Email</h6>
+                </div>
+                <div className="col-sm-9 text-secondary">
+                  <span>{doctorData.email}</span>
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-sm-3">
+                  <h6 className="mb-0">Date of Birth</h6>
+                </div>
+                <div className="col-sm-9 text-secondary">
+                  <span>{doctorData.dateOfBirth}</span>
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-sm-3">
+                  <h6 className="mb-0">Hourly Rate</h6>
+                </div>
+                <div className="col-sm-9 text-secondary">
+                  <span>{doctorData.hourlyRate}</span>
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-sm-3">
+                  <h6 className="mb-0">Speciality</h6>
+                </div>
+                <div className="col-sm-9 text-secondary">
+                  <span>{doctorData.speciality}</span>
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-sm-3">
+                  <h6 className="mb-0">Affiliation</h6>
+                </div>
+                <div className="col-sm-9 text-secondary">
+                  <span>{doctorData.affiliation}</span>
+                </div>
+              </div>
+              <div className="row mb-3">
+                <div className="col-sm-3">
+                  <h6 className="mb-0">Educational Background</h6>
+                </div>
+                <div className="col-sm-9 text-secondary">
+                  <span>{doctorData.educationalBackground}</span>
+                </div>
+              </div>
+              {/* You can add more rows as per the doctor's data */}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
 
       {doctorData && !doctorData.acceptedContract ? (
         <div className="card mt-4">
@@ -259,7 +327,7 @@ const DoctorHome = () => {
               {activeTab === "appointments" && <DoctorMyAppointments />}
             </div>
           )}
-          {activeTab === "patients" && (
+          {/* {activeTab === "patients" && (
             <div className="card mt-4">
               <DoctorMyPatients />
             </div>
@@ -268,7 +336,13 @@ const DoctorHome = () => {
             <div className="card mt-4">
               <SearchForPatient />
             </div>
+          )} */}
+          {activeTab === "patients" && (
+            <div className="card mt-4">
+              <CombinedDoctorMyPatientsAndSearch />
+            </div>
           )}
+
           {activeTab === "appointments" && (
             <div className="card mt-4">
               <TimeSlots />
