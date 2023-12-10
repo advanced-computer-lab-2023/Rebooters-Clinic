@@ -1,14 +1,38 @@
 import React, { useState, useEffect } from "react";
+import { Toast, ToastContainer } from 'react-bootstrap';
+
+
 
 const PatientChats = () => {
   const [newChatContent, setNewChatContent] = useState("");
   const [messageContents, setMessageContents] = useState({});
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [chats, setChats] = useState([]);
-  //const [activeChat, setActiveChat] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [pollingInterval, setPollingInterval] = useState(null);
   const [doctors, setDoctors] = useState([]);
+  const [expandedChats, setExpandedChats] = useState([]);
+  const [showToast, setShowToast] = useState(false);
+  const [toastContent, setToastContent] = useState('');
+
+  const showToastMessage = (message) => {
+    setToastContent(message);
+    setShowToast(true);
+  
+    // Hide the toast after a certain duration (e.g., 3000 milliseconds)
+    setTimeout(() => {
+      setShowToast(false);
+    }, 10000);
+  };
+  
+
+  const toggleChat = (chatId) => {
+    setExpandedChats((prevExpandedChats) =>
+      prevExpandedChats.includes(chatId)
+        ? prevExpandedChats.filter((id) => id !== chatId)
+        : [...prevExpandedChats, chatId]
+    );
+  };
 
   const fetchChats = async () => {
     try {
@@ -39,7 +63,6 @@ const PatientChats = () => {
         const json = await response.json();
         setDoctors(json.doctors);
         if (json.doctors.length > 0) {
-          // Set the default selected doctor to the first doctor in the list
           setSelectedDoctor(json.doctors[0]);
         }
       }
@@ -52,10 +75,8 @@ const PatientChats = () => {
     fetchChats();
     fetchDoctors();
 
-    // Poll for new messages every 2 seconds
     const pollingInterval = setInterval(fetchChats, 2000);
 
-    // Clean up the interval when the component unmounts
     return () => {
       clearInterval(pollingInterval);
     };
@@ -73,8 +94,9 @@ const PatientChats = () => {
           body: JSON.stringify({ doctorUsername }),
         }
       );
-
+  
       if (response.ok) {
+        showToastMessage('Check notifications tab for zoom link');
       } else {
         // Handle error, e.g., show an error message
       }
@@ -82,7 +104,7 @@ const PatientChats = () => {
       console.error("Error starting video chat:", error);
     }
   };
-
+  
   const startNewChatWithDoctor = async () => {
     try {
       if (!newChatContent.trim()) {
@@ -100,14 +122,15 @@ const PatientChats = () => {
           selectedDoctor: selectedDoctor,
         }),
       });
-      const json = await response.json();
-      // Set the active chat to the newly created chat
-      //setActiveChat(json._id);
-      // Refresh the chat list
-      setChats([...chats, json]);
-      // Clear the newChatContent and error message
-      setNewChatContent("");
-      setErrorMessage("");
+
+      if (response.ok) {
+        const json = await response.json();
+        setChats([...chats, json]);
+        setNewChatContent("");
+        setErrorMessage("");
+      } else {
+        console.error("Error starting a new chat:", response.statusText);
+      }
     } catch (error) {
       console.error("Error starting a new chat:", error);
     }
@@ -120,6 +143,7 @@ const PatientChats = () => {
         setErrorMessage("You have to type something");
         return;
       }
+
       const response = await fetch("/api/patient/continueChatWithDoctor", {
         method: "POST",
         headers: {
@@ -127,13 +151,15 @@ const PatientChats = () => {
         },
         body: JSON.stringify({ chatId, messageContent: content }),
       });
-      const json = await response.json();
 
-      // Refresh the chat list
-      setChats(chats.map((chat) => (chat._id === chatId ? json : chat)));
-      // Clear the content for the specific chatId and error message
-      setMessageContents({ ...messageContents, [chatId]: "" });
-      setErrorMessage("");
+      if (response.ok) {
+        const json = await response.json();
+        setChats(chats.map((chat) => (chat._id === chatId ? json : chat)));
+        setMessageContents({ ...messageContents, [chatId]: "" });
+        setErrorMessage("");
+      } else {
+        console.error("Error continuing the chat:", response.statusText);
+      }
     } catch (error) {
       console.error("Error continuing the chat:", error);
     }
@@ -150,10 +176,6 @@ const PatientChats = () => {
       });
 
       if (response.ok) {
-        // Reset the active chat to null
-        //setActiveChat(null);
-
-        // Remove the closed chat from the frontend
         setChats((prevChats) =>
           prevChats.filter((chat) => chat._id !== chatId)
         );
@@ -168,100 +190,127 @@ const PatientChats = () => {
   return (
     <div className="container">
       <div className="card">
-        <h2>My Chats</h2>
+        <h2 style={{ marginLeft: "20px" }}>My Chats</h2>
         {/* Existing Chats */}
         <div>
           {chats.map(
             (chat) =>
               !chat.closed && (
-                <div key={chat._id}>
-                  <h5>My chat with: {chat.doctor}</h5>
-                  <div>
-                    {chat.messages &&
-                      chat.messages.map((message, index) => (
-                        <div key={index}>
-                          <strong>{message.userType}: </strong>{" "}
-                          {message.content}
-                          <span style={{ marginLeft: "10px", color: "gray" }}>
-                            {new Date(message.timestamp).toLocaleString()}
-                          </span>
-                        </div>
-                      ))}
+                <div key={chat._id} className="card mb-3">
+                  <div
+                    className="card-header d-flex justify-content-between align-items-center"
+                    onClick={() => toggleChat(chat._id)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <h5 className="card-title">{chat.doctor}</h5>
+                    <button
+                      type="button"
+                      className="btn-close"
+                      onClick={() => deleteChatWithDoctor(chat._id)}
+                      aria-label="Close"
+                    ></button>
                   </div>
-
-                  {errorMessage && (
-                    <p style={{ color: "red" }}>{errorMessage}</p>
+                  {/* Check if the chat is expanded before rendering content */}
+                  {expandedChats.includes(chat._id) && (
+                    <>
+                      <div className="card-body">
+                        {chat.messages &&
+                          chat.messages.map((message, index) => (
+                            <div key={index}>
+                              <strong>{message.userType}: </strong>{" "}
+                              {message.content}
+                              <span style={{ marginLeft: "10px", color: "gray" }}>
+                                {new Date(message.timestamp).toLocaleString()}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                      <div className="card-footer">
+                        {errorMessage && (
+                          <p style={{ color: "red" }}>{errorMessage}</p>
+                        )}
+                        <div className="input-group mb-3">
+                          <textarea
+                            className="form-control"
+                            placeholder="Type your message here..."
+                            rows="1"
+                            value={messageContents[chat._id] || ""}
+                            onChange={(e) =>
+                              setMessageContents({
+                                ...messageContents,
+                                [chat._id]: e.target.value,
+                              })
+                            }
+                          ></textarea>
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => continueChatWithDoctor(chat._id)}
+                          >
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    </>
                   )}
-                  <textarea
-                    rows="1"
-                    cols="25"
-                    placeholder="Type your message here..."
-                    value={messageContents[chat._id] || ""}
-                    onChange={(e) =>
-                      setMessageContents({
-                        ...messageContents,
-                        [chat._id]: e.target.value,
-                      })
-                    }
-                  ></textarea>
-
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => continueChatWithDoctor(chat._id)}
-                  >
-                    Send
-                  </button>
-                  <br />
-
-                  <button
-                    className="btn btn-danger"
-                    style={{ marginLeft: "10px" }}
-                    onClick={() => deleteChatWithDoctor(chat._id)}
-                  >
-                    Close Chat
-                  </button>
                 </div>
               )
           )}
         </div>
+  
         {/* Start a New Chat */}
         <div>
-          <h3>Start a New Chat</h3>
+          <h3 style={{ marginLeft: "20px" }}> Start a New Chat </h3>
           {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-          {/* Dropdown menu for selecting doctors */}
-          {doctors.length > 0 && (
-            <select
-              value={selectedDoctor}
-              onChange={(e) => setSelectedDoctor(e.target.value)}
+          <div className="input-group mb-3">
+            {doctors.length > 0 && (
+              <select
+                className="form-select"
+                value={selectedDoctor}
+                onChange={(e) => setSelectedDoctor(e.target.value)}
+              >
+                {doctors.map((doctor) => (
+                  <option key={doctor} value={doctor}>
+                    {doctor}
+                  </option>
+                ))}
+              </select>
+            )}
+            <textarea
+              className="form-control"
+              placeholder="Type your message here..."
+              rows="1"
+              value={newChatContent}
+              onChange={(e) => setNewChatContent(e.target.value)}
+            ></textarea>
+            <button
+              className="btn btn-primary me-2"
+              onClick={startNewChatWithDoctor}
             >
-              {doctors.map((doctor) => (
-                <option key={doctor} value={doctor}>
-                  {doctor}
-                </option>
-              ))}
-            </select>
-          )}
-          <textarea
-            rows="1"
-            cols="25"
-            placeholder="Type your message here..."
-            value={newChatContent}
-            onChange={(e) => setNewChatContent(e.target.value)}
-          ></textarea>
-          <br />
-          <button className="btn btn-primary" onClick={startNewChatWithDoctor}>
-            Start Chat
-          </button>
-          <button
-            className="btn btn-success"
-            onClick={() => startVideoChatWithDoctor(selectedDoctor)}
-          >
-            Start Video Chat
-          </button>
+              Start Chat
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => startVideoChatWithDoctor(selectedDoctor)}
+            >
+              Start Video Chat
+            </button>
+          </div>
         </div>
       </div>
+  
+      {/* Toast */}
+      <div style={{ position: 'relative' }}>
+      <ToastContainer position="absolute" style={{ top: '10px', right: '10px' }}  className="p-3">
+        <Toast show={showToast} onClose={() => setShowToast(false)}>
+          <Toast.Header closeButton={true}>
+            <strong className="me-auto">Video Chat With Doctor</strong>
+          </Toast.Header>
+          <Toast.Body>{toastContent}</Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </div>
     </div>
   );
-};
+                }; 
 
 export default PatientChats;

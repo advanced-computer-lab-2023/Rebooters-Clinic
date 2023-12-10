@@ -1579,6 +1579,28 @@ const startNewChatWithDoctor = async (req, res) => {
       return res.status(404).json({ message: "Patient not found" });
     }
 
+    // Check if there is an open chat between the patient and selected doctor
+    const existingChat = await Chat.findOne({
+      patient: patientUsername,
+      doctor: selectedDoctor,
+      closed: false,
+    });
+
+    if (existingChat) {
+      // If an open chat exists, continue the chat
+      existingChat.messages.push({
+        username: patientUsername,
+        userType: "patient",
+        content: messageContent,
+      });
+
+      const updatedChat = await existingChat.save();
+      console.log("Continuing existing chat:", updatedChat);
+
+      return res.status(200).json({ chat: updatedChat });
+    }
+
+    // If no open chat exists, start a new one
     const newChat = new Chat({
       patient: patientUsername,
       doctor: selectedDoctor,
@@ -1593,9 +1615,9 @@ const startNewChatWithDoctor = async (req, res) => {
 
     const savedChat = await newChat.save();
 
-    console.log("savedChat:", savedChat);
+    console.log("New chat created:", savedChat);
 
-    res.status(201).json({ savedChat });
+    res.status(201).json({ chat: savedChat });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error starting a new chat" });
@@ -1746,23 +1768,6 @@ const createZoomMeetingNotification = async (req, res) => {
   }
 };
 
-const getPatientNotifications = async (req, res) => {
-  try {
-    const patientUsername = req.cookies.username;
-
-    // Fetch notifications where the patient username is in the recipients list
-    const notifications = await Notification.find({
-      recipients: { $in: [patientUsername] },
-    });
-
-    res.status(200).json(notifications);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching notifications." });
-  }
-};
 const viewMedicines = async (req, res) => {
   try {
     const patientName = req.cookies.username;
@@ -1819,6 +1824,68 @@ const viewProfile = async (req, res) => {
   }
 };
 
+
+
+const getPatientNotifications = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+
+    // Fetch notifications where the patient username is in the recipients list
+    const notifications = await Notification.find({
+      recipients: { $in: [patientUsername] },
+    });
+
+    // Filter notifications based on recipients and visibility
+    
+    const filteredNotifications = notifications.filter(notification =>
+      notification.recipients.some((recipient, index) =>
+        recipient === patientUsername && notification.visibility[index] === "show"
+      )
+    );
+
+    let count = 0;
+    if(filteredNotifications && filteredNotifications.length>0){
+        count = filteredNotifications.length;
+    }
+
+    res.status(200).json({filteredNotifications, count});
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching notifications." });
+  }
+};
+
+const hideNotification = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+    const {notificationId} = req.body;
+
+    // Update the visibility to 'hide' for the specified patient and notification
+    const updatedNotification = await Notification.findOneAndUpdate(
+      {
+        _id: notificationId,
+        recipients: patientUsername,
+      },
+      { $set: { 'visibility.$': 'hide' } },
+      { new: true }
+    );
+
+    if (!updatedNotification) {
+      return res
+        .status(404)
+        .json({ error: 'Notification not found for the specified patient.' });
+    }
+
+    res.status(200).json(updatedNotification);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while updating notification visibility.' });
+  }
+};
+
+
 module.exports = {
   payWithWallet,
   viewMedicines,
@@ -1865,5 +1932,6 @@ module.exports = {
   viewLinkedDoctors,
   createZoomMeetingNotification,
   getPatientNotifications,
-  viewProfile
+  viewProfile,
+  hideNotification
 };

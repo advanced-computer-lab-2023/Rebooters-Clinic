@@ -12,6 +12,15 @@ const notificationSchema = new Schema({
     type: String,
     required: true,
   },
+  visibility: {
+    type: [{
+      type: String,
+      enum: ['hide', 'show'],
+    }],
+    default: function () {
+      return Array(this.recipients.length).fill('show');
+    },
+  },
 });
 
 const Notification = mongoose.model('Notification', notificationSchema);

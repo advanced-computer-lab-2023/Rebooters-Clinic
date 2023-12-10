@@ -9,7 +9,7 @@ const {payWithWallet,viewMedicines,requestFollowUp,rescheduleAppointment,viewAva
     filterByUpcomingDate , viewHealthRecords, makeAppointment, viewFamilyMembersHealthPackages, viewFamilyAppointments,
      logout, changePassword,getAvailableDoctors, cancelAppointment, startNewChatWithDoctor,
      continueChatWithDoctor, viewMyChats, deleteChatWithDoctor, viewLinkedDoctors, createZoomMeetingNotification,
-     getPatientNotifications , viewProfile
+     getPatientNotifications , viewProfile, hideNotification
     } = require('../Controllers/patientController'); //we're destructuring so we need curly braces
 
 
@@ -126,6 +126,7 @@ router.post('/createZoomMeetingNotification', requireAuth, createZoomMeetingNoti
 
 router.get('/getPatientNotifications', requireAuth, getPatientNotifications);
 
+router.post('/hideNotification', requireAuth, hideNotification);
 
 router.get('/viewProfile', requireAuth, viewProfile);
 

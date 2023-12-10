@@ -16,52 +16,14 @@ import MedicalHistoryComponent from "../components/MedicalHistory";
 import PatientFamilyAppointments from "../components/PatientFamilyAppointments";
 import PatientChats from "../components/PatientChats";
 import NotificationsPatient from "../components/NotificationsPatient";
-import { useNotificationContext } from "../context/NotificationsContext";
 import FamilyMembers from "../components/FamilyMembers";
 import PatientsHealthPackages from "../components/PatientsHealthPackages";
 import PatientProfile from "../components/PatientProfile";
 
 const PatientHome = () => {
-  const { notifications, incrementNotifications } = useNotificationContext();
-  const [prevNotifications, setPrevNotifications] = useState(0);
   const [patientData, setPatientData] = useState(null);
   const [activeTab, setActiveTab] = useState("home");
   const navigate = useNavigate();
-
-  const getPatientNotifications = async () => {
-    try {
-      const response = await fetch("/api/patient/getPatientNotifications", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Include cookies in the request
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-
-        // Check if the count of notifications increased
-        if (data.length > notifications) {
-          incrementNotifications();
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching notifications:", error);
-    }
-  };
-
-  useEffect(() => {
-    // Fetch notifications initially
-    getPatientNotifications();
-
-    // Set up an interval to fetch notifications periodically
-    const intervalId = setInterval(getPatientNotifications, 5000); // Fetch every  seconds, for example
-
-    // Clean up the interval when the component unmounts
-    return () => clearInterval(intervalId);
-  }, [notifications, incrementNotifications]);
-
   useEffect(() => {
     const checkUserType = async () => {
       try {
@@ -115,9 +77,6 @@ const PatientHome = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    if (tab === "notifications") {
-      setPrevNotifications(notifications);
-    }
   };
 
   return (
@@ -325,10 +284,7 @@ const PatientHome = () => {
                   className="nav-link btn btn-link"
                   onClick={() => handleTabClick("notifications")}
                 >
-                  Notifications{" "}
-                  {notifications > prevNotifications && (
-                    <strong>({notifications - prevNotifications})</strong>
-                  )}
+                  Notifications
                 </button>
               </li>
             </ul>
