@@ -588,13 +588,13 @@ const scheduleAppointment = async (req, res) => {
     // Save the appointment to the database
     await appointment.save();
 
-    const prescription = new Prescription({
+   /* const prescription = new Prescription({
       patientName: patientUsername,
       doctorUsername: doctorUsername,
       doctorName : doctor.name,
       date: new Date(dateTime),
     });
-    await prescription.save();
+    await prescription.save();*/
 
     res.status(201).json(appointment);
   } catch (error) {
