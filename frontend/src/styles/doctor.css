@@ -1,5 +1,5 @@
-.patient-cover {
-    background: url('../../public/carousel-1.jpg') repeat center center fixed ;
+.doctor-cover {
+    background: url('../../public/doctor-background.jpg') repeat center center fixed ;
     background-size:cover;
     position:absolute;
     margin: 0;
@@ -9,7 +9,7 @@
     opacity: 1;
   }
 
-  .patient-cover-color {
+  .doctor-cover-color {
     background: rgba(9, 30, 62, 0.85); /* Adjust the color and transparency as needed */
     background-size: cover ;
     width: 100%;
@@ -17,10 +17,11 @@
     z-index: 1;
   }
 
-  .patient-home-text{
+  .doctor-home-text{
     color: white;
     font-family: 'Oswald', sans-serif;
     font-size: 40px;
     width: 40%;
     padding-top: 10%;
+    padding-left: 5%;
   }

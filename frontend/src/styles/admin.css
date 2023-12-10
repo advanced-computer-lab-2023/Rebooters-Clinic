@@ -1,0 +1,12 @@
+.admin-cover {
+    background: url('../../public/admin-background.jpeg') repeat center center fixed ;
+    background-size:cover;
+    position:absolute;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%; 
+    opacity: 1;
+  }
+
+  

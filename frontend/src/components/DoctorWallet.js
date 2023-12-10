@@ -23,7 +23,7 @@ function DoctorWallet() {
   }, []);
 
   return (
-    <div className="container">
+    <div className="" style={{width:"35%"}} >
       <div className="card mt-4">
         <h2 className="card-header">Your Wallet</h2>
         <div className="card-body">

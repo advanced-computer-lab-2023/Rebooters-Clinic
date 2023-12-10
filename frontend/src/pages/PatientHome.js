@@ -125,7 +125,7 @@ const PatientHome = () => {
       <div className="cover-color">
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
           <img src={"clinic-logo.png"} width="100" />
-          <a href="/" class="navbar-brand p-0">
+          <a href="" class="navbar-brand p-0">
             <h1 class="m-0 text-primary">
               <i class="fa fa-tooth me-2"></i>El7a2ni
             </h1>
@@ -140,14 +140,14 @@ const PatientHome = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ms-auto py-0">
-              <li>
+              {/* <li>
                 <button
                   className="nav-link btn btn-link"
                   onClick={handleLogout}
                 >
                   Logout
                 </button>
-              </li>
+              </li> */}
               <li
                 className={`nav-item ${activeTab === "home" ? "active" : ""}`}
               >
@@ -162,21 +162,43 @@ const PatientHome = () => {
                 </button>
               </li>
               <li
-                className={`nav-item ${
-                  activeTab === "profile" ? "active" : ""
-                }`}
-              >
-                <button
-                  style={{
-                    color:
-                      activeTab === "profile" ? "var(--primary)" : "inherit",
-                  }}
-                  className="nav-link btn btn-link"
-                  onClick={() => handleTabClick("profile")}
+                  className={`nav-item ${
+                    activeTab === "profile" ? "active" : ""
+                  }`}
                 >
-                  Profile
-                </button>
-              </li>
+                  <div className="dropdown">
+                    <button
+                      style={{
+                        color:
+                          activeTab === "profile"
+                            ? "var(--primary)"
+                            : "inherit",
+                      }}
+                      className="nav-link btn btn-link dropdown-toggle"
+                      role="button"
+                      id="profileDropdown"
+                      data-bs-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                    >
+                      Profile
+                    </button>
+                    <div
+                      className="dropdown-menu"
+                      aria-labelledby="profileDropdown"
+                    >
+                      <button
+                        className="dropdown-item"
+                        onClick={() => handleTabClick("profile")}
+                      >
+                        Profile & Settings
+                      </button>
+                      <button className="dropdown-item" onClick={handleLogout}>
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </li>
               <li
                 className={`nav-item ${
                   activeTab === "appointments" ? "active" : ""

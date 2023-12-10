@@ -128,7 +128,7 @@ function EditHealthPackage() {
             onChange={(e) => setDiscountOnSubscription(e.target.value)}
           />
         </div>
-        <button onClick={handleEditHealthPackage} className="btn btn-success">
+        <button onClick={handleEditHealthPackage} className="btn btn-primary">
           Edit Package
         </button>
       </div>

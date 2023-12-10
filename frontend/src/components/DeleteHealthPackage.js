@@ -54,7 +54,7 @@ function DeleteHealthPackage() {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <button onClick={handleDeleteHealthPackage} className="btn btn-danger">
+        <button onClick={handleDeleteHealthPackage} className="btn btn-secondary">
           Delete Package
         </button>
       </div>

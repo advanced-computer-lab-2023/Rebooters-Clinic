@@ -326,6 +326,27 @@ const viewHealthPackages = async (req, res) => {
   }
 };
 
+
+const viewAllDoctors = async (req, res) => {
+  try {
+    const allDoctors = await Doctor.find();
+    res.status(200).json(allDoctors);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching patients" });
+  }
+};
+
+const viewAllAdmins = async (req, res) => {
+  try {
+    const allAdmins = await Administrator.find();
+    res.status(200).json(allAdmins);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching patients" });
+  }
+};
+
 module.exports = {
   addAdministrator,
   removeUserFromSystem,
@@ -340,4 +361,6 @@ module.exports = {
   changePassword,
   createToken,
   viewHealthPackages,
+  viewAllDoctors,
+  viewAllAdmins,
 };
