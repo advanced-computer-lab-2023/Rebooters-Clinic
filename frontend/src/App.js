@@ -8,6 +8,8 @@ import Guest from "./pages/Guest";
 import Login from "./pages/Login";
 import OTP from "./pages/OTP";
 import ForgotPassword from "./pages/ForgotPassword";
+import AboutUs from "./pages/AboutUs";
+import ContactPage from "./pages/ContactPage";
 
 function App() {
   return (
@@ -22,6 +24,9 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/forgotpassword" element={<ForgotPassword />} />
           <Route path="/otp" element={<OTP />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactPage />} />
+
 
         </Routes>
       </BrowserRouter>
