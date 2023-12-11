@@ -457,14 +457,6 @@ const PatientAppointments = () => {
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
-                    <button 
-                     onClick={
-                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
-                    }
-                    style={{  marginLeft: 'auto',
-                     marginRight: 'auto',
-                     display: 'block' }                  
-                     }>Reschedule</button>
                   </td>
                   <td>{appointment.status}</td>
                   <td>{appointment.price}</td>
@@ -482,11 +474,16 @@ const PatientAppointments = () => {
                     )}
                     {appointment.status == "Completed" && (
                       
-                      <button 
+                      <button className="btn btn-primary"
                       onClick={() => FollowUp(appointment.datetime)}>
                          Request a Follow-up
                          </button>
                      )}
+                    {appointment.status !=="Completed" && appointment.status !=="Cancelled" && (<button className="btn btn-primary"
+                     onClick={
+                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
+                    }>
+                      Reschedule </button>)}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
                     <button className="btn btn-danger"
                     onClick={() => handleCancelAppointment(appointment)}>
@@ -504,14 +501,6 @@ const PatientAppointments = () => {
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
-                    <button 
-                     onClick={
-                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
-                    }
-                    style={{  marginLeft: 'auto',
-                     marginRight: 'auto',
-                     display: 'block' }                  
-                     }>Reschedule</button>
                   </td>
                   <td>{appointment.status}</td>
                   <td>{appointment.price}</td>
@@ -529,11 +518,16 @@ const PatientAppointments = () => {
                     )}
                     {appointment.status == "Completed" && (
                       
-                      <button 
+                      <button className="btn btn-primary"
                       onClick={() => FollowUp(appointment.datetime)}>
                          Request a Follow-up
                          </button>
                      )}
+                     {appointment.status !=="Completed" && appointment.status !=="Cancelled" && (<button className="btn btn-primary"
+                     onClick={
+                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
+                    }>
+                      Reschedule </button>)}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
                     <button className="btn btn-danger"
                     onClick={() => handleCancelAppointment(appointment)}>
@@ -550,14 +544,6 @@ const PatientAppointments = () => {
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
-                    <button 
-                     onClick={
-                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
-                    }
-                    style={{  marginLeft: 'auto',
-                     marginRight: 'auto',
-                     display: 'block' }                  
-                     }>Reschedule</button>
                   </td>
                   <td>{appointment.status}</td>
                   <td>{appointment.price}</td>
@@ -575,11 +561,16 @@ const PatientAppointments = () => {
                     )}
                     {appointment.status == "Completed" && (
                       
-                      <button 
+                      <button className="btn btn-primary"
                       onClick={() => FollowUp(appointment.datetime)}>
                          Request a Follow-up
                          </button>
                      )}
+                     {appointment.status !=="Completed" && appointment.status !=="Cancelled" && (<button className="btn btn-primary"
+                     onClick={
+                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
+                    }>
+                      Reschedule </button>)}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
                     <button className="btn btn-danger"
                     onClick={() => handleCancelAppointment(appointment)}>
@@ -596,14 +587,6 @@ const PatientAppointments = () => {
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
-                    <button 
-                     onClick={
-                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
-                    }
-                    style={{  marginLeft: 'auto',
-                     marginRight: 'auto',
-                     display: 'block' }                  
-                     }>Reschedule</button>
                   </td>
                   <td>{appointment.status}</td>
                   <td>{appointment.price}</td>
@@ -621,11 +604,16 @@ const PatientAppointments = () => {
                     )}
                     {appointment.status == "Completed" && (
                       
-                      <button 
+                      <button className="btn btn-primary"
                       onClick={() => FollowUp(appointment.datetime)}>
                          Request a Follow-up
                          </button>
                      )}
+                     {appointment.status !=="Completed" && appointment.status !=="Cancelled" && (<button className="btn btn-primary"
+                     onClick={
+                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
+                    }>
+                      Reschedule </button>)}
                      {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
                     <button className="btn btn-danger"
                     onClick={() => handleCancelAppointment(appointment)}>
@@ -641,14 +629,6 @@ const PatientAppointments = () => {
                   <td>
                     {new Date(appointment.datetime).toLocaleDateString()}{" "}
                     {new Date(appointment.datetime).toLocaleTimeString()}
-                    <button 
-                     onClick={
-                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
-                    }
-                    style={{  marginLeft: 'auto',
-                     marginRight: 'auto',
-                     display: 'block' }                  
-                     }>Reschedule</button>
                   </td>
                   <td>{appointment.status}</td>
                   <td>{appointment.price}</td>
@@ -666,11 +646,16 @@ const PatientAppointments = () => {
                     )}
                     {appointment.status == "Completed" && (
                       
-                     <button 
+                     <button className="btn btn-primary"
                      onClick={() => FollowUp(appointment.datetime)}>
                         Request a Follow-up
                         </button>
                     )}
+                    {appointment.status !=="Completed" && appointment.status !=="Cancelled" && (<button className="btn btn-primary"
+                     onClick={
+                      () =>handleRescheduleAppointment (appointment.doctor,appointment.datetime)
+                    }>
+                      Reschedule </button>)}
                     {appointment.status !== "Completed" && appointment.status !== "Cancelled" &&(
                    <button className="btn btn-danger"
                    onClick={() => handleCancelAppointment(appointment)}>

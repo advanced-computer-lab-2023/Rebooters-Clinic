@@ -119,7 +119,7 @@ const ViewDoctors = () => {
     <div className="container">
       {showBookAppointment && (
         <div className="modal-overlay">
-          <div className="card">
+          <div className="card" style={{ width: '60%', height: '80%' }}> 
             <div
               className="editPrescription"
               onHide={() => setShowBookAppointment(false)}

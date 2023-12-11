@@ -7,7 +7,6 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
   const [doctorUsername, setDoctorUsername] = useState(doctor);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
-  const [index, setIndex] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedFamilyMember, setSelectedFamilyMember] = useState("");
   const [familyMembers, setFamilyMembers] = useState([]);
@@ -39,7 +38,6 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
 
   const handleSlotClick = (slot, index) => {
     setSelectedSlot(slot);
-    setIndex(index);
     setShowModal(true);
   };
 
@@ -59,7 +57,6 @@ const ViewSlotsAndMakeAppointment = ({ doctor }) => {
         body: JSON.stringify({
           doctorUsername,
           chosenSlot: selectedSlot,
-          index,
           reservingUser: selectedFamilyMember,
         }),
       });

@@ -1068,7 +1068,7 @@ const viewAvailableDoctorSlots = async (req, res) => {
 const makeAppointment = async (req, res) => {
   try {
     const patientUsername = req.cookies.username;
-    const { doctorUsername, chosenSlot, index, reservingUser } = req.body;
+    const { doctorUsername, chosenSlot, reservingUser } = req.body;
 
     let patient;
     if (reservingUser !== "myself") {
@@ -1105,7 +1105,12 @@ const makeAppointment = async (req, res) => {
       price: appointmentPrice,
     });
 
-    doctor.availableSlots[index].reservingPatientUsername = patient.username;
+    let i=0;
+    for(i;i<doctor.availableSlots.length;i++){
+      if(doctor.availableSlots[i].datetime.getTime() === combinedDateTime.getTime()){
+        doctor.availableSlots[i].reservingPatientUsername = patient.username;
+      }
+    }
 
     await doctor.save();
     await appointment.save();

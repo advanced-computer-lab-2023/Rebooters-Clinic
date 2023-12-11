@@ -19,6 +19,7 @@ import NotificationsPatient from "../components/NotificationsPatient";
 import FamilyMembers from "../components/FamilyMembers";
 import PatientsHealthPackages from "../components/PatientsHealthPackages";
 import PatientProfile from "../components/PatientProfile";
+//import CombinedPatientAppointments from "../components/CombinedPatientAppointments";
 
 const PatientHome = () => {
   const [patientData, setPatientData] = useState(null);
