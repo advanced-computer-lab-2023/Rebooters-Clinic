@@ -1,3 +1,5 @@
+import "../styles/patient.css";
+
 import React, { useEffect, useState } from "react";
 import { saveAs } from 'file-saver';
 import { Viewer, Document, Page, Text, View, PDFDownloadLink } from '@react-pdf-viewer/core';
@@ -77,7 +79,8 @@ function Prescription() {
       setPrescriptions([]);
     }
   };
-    const handleClosePrescription = (index) => {
+    const handleClosePrescription = (event,index) => {
+      event.stopPropagation();
     // Create a copy of the prescriptions array
     const updatedPrescriptions = [...prescriptions];
 
@@ -297,11 +300,15 @@ return (
 
     {prescriptions.length > 0 && !prescriptionDetails && (
       <div>
-        <ul>
+        <ul className="prescription-list">
           {prescriptions.map((prescription, index) => (
+           <a href="#" key={index} onClick={() => handleShowPrescriptionDetails(prescription, index)}>
             <li key={index}>
-              <div className="card">
-                <h3>Prescription {index + 1}</h3>
+            <button onClick={(event) => handleClosePrescription(event,index)}>
+                Close
+              </button>
+              <div className="card title-box">
+                <h3 className="prescription-title">Prescription {index + 1}</h3>
                 <p>
                   <strong>Doctor:</strong> {prescription.doctorName}
                 </p>
@@ -311,15 +318,10 @@ return (
                   {new Date(prescription.date).toLocaleTimeString()}{" "}
                 </p>
               </div>
-              <button
-                onClick={() => handleShowPrescriptionDetails(prescription, index)}
-              >
-                Select
-              </button>
-              <button onClick={() => handleClosePrescription(index)}>
-                Close
-              </button>
+           
+             
             </li>
+            </a>
           ))}
         </ul>
       </div>
