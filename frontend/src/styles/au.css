@@ -240,3 +240,71 @@ a:hover {
   height: 100%; 
   z-index: 1;
 }
+/* fade.css */
+.fade-enter {
+  opacity: 0;
+}
+
+.fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+.fade-in-location {
+  animation: fadeIn 1s ease-in-out 1s; /* 1s delay */
+}
+
+.fade-in-phone {
+  animation: fadeIn 1s ease-in-out 2s; /* 2s delay */
+}
+
+.fade-in-email {
+  animation: fadeIn 1s ease-in-out 3s; /* 3s delay */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* Define forward animation */
+/* Define slide animation */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation-name: slideIn;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
