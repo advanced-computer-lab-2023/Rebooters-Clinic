@@ -1381,7 +1381,9 @@ const viewMyChatsWithPatients = async (req, res) => {
 
     const chats = await Chat.find({
       'doctor': doctorUsername,
-      'pharmacist' : "false"
+      'pharmacist' : "",
+      'patient': { $ne: "" }
+
     });    
     if (!chats || chats.length === 0) {
       return res.status(404).json({ message: 'No chats found.' });
