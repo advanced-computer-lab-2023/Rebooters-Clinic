@@ -1539,14 +1539,60 @@ const viewLinkedPatients = async (req,res) =>{
       const doctorUsername = req.cookies.username;
   
       // Fetch notifications where the doctor username is in the recipients list
-      const notifications = await Notification.find({ recipients: { $in: [doctorUsername] } });
+      const notifications = await Notification.find({
+        recipients: { $in: [doctorUsername] },
+      });
   
-      res.status(200).json(notifications);
+      // Filter notifications based on recipients and visibility
+      
+      const filteredNotifications = notifications.filter(notification =>
+        notification.recipients.some((recipient, index) =>
+          recipient === doctorUsername && notification.visibility[index] === "show"
+        )
+      );
+  
+      let count = 0;
+      if(filteredNotifications && filteredNotifications.length>0){
+          count = filteredNotifications.length;
+      }
+  
+      res.status(200).json({filteredNotifications, count});
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'An error occurred while fetching notifications.' });
+      res
+        .status(500)
+        .json({ error: "An error occurred while fetching notifications." });
     }
   };
+  
+  const hideNotification = async (req, res) => {
+    try {
+      const doctorUsername = req.cookies.username;
+      const {notificationId} = req.body;
+  
+      // Update the visibility to 'hide' for the specified patient and notification
+      const updatedNotification = await Notification.findOneAndUpdate(
+        {
+          _id: notificationId,
+          recipients: doctorUsername,
+        },
+        { $set: { 'visibility.$': 'hide' } },
+        { new: true }
+      );
+  
+      if (!updatedNotification) {
+        return res
+          .status(404)
+          .json({ error: 'Notification not found for the specified doctor.' });
+      }
+  
+      res.status(200).json(updatedNotification);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while updating notification visibility.' });
+    }
+  };
+  
  
 
 
@@ -1593,7 +1639,8 @@ module.exports = {
   deleteChatWithPatient,
   viewLinkedPatients,
   createZoomMeetingNotification,
-  getDoctorNotifications
+  getDoctorNotifications,
+  hideNotification
 
 
 };

@@ -66,6 +66,7 @@ const FollowUpRequests = () => {
             <th>Patient</th>
             <th>Reason</th>
             <th>Preferred Date</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -75,6 +76,7 @@ const FollowUpRequests = () => {
               <td>{request.patient}</td>
               <td>{request.FollowUpRequest.reason}</td>
               <td>{new Date(request.FollowUpRequest.preferredDate).toLocaleString()}</td>
+              <td>{request.FollowUpRequest.status}</td>
               <td>
                 {!request.accepted && !request.revoked && (
                   <>

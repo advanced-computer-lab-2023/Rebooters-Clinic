@@ -4,6 +4,7 @@ import AddPrescription from "./AddPrescription";
 import EditPrescription from "./EditPrescription";
 import AddHealthRecord from "./AddHealthRecord";
 import ScheduleFollowup from "./ScheduleFollowup";
+import { Toast, ToastContainer } from 'react-bootstrap';
 
 const DoctorMyAppointments = () => {
   const [appointmentsData, setAppointmentsData] = useState([]);
@@ -29,10 +30,25 @@ const DoctorMyAppointments = () => {
   const [showScheduleFollowup, setShowScheduleFollowup] = useState(false);
   const [rescheduleDatetime, setRescheduleDatetime] = useState("");
   const [oldDatetime, setOldDatetime] = useState("");
-  const [showRescheduleAppointment, setShowRescheduleAppointment] =
-    useState(false);
+  const [showRescheduleAppointment, setShowRescheduleAppointment] = useState(false);
   const [rescheduleSuccess, setRescheduleSuccess] = useState(false);
   const [rowActionsVisibility, setRowActionsVisibility] = useState({});
+  const [showToast, setShowToast] = useState(false);
+  const [toastContent, setToastContent] = useState('');
+  const [didDoctorCancel, setDidDoctorCancel] = useState(false);
+  const [didDoctorReschedule, setDidDoctorReschedule] = useState(false);
+
+  
+  const showToastMessage = (message) => {
+    setToastContent(message);
+    setShowToast(true);
+  
+    // Hide the toast after a certain duration (e.g., 3000 milliseconds)
+    setTimeout(() => {
+      setShowToast(false);
+    }, 10000);
+  };
+
 
   const handleAddPrescription = (patient) => {
     setShowAddPrescription(true);
@@ -100,10 +116,6 @@ const DoctorMyAppointments = () => {
     setShowRescheduleAppointment(false);
   };
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
-
   const fetchAppointments = async () => {
     try {
       const response = await fetch("/api/doctor/doctor-myappointments", {
@@ -168,6 +180,10 @@ const DoctorMyAppointments = () => {
           appointmentGiven: appointment,
         }),
       });
+
+      if(response.ok){
+        setDidDoctorCancel(true);
+      }
     } catch (error) {}
   };
 
@@ -193,6 +209,7 @@ const DoctorMyAppointments = () => {
 
       if (response.ok) {
         setRescheduleSuccess(true);
+        setDidDoctorReschedule(true);
       } else {
         setRescheduleSuccess(false);
         // Optionally handle other error cases
@@ -349,6 +366,28 @@ const DoctorMyAppointments = () => {
     const comparison = dateA - dateB;
     return sortOrder === "asc" ? comparison : -comparison;
   });
+
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [didDoctorReschedule, didDoctorCancel]);
+  
+
+  useEffect(() => {
+    if (didDoctorReschedule === true) {
+      showToastMessage('Check notifications for rescheduling details');
+      setDidDoctorReschedule(false);
+    }
+    if(didDoctorCancel === true){
+      showToastMessage('Check notifications for cancellation details');
+      setDidDoctorCancel(false);
+
+    }
+
+
+  }, [didDoctorReschedule, didDoctorCancel]);
+
+
 
   return (
     <div className="container">
@@ -1083,6 +1122,18 @@ const DoctorMyAppointments = () => {
               ))}
         </tbody>
       </table>
+
+      {/* Toast */}
+      <div style={{ position: 'relative' }}>
+      <ToastContainer position="absolute" style={{ top: '10px', right: '10px' }}  className="p-3">
+        <Toast show={showToast} onClose={() => setShowToast(false)}>
+          <Toast.Header closeButton={true}>
+            <strong className="me-auto">Appointment Notification</strong>
+          </Toast.Header>
+          <Toast.Body>{toastContent}</Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </div>
     </div>
   );
 };

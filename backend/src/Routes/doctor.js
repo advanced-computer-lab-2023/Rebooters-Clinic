@@ -7,7 +7,8 @@ const {cancelAppointment,viewProfile, updateProfile, viewMyPatients ,
     viewContract ,acceptContract , rejectContract , addAvailableSlots , scheduleAppointment , addHealthRecord, 
     logout, changePassword, addPrescription, removeFromPrescription, addToPrescription, editPrescription,sendMessageToPharmacist,
      viewAllChats,startNewChat,continueChat,viewMyChats,deleteChat , acceptFollowUpRequest , revokeFollowUpRequest , rescheduleAppointment , getDoctorFollowUpRequests , viewMyChatsWithPatients, startNewChatWithPatient, continueChatWithPatient, deleteChatWithPatient,
-     viewLinkedPatients, createZoomMeetingNotification, getDoctorNotifications} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
+     viewLinkedPatients, createZoomMeetingNotification, getDoctorNotifications,
+    hideNotification} = require('../Controllers/doctorController') //we're destructuring so we need curly braces
      
 
 const router = express.Router() //create a router
@@ -66,4 +67,5 @@ router.post('/continueChatWithPatient',requireAuth, continueChatWithPatient);
 router.post('/deleteChatWithPatient',requireAuth, deleteChatWithPatient);
 router.post('/createZoomMeetingNotification',requireAuth, createZoomMeetingNotification);
 router.get("/getDoctorNotifications", requireAuth ,getDoctorNotifications);
+router.post('/hideNotification', requireAuth, hideNotification);
 module.exports = router;

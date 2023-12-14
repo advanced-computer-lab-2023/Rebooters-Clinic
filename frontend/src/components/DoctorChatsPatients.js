@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Toast, ToastContainer } from 'react-bootstrap';
 
 const DoctorChatsPatients = () => {
   const [newChatContent, setNewChatContent] = useState('');
@@ -9,6 +10,19 @@ const DoctorChatsPatients = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [pollingInterval, setPollingInterval] = useState(null);
   const [patients, setPatients] = useState([]);
+  const [showToast, setShowToast] = useState(false);
+  const [toastContent, setToastContent] = useState('');
+
+  const showToastMessage = (message) => {
+    setToastContent(message);
+    setShowToast(true);
+  
+    // Hide the toast after a certain duration (e.g., 3000 milliseconds)
+    setTimeout(() => {
+      setShowToast(false);
+    }, 10000);
+  };
+  
 
   const fetchChatsWithPatients = async () => {
     try {
@@ -78,7 +92,7 @@ const DoctorChatsPatients = () => {
 
 
       if (response.ok) {
-        // Handle success, e.g., show a success message
+        showToastMessage('Check notifications tab for zoom link');
       } else {
         // Handle error, e.g., show an error message
       }
@@ -242,6 +256,17 @@ const DoctorChatsPatients = () => {
 
           </div>
       </div>
+      {/* Toast */}
+      <div style={{ position: 'relative' }}>
+      <ToastContainer position="absolute" style={{ top: '10px', right: '10px' }}  className="p-3">
+        <Toast show={showToast} onClose={() => setShowToast(false)}>
+          <Toast.Header closeButton={true}>
+            <strong className="me-auto">Video Chat With Patient</strong>
+          </Toast.Header>
+          <Toast.Body>{toastContent}</Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </div>
     </div>
   );
 };

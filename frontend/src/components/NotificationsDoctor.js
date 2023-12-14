@@ -1,44 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-
-const NotificationsDoctor = ({ setNewNotification }) => {
+const NotificationsDoctor = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    // Fetch notifications when the component mounts
-    fetch('/api/doctor/getDoctorNotifications', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include', // Include cookies in the request
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setNotifications(data);
-        // Notify DoctorHome about new notifications
-        setNewNotification(data.length > 0);
-      })
-      .catch((error) => console.error('Error fetching notifications:', error));
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch("/api/doctor/getDoctorNotifications", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Include cookies in the request
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(data.filteredNotifications);
+        }
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
+    };
+
+    // Fetch notifications initially
+    fetchNotifications();
   }, [notifications]);
 
   const createMarkup = (content) => {
     return { __html: content };
   };
 
+  const hideNotification = async (notificationId) => {
+    try {
+      const response = await fetch("/api/doctor/hideNotification", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include cookies in the request
+        body: JSON.stringify({ notificationId }),
+      });
+
+      if (response.ok) {
+        // Update the UI by removing the hidden notification
+        setNotifications((prevNotifications) =>
+          prevNotifications.filter(
+            (notification) => notification._id !== notificationId
+          )
+        );
+      } else {
+        console.error("Error hiding notification:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error hiding notification:", error);
+    }
+  };
+
   return (
     <div className="container">
-      <h2>Notifications</h2>
-      <ul className="list-group">
-        {notifications.map((notification, index) => (
-          <li key={index} className="list-group-item">
-            <strong>Recipients:</strong> {notification.recipients.join(', ')}
-            <br />
-            <strong>Content:</strong>{' '}
-            <div dangerouslySetInnerHTML={createMarkup(notification.content)} />
-          </li>
-        ))}
-      </ul>
+      <div className="card">
+        <h2>Notifications</h2>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Recipients</th>
+              <th>Content</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.isArray(notifications) && notifications.length > 0 ? (
+              notifications.map((notification, index) => (
+                <tr key={index}>
+                  <td>{notification.recipients.join(", ")}</td>
+                  <td>
+                    <div dangerouslySetInnerHTML={createMarkup(notification.content)} />
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger btn-sm"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Hide Notification"
+                      onClick={() => hideNotification(notification._id)}
+                    >
+                      &#x2716;
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="3">No notifications available.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
