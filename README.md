@@ -28,12 +28,420 @@ MERN Stack
 - Intuitive UI/UX
 - Cross Platform
 ## Usage/Examples
-
+#### Code Examples from the guestController.js
 ```javascript
+const login = async(req, res) => {
+  const { username, password } = req.body;
+  try {
+    let user;
+    type = "";
 
+    // Search for the username in Patients
+    user = await Patient.findOne({ username });
+    type = "patient";
+    if (!user) {
+        // Search for the username in Admins
+        user = await Admin.findOne({ username });
+        type = "admin";
+    }
+    if (!user) {
+        // Search for the username in Pharmacists
+        user = await Doctor.findOne({ username });
+        type = "doctor";
+    }
+
+    if (user) {
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        if (isPasswordMatch) {
+            const token = createToken(user.username);
+            res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+            res.cookie('userType', type, { httpOnly: true, maxAge: maxAge * 1000 });
+            res.cookie('username', username, { httpOnly: true, maxAge: maxAge * 1000 });
+            res.status(200).json({ username, token, type});
+        } else {
+            res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        //DO REDIRECTING ACCORDING TO TYPE
+
+    } else {
+        res.status(401).json({ error: 'User not found' });
+    }
+} catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while logging in.' });
+}
+};
 ```
 
 
+```javascript
+const createPatient = async (req, res) => {
+    try {
+      const {username,name,email,password,dateOfBirth,gender,mobile_number,emergency_contact} = req.body; 
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const newPatient = new Patient({username,name,email,password:hashedPassword,dateOfBirth,gender,mobile_number,emergency_contact});
+      await newPatient.save();
+      const token = createToken(newPatient._id);
+      res.status(200).json({username, token});
+      } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'An error occurred while creating the patient.' });
+    }
+  };
+```
+#### Code Examples from the patientController.js
+```javascript
+const filterDoctor = async (req, res) => {
+  try {
+    const { speciality, date } = req.body; // Get speciality, date, and time from the request body
+    const patientUsername = req.cookies.username;
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!speciality && !date) {
+      return res.status(400).json({
+        error:
+          "Please provide at least one search parameter (speciality, date, or time).",
+      });
+    }
+
+    if (speciality && !date) {
+      let filteredDoctors = await Doctor.find({
+        speciality: { $regex: new RegExp(speciality, "i") },
+        acceptedContract: true,
+      });
+
+      // Calculate session prices for each doctor
+      const doctorsWithSessionPrices = filteredDoctors.map((doctor) => {
+        let sessionPrice = doctor.hourlyRate;
+
+        if (patient.healthPackage) {
+          // Apply the discount from the patient's health package
+          sessionPrice =
+            doctor.hourlyRate +
+            doctor.hourlyRate * 0.1 -
+            patient.healthPackage.discountOnSession;
+        } else {
+          // If no health package, calculate session price with clinic's markup only
+          sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
+        }
+        doctor.sessionPrice = sessionPrice;
+        return {
+          _id: doctor._id,
+          username: doctor.username,
+          name: doctor.name,
+          speciality: doctor.speciality,
+          educationalBackground: doctor.educationalBackground,
+          affiliation: doctor.affiliation,
+          dateOfBirth: doctor.dateOfBirth,
+          sessionPrice,
+        };
+      });
+
+      res.status(200).json(doctorsWithSessionPrices);
+    } else if (!speciality && date) {
+      const combinedDateTime = new Date(date);
+      const doctors = await Doctor.find();
+      const doctorsWithAvailableSlots = [];
+
+      doctors.forEach((doctor) => {
+        const hasAvailableSlot = doctor.availableSlots.some(
+          (slot) =>
+            new Date(slot.datetime).getTime() === combinedDateTime.getTime() &&
+            slot.reservingPatientUsername === null
+        );
+
+        if (hasAvailableSlot && doctor.acceptedContract) {
+          doctorsWithAvailableSlots.push(doctor);
+        }
+      });
+
+      // Calculate session prices for each doctor
+      const doctorsWithSessionPrices = doctorsWithAvailableSlots.map(
+        (doctor) => {
+          let sessionPrice = doctor.hourlyRate;
+
+          if (patient.healthPackage) {
+            // Apply the discount from the patient's health package
+            sessionPrice =
+              doctor.hourlyRate +
+              doctor.hourlyRate * 0.1 -
+              patient.healthPackage.discountOnSession;
+          } else {
+            // If no health package, calculate session price with clinic's markup only
+            sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
+          }
+          doctor.sessionPrice = sessionPrice;
+          return {
+            _id: doctor._id,
+            username: doctor.username,
+            name: doctor.name,
+            speciality: doctor.speciality,
+            educationalBackground: doctor.educationalBackground,
+            affiliation: doctor.affiliation,
+            dateOfBirth: doctor.dateOfBirth,
+            sessionPrice,
+          };
+        }
+      );
+
+      res.status(200).json(doctorsWithSessionPrices);
+    } else if (speciality && date) {
+      const combinedDateTime = new Date(date);
+      const doctors = await Doctor.find();
+      const doctorsWithAvailableSlots = [];
+
+      doctors.forEach((doctor) => {
+        const hasAvailableSlot = doctor.availableSlots.some(
+          (slot) =>
+            new Date(slot.datetime).getTime() === combinedDateTime.getTime() &&
+            slot.reservingPatientUsername === null
+        );
+
+        if (hasAvailableSlot && doctor.acceptedContract) {
+          doctorsWithAvailableSlots.push(doctor.username);
+        }
+      });
+      filteredDoctors = await Doctor.find({
+        speciality: { $regex: new RegExp(speciality, "i") },
+        username: { $in: doctorsWithAvailableSlots },
+        acceptedContract: true,
+      });
+
+      // Calculate session prices for each doctor
+      const doctorsWithSessionPrices = filteredDoctors.map((doctor) => {
+        let sessionPrice = doctor.hourlyRate;
+
+        if (patient.healthPackage) {
+          // Apply the discount from the patient's health package
+          sessionPrice =
+            doctor.hourlyRate +
+            doctor.hourlyRate * 0.1 -
+            patient.healthPackage.discountOnSession;
+        } else {
+          // If no health package, calculate session price with clinic's markup only
+          sessionPrice = doctor.hourlyRate + doctor.hourlyRate * 0.1;
+        }
+        doctor.sessionPrice = sessionPrice;
+        return {
+          _id: doctor._id,
+          username: doctor.username,
+          name: doctor.name,
+          speciality: doctor.speciality,
+          educationalBackground: doctor.educationalBackground,
+          affiliation: doctor.affiliation,
+          dateOfBirth: doctor.dateOfBirth,
+          sessionPrice,
+        };
+      });
+
+      res.status(200).json(doctorsWithSessionPrices);
+    } else {
+      return res.status(400).json({
+        error:
+          "Please provide at least one search parameter (speciality or date).",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while filtering doctors." });
+  }
+};
+```
+
+```javascript
+const viewMyAppointments = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username;
+    const myAppointments = await Appointment.find({ patient: patientUsername });
+    res.status(200).json(myAppointments);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred" });
+  }
+};
+```
+
+#### Code Examples from the doctorController.js
+```javascript
+const viewMyPatients = async (req, res) => {
+  try {
+    //const {doctorUsername} = req.body;
+    const doctorUsername = req.cookies.username;
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+    const patients = await Patient.find({
+      username: { $in: patientUsernames },
+    });
+    res.status(200).json(patients);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching patients" });
+  }
+};
+
+```
+
+```javascript
+const scheduleAppointment = async (req, res) => {
+  try {
+    const doctorUsername = req.cookies.username;
+    const { patientUsername, dateTime } = req.body;
+
+    const doctor = await Doctor.findOne({ username: doctorUsername });
+    if (!doctor) {
+      return res.status(404).json({ error: "Doctor not found." });
+    }
+
+    // Find the patient by their username
+    const patient = await Patient.findOne({ username: patientUsername });
+
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    //make sure patient is one of doctor's patients
+    const appointments = await Appointment.find({ doctor: doctorUsername });
+    const patientUsernames = appointments.map(
+      (appointment) => appointment.patient
+    );
+
+    if (!patientUsernames.includes(patientUsername)) {
+      return res
+        .status(404)
+        .json({ error: "Patient is not one of the doctor's patients" });
+    }
+
+    // Ensure the provided date and time are ahead of the current date and time
+    const currentDateTime = new Date();
+    const providedDateTime = new Date(`${dateTime}`);
+
+    if (providedDateTime <= currentDateTime) {
+      return res.status(400).json({
+        error:
+          "Please provide a date and time ahead of the current date and time.",
+      });
+    }
+
+    // Create a new appointment for the follow-up or regular appointment
+    appointmentPrice = doctor.hourlyRate;
+    if (patient.statusOfHealthPackage === "Subscribed") {
+      appointmentPrice =
+        doctor.hourlyRate * patient.healthPackage.discountOnSession;
+    }
+    const appointment = new Appointment({
+      doctor: doctorUsername,
+      patient: patientUsername,
+      datetime: new Date(dateTime),
+      status: "Upcoming",
+      price: appointmentPrice,
+    });
+
+    // Save the appointment to the database
+    await appointment.save();
+
+   /* const prescription = new Prescription({
+      patientName: patientUsername,
+      doctorUsername: doctorUsername,
+      doctorName : doctor.name,
+      date: new Date(dateTime),
+    });
+    await prescription.save();*/
+
+    res.status(201).json(appointment);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while scheduling the appointment." });
+  }
+};
+```
+#### Code Examples from the AdminController.js
+```javascript
+const addAdministrator = async (req, res) => {
+  try {
+    const { username, password, email } = req.body;
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
+    const newAdministrator = new Administrator({
+      email,
+      username,
+      password: hashedPassword,
+    });
+    const savedAdministrator = await newAdministrator.save();
+    const token = createToken(newAdministrator._id);
+    res.status(201).json({ username, token, savedAdministrator });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error adding administrator" });
+  }
+};
+```
+```javascript
+const approveDoctorRequest = async (req, res) => {
+  try {
+    const { username } = req.body;
+    const request = await NewDoctorRequest.findOne({ username: username });
+
+    if (!request) {
+      return res.status(404).json({ error: "Request not found" });
+    }
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(request.password, salt);
+
+    const newDoctor = new Doctor({
+      username: request.username,
+      password: hashedPassword,
+      name: request.name,
+      email: request.email,
+      dateOfBirth: request.dateOfBirth,
+      hourlyRate: request.hourlyRate,
+      speciality: request.speciality,
+      affiliation: request.affiliation,
+      educationalBackground: request.educationalBackground,
+    });
+
+    request.status = "accepted";
+    await newDoctor.save();
+
+    await NewDoctorRequest.findOneAndRemove({ username: username });
+
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + 2);
+
+    // Calculate salary with a 10% markup
+    const salary = request.hourlyRate * 40 * 1.1;
+
+    const newContract = new Contract({
+      doctorName: request.username,
+      employerName: req.cookies.username, 
+      startDate: new Date(), 
+      endDate: endDate, 
+      salary: salary, 
+      status: 'pending',
+    });
+
+    // Save the new contract
+    await newContract.save();
+
+    const emailInfo = await sendApprovalEmail(request.email);
+
+    res.status(200).json({ message: "Request accepted", emailInfo });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while approving the request" });
+  }
+};
+```
 ## Installation
 
 - [Install VS Code](https://code.visualstudio.com/download)
@@ -57,7 +465,7 @@ https://stripe.com/docs
 #### Login
 
 ```http
-  POST /api/guest/login
+POST /api/guest/login
 ```
 
 | Parameter | Type     | Description                |
@@ -68,7 +476,7 @@ https://stripe.com/docs
 #### Patient Registration
 
 ```http
-  POST /api/guest/createPatient
+POST /api/guest/createPatient
 ```
 
 | Parameter                  | Type     | Description                                      |
@@ -475,8 +883,8 @@ POST /api/patient/startNewChatWithDoctor
 ```
 | Parameter               | Type   | Description                                    |
 | :---------------------- | :----- | :--------------------------------------------- |
-| `messageContent`     | `number` | **Required**. Message to be sent|
-| `selectedDoctor`     | `number` | **Required**. Doctor to chat with|
+| `messageContent`     | `string` | **Required**. Message to be sent|
+| `selectedDoctor`     | `string` | **Required**. Doctor to chat with|
 
 
 #### Continue chat with a Doctor
@@ -486,8 +894,8 @@ POST /api/patient/continueChatWithDoctor
 ```
 | Parameter               | Type   | Description                                    |
 | :---------------------- | :----- | :--------------------------------------------- |
-| `messageContent`     | `number` | **Required**. Message to be sent|
-| `chatId`     | `number` | **Required**. ID of chat to continue on|
+| `messageContent`     | `string` | **Required**. Message to be sent|
+| `chatId`     | `string` | **Required**. ID of chat to continue on|
 
 
 #### View all Chats
@@ -503,7 +911,7 @@ POST /api/patient/deleteChatWithDoctor
 ```
 | Parameter               | Type   | Description                                    |
 | :---------------------- | :----- | :--------------------------------------------- |
-| `chatId`     | `number` | **Required**. ID of chat to close|
+| `chatId`     | `string` | **Required**. ID of chat to close|
 
 #### View all doctors patient had appointment with
 
@@ -518,7 +926,7 @@ POST /api/patient/createZoomMeetingNotification
 ```
 | Parameter               | Type   | Description                                    |
 | :---------------------- | :----- | :--------------------------------------------- |
-| `doctorUsername `     | `number` | **Required**. Username of doctor to video call|
+| `doctorUsername `     | `string` | **Required**. Username of doctor to video call|
 
 
 #### Get Patient Notifications
@@ -534,7 +942,7 @@ POST /api/patient/hideNotification
 ```
 | Parameter               | Type   | Description                                    |
 | :---------------------- | :----- | :--------------------------------------------- |
-| `notificationId `     | `number` | **Required**. Notification ID to hide|
+| `notificationId `     | `string` | **Required**. Notification ID to hide|
 
 #### View patient profile
 
@@ -953,7 +1361,7 @@ POST /api/doctor/createZoomMeetingNotification
 ```
 | Parameter               | Type   | Description                                    |
 | :---------------------- | :----- | :--------------------------------------------- |
-| `patientUsername `     | `number` | **Required**. Username of doctor to video call|
+| `patientUsername `     | `string` | **Required**. Username of doctor to video call|
 
 #### Get Doctor Notifications
 
