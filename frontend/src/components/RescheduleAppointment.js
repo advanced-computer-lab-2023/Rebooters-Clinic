@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-const RescheduleAppointment = ({doctorUsername ,dateApp }) => {
+const RescheduleAppointment = ({weRescheduled ,doctorUsername ,dateApp }) => {
     const [slots, setSlots] = useState([]);
     const [selectedValue, setSelectedValue] = useState('');
     useEffect(() => {
@@ -16,8 +16,9 @@ const RescheduleAppointment = ({doctorUsername ,dateApp }) => {
             },
             body: JSON.stringify({newdate:selectedValue,datetime:dateApp,doctorUsername }),
           });
+
           if (response.ok) {
-            const data = await response.json();
+            weRescheduled();
           } else {
             console.error("Error fetching available slots.");
           }
@@ -26,6 +27,10 @@ const RescheduleAppointment = ({doctorUsername ,dateApp }) => {
           console.error("An error occurred while fetching available slots:", error);
         }
       }
+
+
+
+
       const fetchAvailableSlots = async () => {
        try {
           if (!doctorUsername) {
@@ -56,7 +61,7 @@ const RescheduleAppointment = ({doctorUsername ,dateApp }) => {
         <h2>Choose the date convenient to you</h2>
       <select value={selectedValue} onChange={(e) => setSelectedValue(e.target.value)}>
   <option value="">Select...</option>
-  {slots.map((option) => (
+  {slots.length>0 && slots.map((option) => (
     <option value={`${option.datetime}`}>
     { option.datetime.slice(0, 19).replace('T', ' ')} 
     </option>

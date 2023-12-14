@@ -1361,7 +1361,9 @@ const getDoctorFollowUpRequests = async (req, res) => {
     // Retrieve all appointments where the doctor is the assigned doctor
     const followUpRequests = await Appointment.find({
       'doctor': doctorUsername,
-      'FollowUpRequest.status': { $in: ['Pending', 'Accepted', 'Revoked'] } // Optional: Filter by status if needed
+      'FollowUpRequest.reason': { $ne: '' },
+      'FollowUpRequest.status': { $in: ['Accepted','Pending']}
+
     });
 
     res.json({ followUpRequests });

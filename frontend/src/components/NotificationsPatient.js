@@ -26,7 +26,7 @@ const NotificationsPatient = () => {
 
     // Fetch notifications initially
     fetchNotifications();
-  }, []);
+  }, [notifications]);
 
   const createMarkup = (content) => {
     return { __html: content };

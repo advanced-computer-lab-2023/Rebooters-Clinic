@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-const FollowUpRequest = ({ datetimeApp }) => {
-  const [reason, setReason] = useState("");
+const FollowUpRequest = ({  datetimeApp }) => {
 
 
   const handleFollowUpRequest = async () => {
@@ -14,6 +13,7 @@ const FollowUpRequest = ({ datetimeApp }) => {
         },
         body: JSON.stringify({ datetime:datetimeApp,reason,preferredDate}),
       });
+      
 
     } catch (error) {
       console.log('error')
@@ -29,9 +29,7 @@ const FollowUpRequest = ({ datetimeApp }) => {
        id="reason"
 />
       <p>Preferred Date/Time:</p>
-      <textarea
-      id="preference"
-/>
+      <input type="date" id="preference" />
       <div>
         <br/>
       <button onClick={handleFollowUpRequest} className="btn btn-primary btn-lg">Submit</button>

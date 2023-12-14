@@ -20,7 +20,7 @@ const NotificationsDoctor = ({ setNewNotification }) => {
         setNewNotification(data.length > 0);
       })
       .catch((error) => console.error('Error fetching notifications:', error));
-  }, [setNewNotification]);
+  }, [notifications]);
 
   const createMarkup = (content) => {
     return { __html: content };

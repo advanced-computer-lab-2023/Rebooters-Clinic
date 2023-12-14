@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { Toast, ToastContainer } from 'react-bootstrap';
+import Alert from 'react-bootstrap/Alert';
 import FollowUpRequest from "./FollowUpRequest";
 import RescheduleAppointment from "./RescheduleAppointment";
 
@@ -15,7 +17,6 @@ const PatientAppointments = () => {
   const [endDate, setEndDate] = useState("");
   const [appointmentId, setAppointmentId] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
-  const [paymentMessage, setPaymentMessage] = useState("");
   const [paymentError, setPaymentError] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [showPayAppointment, setShowPayAppointment] = useState(false);
@@ -24,6 +25,33 @@ const PatientAppointments = () => {
   const [appFollowUp, setAppFollowUp] = useState("");
   const [showReschedule, setShowReschedule] = useState(false);
   const [doctor, setDoctor] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastContent, setToastContent] = useState('');
+
+  const [didWeReschedule, setDidWeReschedule] = useState(false);
+  const [didWeCancel, setDidWeCancel] = useState(false);
+  
+
+
+
+  const showToastMessage = (message) => {
+    setToastContent(message);
+    setShowToast(true);
+  
+    // Hide the toast after a certain duration (e.g., 3000 milliseconds)
+    setTimeout(() => {
+      setShowToast(false);
+    }, 10000);
+  };
+  
+
+
+  const weRescheduled = () => {
+    setDidWeReschedule(true);
+  }
+
+
+
   const handleToggleFilters = () => {
     setShowFilters(!showFilters);
   };
@@ -213,6 +241,12 @@ const PatientAppointments = () => {
         }),
       })
 
+      if(response.ok){
+        setDidWeCancel(true);
+      }
+
+
+
     }catch(error){
     }
 
@@ -270,25 +304,42 @@ const PatientAppointments = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setPaymentMessage(data.message);
         setPaymentError("");
         await fetchAppointments(); // Refresh appointments after successful payment
       } else {
         const errorData = await response.json();
         setPaymentError(errorData.error);
-        setPaymentMessage("");
       }
     } catch (error) {
       console.error("Error processing payment:", error);
       setPaymentError("An error occurred while processing the payment.");
-      setPaymentMessage("");
     }
   };
+
+  const clearError = () => {
+    setPaymentError('');
+  };
+
+  
 
   useEffect(() => {
     // Fetch appointments when the component mounts
     fetchAppointments();
-  }, []);
+  }, [didWeCancel, didWeReschedule, followUpRequest, showPayAppointment ]);
+
+  useEffect(() => {
+    if (didWeReschedule === true) {
+      showToastMessage('Check notifications for rescheduling details');
+      setDidWeReschedule(false);
+    }
+    if(didWeCancel === true){
+      showToastMessage('Check notifications for cancellation details');
+      setDidWeCancel(false);
+
+    }
+
+
+  }, [didWeReschedule, didWeCancel]);
 
   return (
     <div className="container">
@@ -296,7 +347,7 @@ const PatientAppointments = () => {
   <div className="modal-overlay">
     <div className="card">
       <div className="scheduleFollowup">
-        <RescheduleAppointment doctorUsername={doctor} dateApp={appFollowUp}/>
+        <RescheduleAppointment weRescheduled={weRescheduled} doctorUsername={doctor} dateApp={appFollowUp}/>
       </div>
       <button
         className="btn btn-danger"
@@ -435,8 +486,9 @@ const PatientAppointments = () => {
           </div>
         </>
       )}
-      {paymentError && <p className="text-danger">{paymentError}</p>}
-      {paymentMessage && <p className="text-success">{paymentMessage}</p>}
+      {paymentError && <Alert variant="danger" onClose={clearError} dismissible>
+          {paymentError}
+        </Alert>}
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -667,6 +719,17 @@ const PatientAppointments = () => {
               ))}
         </tbody>
       </table>
+      {/* Toast */}
+      <div style={{ position: 'relative' }}>
+      <ToastContainer position="absolute" style={{ top: '10px', right: '10px' }}  className="p-3">
+        <Toast show={showToast} onClose={() => setShowToast(false)}>
+          <Toast.Header closeButton={true}>
+            <strong className="me-auto">Appointment Notification</strong>
+          </Toast.Header>
+          <Toast.Body>{toastContent}</Toast.Body>
+        </Toast>
+      </ToastContainer>
+    </div>
     </div>
   );
 };

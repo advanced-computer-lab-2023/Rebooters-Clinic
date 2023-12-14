@@ -1347,11 +1347,12 @@ const rescheduleAppointment = async (req, res) => {
 
     for (let i = 0; i < doctor.availableSlots.length; i++) {
       if (
-        doctor.availableSlots[i].datetime.getTime() ==
-        new Date(newdate).getTime()
-      ) {
+        doctor.availableSlots[i].datetime.getTime() == new Date(newdate).getTime()) {
         doctor.availableSlots[i].reservingPatientUsername =
           req.cookies.username;
+      }
+      if(doctor.availableSlots[i].datetime.getTime() == new Date(datetime).getTime()){
+        doctor.availableSlots[i].reservingPatientUsername =null;
       }
     }
 
@@ -1398,6 +1399,8 @@ const rescheduleAppointment = async (req, res) => {
     // Send emails
     await transporter.sendMail(patientEmailOptions);
     await transporter.sendMail(doctorEmailOptions);
+
+    res.status(200).json({ message: "Appointment rescheduled" });
   } catch (error) {
     console.error(error);
     res
@@ -1412,6 +1415,8 @@ const requestFollowUp = async (req, res) => {
       { datetime },
       { $set: { FollowUpRequest: { reason, preferredDate } } }
     );
+
+    res.status(200).json({ message: "Request successfully made" });
   } catch (error) {
     console.error(error);
     res

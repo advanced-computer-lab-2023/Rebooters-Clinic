@@ -36,8 +36,8 @@ const appointmentSchema = new Schema({
     preferredDate: String,
     status: {
       type: String,
-      enum: ['Pending', 'Accepted', 'Revoked', 'N/A'],
-      default: 'N/A',
+      enum: ['Pending', 'Accepted', 'Revoked'],
+      default: 'Pending',
     },
   }
 });
