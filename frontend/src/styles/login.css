@@ -50,13 +50,13 @@
   border-radius: 15px;
   background-color: white;
   margin-left: 35%;
-  /*margin-right: 100px;*/
+  margin-right: 100px;
   transform: translateY(50%);
   margin-bottom: auto;
   padding-bottom: 50px;
   padding-left: 20px;
   padding-right: 20px;
-  /* color: #444; */
+  color: #444;
 }
 .forgot {
   height: auto;
@@ -104,15 +104,16 @@
   height: 100%;
   z-index: 1;
 }
-.email-card {
-  width: 50%;
-  height: 40%;
-}
+
 .close-btn {
   position: absolute;
   bottom: 22.5%;
   left: 76.5%;
+  transform: translate(-8%, 44%);
 }
 .title {
   justify-content: center;
+}
+.email-card {
+  width: 100%;
 }

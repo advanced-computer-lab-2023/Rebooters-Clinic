@@ -30,7 +30,7 @@ const ForgotPassword = () => {
   };
   return (
     <div className="email-cont">
-      <div className="card-body">
+      <div className="">
         <div className="logo-forgot">
           <img
             src={"clinic-logo.png"}
@@ -43,7 +43,7 @@ const ForgotPassword = () => {
         <div className="enter-email">Enter your email:</div>
         <input
           name="email"
-          className="form-control col-8"
+          className="form-control col-10"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

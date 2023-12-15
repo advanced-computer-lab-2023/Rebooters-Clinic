@@ -6,6 +6,7 @@ import { Carousel, Button } from "react-bootstrap";
 import ForgotPass from "./ForgotPassword";
 import Navbar from "../components/Navbar";
 import Footer from "../components/footer";
+import { Link } from "react-router-dom";
 //import { useHistory } from 'react-router-dom';
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -103,15 +104,7 @@ const Login = () => {
               />
               <br />
 
-              <button
-                onClick={handleLogin}
-                className="btn btn-primary"
-                style={{ width: "70%" }}
-              >
-                Login
-              </button>
-              <br />
-              <br />
+              {error && <p style={{ color: "red" }}>{error}</p>}
               <a
                 className="forgot"
                 style={{ textDecoration: "underline" }}
@@ -134,11 +127,18 @@ const Login = () => {
                   </div>
                 </div>
               )}
+
               <br />
+              <button
+                className="login-btn btn btn-primary"
+                onClick={handleLogin}
+              >
+                Login
+              </button>
               <hr />
-              <a className="btn btn-primary" href="/">
-                Create New Account
-              </a>
+              <Link to="/" className="createAcc-btn btn btn-primary">
+                Create Account
+              </Link>
             </div>
           </div>
         </div>

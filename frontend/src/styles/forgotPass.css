@@ -5,17 +5,11 @@
 .logo-name {
   margin-bottom: 0;
   position: absolute;
-  left: 10%;
-  top: 13%;
+  left: 18%;
+  top: 10%;
 }
 .enter-email {
   text-align: left;
   margin-top: 5px;
   margin-bottom: 2px;
-}
-.req-otp {
-  position: absolute;
-}
-.email-cont {
-  position: relative;
 }
