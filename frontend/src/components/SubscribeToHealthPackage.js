@@ -188,7 +188,7 @@ const SubscribeToHealthPackage = () => {
               {packages.map((packageOption) => (
                 <Dropdown.Item
                   key={packageOption.name}
-                  onSelect={() => handlePackageSelection(packageOption.name)}
+                  onClick={() => handlePackageSelection(packageOption.name)}
                 >
                   {packageOption.name}
                 </Dropdown.Item>
@@ -207,14 +207,14 @@ const SubscribeToHealthPackage = () => {
             <Dropdown.Menu>
               <Dropdown.Item
                 key="myself"
-                onSelect={() => setSelectedFamilyMember("myself")}
+                onClick={() => setSelectedFamilyMember("myself")}
               >
                 Myself
               </Dropdown.Item>
               {familyMembers.map((familyMember) => (
                 <Dropdown.Item
                   key={familyMember.username}
-                  onSelect={() =>
+                  onClick={() =>
                     setSelectedFamilyMember(familyMember.username)
                   }
                 >
@@ -233,7 +233,7 @@ const SubscribeToHealthPackage = () => {
             <Dropdown.Menu>
               <Dropdown.Item
                 key="payWithWallet"
-                onSelect={() =>
+                onClick={() =>
                   handlePaymentSelection("pay with my wallet")
                 }
               >
@@ -241,7 +241,7 @@ const SubscribeToHealthPackage = () => {
               </Dropdown.Item>
               <Dropdown.Item
                 key="payWithCard"
-                onSelect={() =>
+                onClick={() =>
                   handlePaymentSelection("pay with credit card")
                 }
               >
