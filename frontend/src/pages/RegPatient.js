@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-
+import Footer from "../components/footer";
+import Navbar from "../components/Navbar";
 const AddPatient = () => {
   const [newPatient, setNewPatient] = useState({
     username: "",
@@ -177,7 +178,6 @@ const AddPatient = () => {
                   <select
                     className="form-select"
                     id="gender"
-                    style={{ padding: "6px", borderRadius: "5px" }}
                     name="gender"
                     value={newPatient.gender}
                     onChange={handleInputChange}
@@ -278,9 +278,8 @@ const AddPatient = () => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
-
-      <Footer />
     </div>
   );
 };
