@@ -17,6 +17,7 @@ import FollowUpRequests from "../components/FollowUpRequests";
 import DoctorChatsPatients from "../components/DoctorChatsPatients";
 import NotificationsDoctor from "../components/NotificationsDoctor";
 import CombinedDoctorMyPatientsAndSearch from "../components/CombinedDoctorMyPatientsAndSearch";
+import Footer from "../components/footer";
 
 const DoctorHome = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -463,6 +464,7 @@ const DoctorHome = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

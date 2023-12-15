@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Footer from "../components/footer";
 
 const AddPatient = () => {
   const [newPatient, setNewPatient] = useState({
@@ -319,7 +320,9 @@ const AddPatient = () => {
         </div>
       </div>
       
-    </div></div>
+    </div>
+    <Footer />
+    </div>
       
       </div>
   );

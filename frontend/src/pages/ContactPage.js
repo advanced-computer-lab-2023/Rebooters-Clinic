@@ -91,6 +91,7 @@ const Conc = () => {
           >
             {/* Your Background Image */}
           </div>
+          <Footer />
         </div>
       </div>
     </div>

@@ -19,6 +19,7 @@ import NotificationsPatient from "../components/NotificationsPatient";
 import FamilyMembers from "../components/FamilyMembers";
 import PatientsHealthPackages from "../components/PatientsHealthPackages";
 import PatientProfile from "../components/PatientProfile";
+import Footer from "../components/footer";
 //import CombinedPatientAppointments from "../components/CombinedPatientAppointments";
 
 const PatientHome = () => {
@@ -387,6 +388,7 @@ const PatientHome = () => {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
