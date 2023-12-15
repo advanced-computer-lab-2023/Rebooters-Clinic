@@ -76,7 +76,7 @@ const Login = () => {
           </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto py-0">
-              <a href="/index" class="nav-item nav-link active">
+              <a href="/" class="nav-item nav-link active">
                 Home
               </a>
               <a href="/about" class="nav-item nav-link">
@@ -108,7 +108,7 @@ const Login = () => {
                   </a>
                 </div>
               </div>
-              <a href="contact.html" class="nav-item nav-link">
+              <a href="/contact" class="nav-item nav-link">
                 Contact
               </a>
             </div>
@@ -166,7 +166,7 @@ const Login = () => {
             </a>
             <br />
             <hr />
-            <a className="btn btn-primary" href="/guest">
+            <a className="btn btn-primary" href="/">
               Create New Account
             </a>
           </div>

@@ -1,0 +1,26 @@
+.home-page {
+    position: relative;
+
+  }
+  
+  .button-container {
+    background-color: whitesmoke; 
+    padding: 20px;
+    border-radius: 10px;
+    
+  }
+  .btn1-primary{
+    background-color:  rgb(94, 120, 224);
+    padding: 10px 20px; /* Adjust padding as needed */
+    color: rgb(232, 235, 240);
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; /* Remove underline */
+    transition: background-color 0.3s ease; /* Add smooth transition */
+  }
+  
+  .btn1-primary:hover {
+    background-color: #1910ca; /* Change the background color on hover */
+  }
+  
+  

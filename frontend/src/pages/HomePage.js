@@ -1,27 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { CSSTransition } from 'react-transition-group';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMapMarkerAlt, faPhone, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import loginCoverImage from '../styles/carousel-2.jpg';
-import "../styles/au.css";
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
+import "../styles/home.css";
 
-const Conc = () => {
-  const [showContent, setShowContent] = useState(false);
 
-  useEffect(() => {
-    // Set a delay to trigger the animation after a short period (e.g., 500 milliseconds)
-    const timeout = setTimeout(() => {
-      setShowContent(true);
-    }, 500);
+const Homey = () => {
+    const [containerTransform, setContainerTransform] = useState("translateX(-100%)");
 
-    // Clear the timeout on component unmount
-    return () => clearTimeout(timeout);
-  }, []);
+    useEffect(() => {
+      // Update the transform when the component mounts
+      setContainerTransform("translateX(0)");
+    }, []);
 
   return (
     <div className="site-wrap">
-      <div className="login-cover">
-        <div className="cover-color">
+      <div className="login-cover" style={{ height: "800px", overflow: "hidden"}}>
+      <div
+          className="cover-color"
+          
+        >
+          
+
           <nav className="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
             <img src={"clinic-logo.png"} width="100" alt="Clinic Logo" />
             <a href="/" className="navbar-brand p-0">
@@ -88,36 +87,49 @@ const Conc = () => {
               </a>
             </div>
           </nav>
-          <div className="text-center" style={{ marginLeft: '30px', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'white', zIndex: 2 }}>
-            <CSSTransition in={showContent} timeout={500} classNames="fade" unmountOnExit>
-              <div>
-                <h1 style={{ fontSize: '52px'}}>Contact Info</h1>
-                <ul className="list-unstyled">
-                  <li className="address" style={{ color: '#add8e6' }}>
-                  <FontAwesomeIcon icon={faMapMarkerAlt} /> {''} <a
-                      href="https://www.google.com/maps?q=GUC,El+Tagamoa+El+Khames,New+Cairo+City,Egypt"
-                      target="_blank"
-                      rel="noopener noreferrer" style={{ color: '#add8e6' }}
-                    >
-                      GUC - El Tagamoa El Khames New Cairo City - Egypt
-                    </a>                  </li>
-                  <li className="phone" >
-                    <FontAwesomeIcon icon={faPhone} /> <a href="tel://23923929210" style={{ color: '#add8e6' }}>+1 23456789</a>
-                  </li>
-                  <li className="email" style={{ color: '#ffffff' }}>
-                  <FontAwesomeIcon icon={faEnvelope} /> <a href="mailto:rebootersteam9@gmail.com" style={{ color: '#add8e6' }}>rebootersteam9@gmail.com</a>
-                                   </li>
-                </ul>
+          <div  style={{ maxWidth: "600px", padding: "20px" ,margin: "auto", marginTop: "100px", overflow: "hidden"}}>
+          <div className="card mt-4" style={{ transform: containerTransform, transition: "transform 0.5s ease-in-out"}}>
+              <div className="card-body text-center">
+              <h1 style={{ fontSize: "40px", marginBottom: "20px", color: "black" }}>
+                Welcome to El7a2ni Clinic
+              </h1>
+
+              <div
+                className="button-group"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center", // Center horizontally
+                }}
+              >
+                <Link
+                  to="/login"
+                  className="btn1 btn1-primary"
+                  style={{ margin: "10px 0" }}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/RequestDoc"
+                  className="btn1 btn1-primary"
+                  style={{ margin: "10px 0" }}
+                >
+                  Request to Join our Team
+                </Link>
+                <Link
+                  to="/Register"
+                  className="btn1 btn1-primary"
+                  style={{ margin: "10px 0" }}
+                >
+                  Register as Patient
+                </Link>
               </div>
-            </CSSTransition>
+            </div>
           </div>
-          <div className='xy-cover' style={{ backgroundImage: `url(${loginCoverImage})`, backgroundSize: 'cover', height: '100vh', position: 'relative', zIndex: 1 }}>
-            {/* Your Background Image */}
-          </div>
+        </div>
         </div>
       </div>
     </div>
   );
 };
-
-export default Conc;
+ export default Homey;

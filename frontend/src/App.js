@@ -10,6 +10,11 @@ import OTP from "./pages/OTP";
 import ForgotPassword from "./pages/ForgotPassword";
 import AboutUs from "./pages/AboutUs";
 import ContactPage from "./pages/ContactPage";
+import HomePage from "./pages/HomePage";
+import RegPatient from "./pages/RegPatient";
+import ReqDoc from "./pages/ReqDoc";
+import Service from "./pages/service";
+
 
 function App() {
   return (
@@ -17,7 +22,8 @@ function App() {
       <BrowserRouter>
         {/* <Navbar /> */}
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/guest" element={<Guest />} />
           <Route path="/doctor-home" element={<DoctorHome />} />
           <Route path="/patient-home" element={<PatientHome />} />
@@ -26,6 +32,9 @@ function App() {
           <Route path="/otp" element={<OTP />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/Register" element={<RegPatient />} />
+          <Route path="/RequestDoc" element={<ReqDoc />} />
+          <Route path="/service" element={<Service />} />
 
 
         </Routes>
