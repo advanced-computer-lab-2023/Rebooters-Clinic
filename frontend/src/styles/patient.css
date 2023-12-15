@@ -1,212 +1,216 @@
 .patient-cover {
-  background: url('../../public/carousel-1.jpg') repeat center center fixed ;
-  background-size:cover;
-  position:absolute;
+  background: url("../../public/carousel-1.jpg") repeat center center fixed;
+  background-size: cover;
+  position: absolute;
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 300%; 
+  height: 300%;
   opacity: 1;
 }
 
 .patient-cover-color {
-  background: rgba(9, 30, 62, 0.85); /* Adjust the color and transparency as needed */
-  background-size: cover ;
+  background: rgba(
+    9,
+    30,
+    62,
+    0.85
+  ); /* Adjust the color and transparency as needed */
+  background-size: cover;
   width: 100%;
-  height: 100%; 
+  height: 100%;
   z-index: 1;
 }
 
-.patient-home-text{
+.patient-home-text {
   color: white;
-  font-family: 'Oswald', sans-serif;
+  font-family: "Oswald", sans-serif;
   font-size: 40px;
   width: 40%;
   padding-top: 10%;
 }
 /* Card container */
 .card {
-padding: 20px;
-margin: 20px;
-border-radius: 8px;
-background-color: #f0f0f0; /* Light grey background for .card */
-box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adding a subtle shadow */
+  padding: 20px;
+  margin: 20px;
+  border-radius: 8px;
+  background-color: #f0f0f0; /* Light grey background for .card */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adding a subtle shadow */
 }
 
 /* Headings */
 .card h2 {
-color: #333; /* Dark text color for headings */
-font-size: 24px;
-margin-bottom: 20px;
+  color: #333; /* Dark text color for headings */
+  font-size: 24px;
+  margin-bottom: 20px;
 }
 
 /* Inner divisions */
 .card > div {
-margin-bottom: 15px; /* Space between elements */
+  margin-bottom: 15px; /* Space between elements */
 }
 
 /* List items */
 .card ul li:nth-child(even) {
-background-color: #fafafa; /* Even list items background color */
-padding: 10px;
-border-radius: 5px;
+  background-color: #fafafa; /* Even list items background color */
+  padding: 10px;
+  border-radius: 5px;
 }
 
 /* Buttons */
 /* Card container */
 .card {
-padding: 20px;
-margin: 20px;
-border-radius: 12px;
-background-color: #f7f7f7;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px;
+  border-radius: 12px;
+  background-color: #f7f7f7;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Headings */
 .card h2 {
-color: #333;
-font-size: 28px;
-margin-bottom: 25px;
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 25px;
 }
 
 /* Inner divisions */
 .card > div {
-margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 /* List items */
 .card ul li:nth-child(even) {
-background-color: #f0f0f0;
-padding: 15px;
-border-radius: 8px;
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 8px;
 }
 
 /* Card container */
 .card {
-padding: 20px;
-margin: 20px;
-border-radius: 12px;
-background-color: #f0faff; /* Very light blue similar to the sky */
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px;
+  border-radius: 12px;
+  background-color: #f0faff; /* Very light blue similar to the sky */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Headings */
 .card h2 {
-color: #333;
-font-size: 28px;
-margin-bottom: 25px;
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 25px;
 }
 
 /* Inner divisions */
 .card > div {
-margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 /* List items */
 .card ul li:nth-child(even) {
-background-color: #d6eaff; /* Slightly darker blue for list items */
-padding: 15px;
-border-radius: 8px;
+  background-color: #d6eaff; /* Slightly darker blue for list items */
+  padding: 15px;
+  border-radius: 8px;
 }
 
 /* Buttons */
 .card button {
-padding: 10px 20px;
-border-radius: 8px;
-background-color: #007bff;
-color: white;
-border: none;
-cursor: pointer;
-transition: background-color 0.3s ease;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 /* Danger button */
 .card button.btn-danger {
-background-color: #dc3545;
+  background-color: #dc3545;
 }
 
 /* Select dropdown */
 .card select {
-padding: 10px;
-border-radius: 8px;
-border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 /* Paragraphs */
 .card p {
-margin-bottom: 10px;
-line-height: 1.6;
-color: #555;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  color: #555;
 }
 
 /* Button hover effect */
 .card button:hover {
-background-color: #0056b3;
+  background-color: #0056b3;
 }
 /* List items */
 .card ul li {
-background-color: #d6eaff;
-padding: 20px;
-border-radius: 15px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-position: relative;
-overflow: hidden;
-transition: transform 0.3s ease;
-margin-left: 5%;
-margin-right: calc(5%); /* Set right margin dynamically */}
+  background-color: #d6eaff;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  margin-left: 5%;
+  margin-right: calc(5%); /* Set right margin dynamically */
+}
 
 .card ul li:before {
-content: "";
-position: absolute;
-top: -20px;
-left: -20px;
-width: calc(100% + 40px);
-height: calc(100% + 40px);
-background: linear-gradient(45deg, #007bff, #0056b3);
-z-index: -1;
-border-radius: 25px;
-transform: rotate(15deg);
-transition: transform 0.3s ease;
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  z-index: -1;
+  border-radius: 25px;
+  transform: rotate(15deg);
+  transition: transform 0.3s ease;
 }
 
 .card ul li:hover {
-transform: scale(1.05); /* Increase size on hover */
-cursor:pointer
+  transform: scale(1.05); /* Increase size on hover */
+  cursor: pointer;
 }
 
 .card ul li:hover:before {
-transform: rotate(15deg) scale(1.1); /* Increase size and keep gradient border on hover */
-cursor:pointer
-
+  transform: rotate(15deg) scale(1.1); /* Increase size and keep gradient border on hover */
+  cursor: pointer;
 }
 .card ul li:hover {
-transform: scale(0.8); /* Smaller scale for enlargement on hover */
+  transform: scale(0.8); /* Smaller scale for enlargement on hover */
 }
 .card ul li {
-background-color: #d6eaff;
-padding: 10px;
-border-radius: 10px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-position: relative;
-overflow: hidden;
-transition: transform 0.3s ease;
-margin-bottom: 10px; /* Add margin between items */
-cursor: pointer; /* Show pointer cursor on hover */
-max-width: 200px; /* Limit the width of the boxes */
+  background-color: #d6eaff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  margin-bottom: 10px; /* Add margin between items */
+  cursor: pointer; /* Show pointer cursor on hover */
+  max-width: 200px; /* Limit the width of the boxes */
 }
 /* List items */
 .prescription-list li {
-display: inline-block;
-vertical-align: top; /* Align items at the top */
-background-color: #d6eaff;
-padding: 10px;
-border-radius: 10px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-cursor: pointer;
-margin-right: 10px; /* Add space between items */
+  display: inline-block;
+  vertical-align: top; /* Align items at the top */
+  background-color: #d6eaff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  margin-right: 10px; /* Add space between items */
 }
 /* Prescription title */
 .prescription-list li .prescription-title {
-font-size: smaller; /* Adjust the font size */
-margin: 0; /* Remove any default margin */
+  font-size: smaller; /* Adjust the font size */
+  margin: 0; /* Remove any default margin */
 }

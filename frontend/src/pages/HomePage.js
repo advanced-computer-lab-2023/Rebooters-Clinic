@@ -2,25 +2,24 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
 import "../styles/home.css";
-
+import Footer from "../components/footer";
 
 const Homey = () => {
-    const [containerTransform, setContainerTransform] = useState("translateX(-100%)");
+  const [containerTransform, setContainerTransform] =
+    useState("translateX(-100%)");
 
-    useEffect(() => {
-      // Update the transform when the component mounts
-      setContainerTransform("translateX(0)");
-    }, []);
+  useEffect(() => {
+    // Update the transform when the component mounts
+    setContainerTransform("translateX(0)");
+  }, []);
 
   return (
     <div className="site-wrap">
-      <div className="login-cover" style={{ height: "800px", overflow: "hidden"}}>
       <div
-          className="cover-color"
-          
-        >
-          
-
+        className="login-cover"
+        style={{ height: "800px", overflow: "hidden" }}
+      >
+        <div className="cover-color">
           <nav className="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
             <img src={"clinic-logo.png"} width="100" alt="Clinic Logo" />
             <a href="/" className="navbar-brand p-0">
@@ -47,29 +46,7 @@ const Homey = () => {
                 <a href="/service" className="nav-item nav-link">
                   Service
                 </a>
-                <div className="nav-item dropdown">
-                  <a
-                    href="#"
-                    className="nav-link dropdown-toggle"
-                    data-bs-toggle="dropdown"
-                  >
-                    Pages
-                  </a>
-                  <div className="dropdown-menu m-0">
-                    <a href="price.html" className="dropdown-item">
-                      Pricing Plan
-                    </a>
-                    <a href="team.html" className="dropdown-item">
-                      Our Dentist
-                    </a>
-                    <a href="testimonial.html" className="dropdown-item">
-                      Testimonial
-                    </a>
-                    <a href="appointment.html" className="dropdown-item">
-                      Appointment
-                    </a>
-                  </div>
-                </div>
+
                 <a href="/contact" className="nav-item nav-link">
                   Contact
                 </a>
@@ -87,49 +64,69 @@ const Homey = () => {
               </a>
             </div>
           </nav>
-          <div  style={{ maxWidth: "600px", padding: "20px" ,margin: "auto", marginTop: "100px", overflow: "hidden"}}>
-          <div className="card mt-4" style={{ transform: containerTransform, transition: "transform 0.5s ease-in-out"}}>
+          <div
+            style={{
+              maxWidth: "600px",
+              padding: "20px",
+              margin: "auto",
+              marginTop: "100px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="card mt-4"
+              style={{
+                transform: containerTransform,
+                transition: "transform 0.5s ease-in-out",
+              }}
+            >
               <div className="card-body text-center">
-              <h1 style={{ fontSize: "40px", marginBottom: "20px", color: "black" }}>
-                Welcome to El7a2ni Clinic
-              </h1>
+                <h1
+                  style={{
+                    fontSize: "40px",
+                    marginBottom: "20px",
+                    color: "black",
+                  }}
+                >
+                  Welcome to El7a2ni Clinic
+                </h1>
 
-              <div
-                className="button-group"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center", // Center horizontally
-                }}
-              >
-                <Link
-                  to="/login"
-                  className="btn1 btn1-primary"
-                  style={{ margin: "10px 0" }}
+                <div
+                  className="button-group"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center", // Center horizontally
+                  }}
                 >
-                  Login
-                </Link>
-                <Link
-                  to="/RequestDoc"
-                  className="btn1 btn1-primary"
-                  style={{ margin: "10px 0" }}
-                >
-                  Request to Join our Team
-                </Link>
-                <Link
-                  to="/Register"
-                  className="btn1 btn1-primary"
-                  style={{ margin: "10px 0" }}
-                >
-                  Register as Patient
-                </Link>
+                  <Link
+                    to="/login"
+                    className="btn1 btn1-primary"
+                    style={{ margin: "10px 0" }}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/RequestDoc"
+                    className="btn1 btn1-primary"
+                    style={{ margin: "10px 0" }}
+                  >
+                    Request to Join our Team
+                  </Link>
+                  <Link
+                    to="/Register"
+                    className="btn1 btn1-primary"
+                    style={{ margin: "10px 0" }}
+                  >
+                    Register as Patient
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
   );
 };
- export default Homey;
+export default Homey;

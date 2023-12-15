@@ -1,0 +1,42 @@
+.otp-container {
+  background-color: white;
+  padding: 20px;
+  transform: translate(75%, 60%);
+  width: 40%;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.cc {
+  text-align: center;
+  color: #06a3da;
+}
+.boxes {
+  list-style: none;
+  display: flex;
+  padding-left: 10px;
+  margin-left: 40px;
+}
+.single-box {
+  width: 60px;
+  height: 50px;
+  margin-left: 10px;
+  border-radius: 15px;
+  border: none;
+  box-shadow: 3px 3px 10px #ccc;
+  text-indent: 20px;
+}
+.enter-code {
+  margin-left: 30px;
+}
+.submit-otp {
+  margin: 30px 30px 20px 0px;
+}
+.cbutton {
+  transform: translate(36px, 15px);
+}
+.sbutton {
+  transform: translate(-65px, 32px);
+}
+.emailPass-card {
+  padding: 60px;
+}

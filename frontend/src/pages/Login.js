@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Carousel, Button } from "react-bootstrap";
+import ForgotPass from "./ForgotPassword";
+
 //import { useHistory } from 'react-router-dom';
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -13,6 +15,15 @@ const Login = () => {
   const [error, setError] = useState(null);
   const location = useLocation();
   const errorMessage = location.state && location.state.errorMessage;
+  const [showEmailWindow, setShowEmailWindow] = useState(false);
+
+  const handleForgotEmail = () => {
+    setShowEmailWindow(true);
+  };
+
+  const handleCloseForgotEmail = () => {
+    setShowEmailWindow(false);
+  };
   const handleLogin = async () => {
     try {
       const response = await fetch("/api/guest/login", {
@@ -60,7 +71,7 @@ const Login = () => {
     <div className="login-cover">
       <div className="cover-color">
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
-        <img src={"clinic-logo.png"} width="100"/>
+          <img src={"clinic-logo.png"} width="100" />
           <a href="/" class="navbar-brand p-0">
             <h1 class="m-0 text-primary">
               <i class="fa fa-tooth me-2"></i>El7a2ni
@@ -135,7 +146,7 @@ const Login = () => {
           </div>
           <div className="login-form">
             <div className="wb">
-            <h6>Log in to El7a2ni</h6>
+              <h6>Log in to El7a2ni</h6>
               <br />
             </div>
             <input
@@ -155,15 +166,38 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             <br />
-        
-            <button onClick={handleLogin} className="btn btn-primary" style={{width: "70%"}}>
+
+            <button
+              onClick={handleLogin}
+              className="btn btn-primary"
+              style={{ width: "70%" }}
+            >
               Login
             </button>
             <br />
             <br />
-            <a className="forgot" href="/forgotpassword">
-              Forgot your password?
+            <a
+              className="forgot"
+              style={{ textDecoration: "underline" }}
+              onClick={handleForgotEmail}
+            >
+              Forgot password?
             </a>
+            {showEmailWindow && (
+              <div className="modal-overlay">
+                <div className="email-card card">
+                  <div className="forgotPass">
+                    <ForgotPass />
+                  </div>
+                  <button
+                    className="close-btn btn btn-secondary btn-default-width"
+                    onClick={handleCloseForgotEmail}
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
             <br />
             <hr />
             <a className="btn btn-primary" href="/">
