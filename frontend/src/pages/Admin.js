@@ -12,6 +12,7 @@ import UserPieChart from "../components/UserPieChart";
 import DoctorBarChart from "../components/DoctorBarChart";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
+import Footer from "../components/footer";
 
 function Admin() {
   const [adminUsername, setAdminUsername] = useState("");
@@ -443,7 +444,7 @@ function Admin() {
           </div>
         )}
         {activeTab === "usermanager" && (
-          <div className="mt-4">
+          <div className="mt-4" style={{height: ""}}>
             <h2>New Doctor Requests</h2>
             <button className="btn btn-primary" onClick={toggleDoctorRequests}>
               {showDoctorRequests
@@ -596,6 +597,10 @@ function Admin() {
           </div>
         )}
       </div>
+      <div style={{paddingTop: "17%"}}>
+      <Footer />
+      </div>
+
     </div>
   );
 }

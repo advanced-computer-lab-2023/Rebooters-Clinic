@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/otp.css";
 import Navbar from "../components/Navbar";
+import Footer from "../components/footer";
 const OTP = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -130,7 +131,9 @@ const OTP = () => {
             )}
           </div>
         </div>
+        <Footer />
       </div>
+
     </div>
   );
 };

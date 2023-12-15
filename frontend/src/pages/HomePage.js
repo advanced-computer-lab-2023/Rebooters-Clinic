@@ -29,7 +29,7 @@ const Homey = () => {
                 padding: "20px",
                 margin: "auto",
                 overflow: "hidden",
-                transform: "translate(5%, 45%)",
+                transform: "translate(0%, 20%)",
               }}
             >
               <div
@@ -82,6 +82,9 @@ const Homey = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            <div style={{paddingTop: '13%'}}>
+              <Footer />
             </div>
           </div>
         </div>

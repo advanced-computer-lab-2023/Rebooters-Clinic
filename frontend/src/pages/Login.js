@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import { Carousel, Button } from "react-bootstrap";
 import ForgotPass from "./ForgotPassword";
 import Navbar from "../components/Navbar";
+import Footer from "../components/footer";
 //import { useHistory } from 'react-router-dom';
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -141,6 +142,7 @@ const Login = () => {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     </div>
   );

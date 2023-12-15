@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
+
 const AddPatient = () => {
   const [newPatient, setNewPatient] = useState({
     username: "",
@@ -279,6 +279,8 @@ const AddPatient = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
