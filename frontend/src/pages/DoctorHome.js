@@ -217,20 +217,45 @@ const DoctorHome = () => {
                     Patients
                   </button>
                 </li>
-                <li
-                  className={`nav-item ${activeTab === "chat" ? "active" : ""}`}
-                >
-                  <button
-                    style={{
-                      color:
-                        activeTab === "chat" ? "var(--primary)" : "inherit",
-                    }}
-                    className="nav-link btn btn-link"
-                    onClick={() => handleTabClick("chat")}
-                  >
-                    Chat
-                  </button>
-                </li>
+               <li className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}>
+  <div className="dropdown">
+    <button
+      style={{
+        color: activeTab === 'Chat With A Patient'||  activeTab === 'Chat With A Pharmacist'||activeTab === 'View Chats'? 'var(--primary)' : 'inherit',
+      }}
+      className="nav-link btn btn-link dropdown-toggle"
+      role="button"
+      id="chatDropdown"
+      data-bs-toggle="dropdown"
+      aria-haspopup="true"
+      aria-expanded="false"
+    >
+      Chat
+    </button>
+    <div className="dropdown-menu" aria-labelledby="chatDropdown">
+      <button
+        className="dropdown-item"
+        onClick={() => handleTabClick('Chat With A Pharmacist')}
+      >
+        Chat With A Pharmacist
+      </button>
+      <button
+        className="dropdown-item"
+        onClick={() => handleTabClick('Chat With A Patient')}
+      >
+       Chat With A Patient
+      </button>
+      <button
+        className="dropdown-item"
+        onClick={() => handleTabClick('View Chats')}
+      >
+  View Chats
+      </button>
+      {/* Add more chat options as needed */}
+    </div>
+  </div>
+</li>
+
                 <li
                   className={`nav-item ${
                     activeTab === "notifications" ? "active" : ""
@@ -415,19 +440,23 @@ const DoctorHome = () => {
             )}
           </>
         )}
-        {activeTab === "chat" && (
-          <div>
-            <div className="card mt-4 container">
-              <DoctorSendsToPharm />
-            </div>
-            <div className="card mt-4 container">
-              <DoctorChatsPatients />
-            </div>
-            <div className="card mt-4 container">
-              <DoctorChats />
-            </div>
-          </div>
-        )}
+          {activeTab === "Chat With A Pharmacist" && (
+              <div className="card mt-4 container">
+                <DoctorSendsToPharm />
+              </div>
+            )}
+  {activeTab === "Chat With A Patient" && (
+              <div className="card mt-4 container">
+                <DoctorChatsPatients />
+              </div>
+            )}
+  {activeTab === "View Chats" && (
+              <div className="card mt-4 container">
+                <DoctorChats  />
+              </div>
+            )}
+
+       
         {activeTab === "notifications" && (
           <div className="card mt-4 container">
             <NotificationsDoctor />

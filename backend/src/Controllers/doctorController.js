@@ -4,6 +4,8 @@ const Appointment = require("../Models/appointmentModel");
 const Prescription = require("../Models/prescriptionModel");
 const Contract = require("../Models/contractModel");
 const Notification = require("../Models/notificationModel");
+const Pharmacist = require("../Models/Pharmacist");
+
 const DoctorRequest = require("../Models/newDoctorRequestModel");
 const bcrypt = require("bcrypt"); //needed only for creating the dummy doctor password
 const { logout, changePassword } = require("./authController");
@@ -1072,6 +1074,8 @@ const viewAllChats = async (req, res) => {
 
 const startNewChat = async (req, res) => {
   try {
+    const PharmacistUsername = req.body.pharmacist;
+
     const doctorUsername = req.cookies.username;
     const { messageContent } = req.body;
 
@@ -1083,7 +1087,7 @@ const startNewChat = async (req, res) => {
 
     const newChat = new Chat({
       doctor: doctorUsername,
-      pharmacist: '',
+      pharmacist: PharmacistUsername,
       messages: [
         {
           username: doctorUsername,
@@ -1092,7 +1096,6 @@ const startNewChat = async (req, res) => {
         },
       ],
     });
-
     const savedChat = await newChat.save();
     // Update the patient's chats array with the new chat ID
     await doctor.save();
@@ -1103,6 +1106,17 @@ const startNewChat = async (req, res) => {
     res.status(500).json({ message: 'Error starting a new chat' });
   }
 };
+const viewPharmacistInformation = async (req, res) => {
+  try {
+    const pharmacist = await Pharmacist.find();
+   
+console.log(pharmacist)
+    res.status(200).json(pharmacist);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching pharmacist information' });
+  }
+}
 
 const continueChat = async (req, res) => {
   try {
@@ -1642,7 +1656,7 @@ module.exports = {
   viewLinkedPatients,
   createZoomMeetingNotification,
   getDoctorNotifications,
-  hideNotification
-
+  hideNotification,
+  viewPharmacistInformation
 
 };

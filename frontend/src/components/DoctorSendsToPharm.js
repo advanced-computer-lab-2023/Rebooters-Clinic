@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+import { Toast, ToastContainer } from 'react-bootstrap';
 
 const DoctorSendsToPharm = () => {
   const [newChatContent, setNewChatContent] = useState('');
@@ -7,10 +9,15 @@ const DoctorSendsToPharm = () => {
   const [activeChat, setActiveChat] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [pollingInterval, setPollingInterval] = useState(null); 
+  const [Pharmacists, setPharmacists] = useState([]); 
+  const [chatingWith, setChatingWith] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastContent, setToastContent] = useState('');
 
   useEffect(() => {
     // Fetch doctors and chats on component mount
     fetchChats();
+    fetchPharmacists();
 
     // Poll for new messages every 2 seconds
     const pollingInterval = setInterval(fetchChats, 2000);
@@ -19,9 +26,24 @@ const DoctorSendsToPharm = () => {
     return () => {
       clearInterval(pollingInterval);
     };
-  }, []);
+  }, [chatingWith]);
 
-
+  const fetchPharmacists = async () => {
+    try {
+      const response = await fetch("/api/doctor/viewPharmacistInformation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const json = await response.json();
+        setPharmacists(json);
+      }
+    } catch (error) {
+      console.error('Error fetching pharmacists:', error);
+    }
+  };
   const fetchChats = async () => {
     try {
       const response = await fetch("/api/doctor/viewMyChats", {
@@ -32,14 +54,14 @@ const DoctorSendsToPharm = () => {
       });
       if (response.ok) {
         const json = await response.json();
-        setChats(json);
+        setChats(json.filter(chat=>chat.pharmacist==chatingWith));
       }
     } catch (error) {
       console.error('Error fetching chats:', error);
     }
-  };
+  }
 
-  const startNewChat = async () => {
+  const startNewChat = async (selectedPharmacist) => {
     try {
       
       if (!newChatContent.trim()) {
@@ -59,7 +81,7 @@ const DoctorSendsToPharm = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ messageContent: newChatContent})
+        body: JSON.stringify({ messageContent: newChatContent, pharmacist: selectedPharmacist})
       });
 
       // console.log('Response:', response);
@@ -135,80 +157,126 @@ const DoctorSendsToPharm = () => {
       console.error('Error deleting chat:', error);
     }
   };
-
+  function showANDchat(pharmacist){
+    setChatingWith(pharmacist)
+    fetchChats()
+  
+  }
   return (
-    
-    <div className='container'>
-      <h2>Chats With Pharmacists</h2>
-      <div>
+    <>
+   <div className="sidebar">
+ 
+  {Pharmacists.length > 0 && (
+    <div className="patientList"
+    >
+      {Pharmacists.map((pharmacist) => (
+        <div
+          key={pharmacist}
+          value={pharmacist}
+          className="patientName"
+          onClick={() => showANDchat(pharmacist.username)}
+        >
+          {/* {  <img src={patient.gender && patient.gender.toLowerCase()==="male"?"https://bootdey.com/img/Content/avatar/avatar6.png":"https://bootdey.com/img/Content/avatar/avatar3.png"} alt={patient.name} className="patientImage" />   } */}
+          {pharmacist.username}
+        </div>
+      ))}
+    </div>
+  )}
+     </div>
+     <div >
+     <div  style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', width: '400px', marginLeft: '220px' }}>
+        <div >
+      
 
+  {chatingWith && chats.map((chat) => (
+    !chat.closed && (
 
-        {/* Existing Chats */}
-        <div>
-          {chats.length>0 ? chats.map((chat) => (
-            <div key={chat._id}>
-              {!chat.closed && (
-                <div>
-                  <div>
-                    {chat.messages && chat.messages.map((message, index) => (
-                      <div key={index}>
-                        <strong>{message.userType}: </strong> {message.content}
-                        <span style={{ marginLeft: '10px', color: 'gray' }}>
-                          {new Date(message.timestamp).toLocaleString()}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                    <div>
-                      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                      <textarea
-                        rows="1"
-                        cols="25"
-                        placeholder="Type your message here..."
-                        value={messageContents[chat._id] || ''}
-                        onChange={(e) =>
-                          setMessageContents({ ...messageContents, [chat._id]: e.target.value })
-                        }
-                      ></textarea>
-                      <br />
-                      <button className='btn btn-primary' onClick={() => continueChat(chat._id)}>
-                        Send
-                      </button>
-                      <button
-                        className='btn btn-danger'
-                       style={{ marginLeft: '10px' }}
-                        onClick={() => deleteChat(chat._id)}
-                      >
-                        Close Chat
-                      </button>
-                    </div>
-                
-                </div>
-              )}
+      <div key={chat._id}>
+      <div className="message-container">
+        {chat.messages &&
+          chat.messages.map((message, index) => (
+            <div
+              key={index}
+              className={message.userType === 'pharmacist' ? 'patient-message' : 'other-message'
+            }
+            >
+              <strong>{message.userType}: </strong> <br></br>{message.content}
+              <span style={{ marginLeft: '10px', color: 'gray' }}>
+                {new Date(message.timestamp).toLocaleString()}
+              </span>
+              {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <textarea
+          rows="1"
+          cols="25"
+          placeholder="Type your message here..."
+          value={messageContents[chat._id] || ''}
+          onChange={(e) =>
+            setMessageContents({ ...messageContents, [chat._id]: e.target.value })
+          }
+        ></textarea>
+  <div className="button-container">
+
+        <button className='btn btn-primary' onClick={() => continueChat(chat._id)}>
+         <p  className='sendText'> Reply</p>
+          
+        </button>
+        <br />
+        <button
+          style={{ marginLeft: '10px' }}
+          onClick={() => deleteChat(chat._id)}
+        >
+        <p>  Hide</p>
+        </button>
+        </div>
             </div>
-          )): (
-            <div>
-            <h3>Start a New Chat</h3>
+          ))}
+      </div>
+    
+
+
+       
+      </div>
+    )
+  ))}
+</div>
+        {/* Start a New Chat */}
+        { chatingWith && <div>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            {/* Dropdown menu for selecting patients */}
+           
             <textarea
               rows="1"
               cols="25"
               placeholder="Type your message here..."
               value={newChatContent}
+              className='type'
               onChange={(e) => setNewChatContent(e.target.value)}
             ></textarea>
             <br />
-            <br />
-            <button className='btn btn-primary' onClick={startNewChat}>
-              Start Chat
+            <button className='btn btn-primary send' onClick={() =>startNewChat(chatingWith)}>
+             SEND  
             </button>
+         
+
+
           </div>
-          )}
-        </div>
+}
       </div>
+
+      {/* Toast */}
+      <div style={{ position: 'relative' }}>
+      <ToastContainer position="absolute" style={{ top: '10px', right: '10px' }}  className="p-3">
+        <Toast show={showToast} onClose={() => setShowToast(false)}>
+          <Toast.Header closeButton={true}>
+            <strong className="me-auto">Video Chat With Patient</strong>
+          </Toast.Header>
+          <Toast.Body>{toastContent}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
+    </div>
+    </>
   );
 };
-
 
 export default DoctorSendsToPharm;

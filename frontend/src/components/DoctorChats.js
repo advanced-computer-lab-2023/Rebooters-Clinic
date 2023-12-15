@@ -66,12 +66,12 @@ const DoctorChats = () => {
   };
 
   return (
-    <div className="card">
+    <div className="card doctor-chats-container">
       <h2 className="card-header">
         All Chats{" "}
         <div>
           <button
-            className="btn btn-secondary"
+            className="btn btn-secondary toggle-btn"
             onClick={() => setShowChats(!showChats)}
           >
             Toggle Chats
@@ -79,16 +79,16 @@ const DoctorChats = () => {
         </div>
       </h2>
       {showChats && chats.length === 0 ? (
-        <p>There are no chats</p>
-      ) : (
-        <div>
+        <p className="no-chat-message">There are no chats</p>
+        ) : (
+          <div className="chats-wrapper">
           {showChats &&
             chats
               // .filter((chat) => chat.patient === "false")
               .map((chat) => (
                 /*!chat.patient &&(*/
-                <div key={chat._id}>
-                  <h4>Chat ID: {chat._id}</h4>
+                <div key={chat._id} className="chat-container">
+                <h4>Chat ID: {chat._id}</h4>
                   <div>
                     {chat.messages.length > 0 &&
                       chat.messages.map((message, index) => (
