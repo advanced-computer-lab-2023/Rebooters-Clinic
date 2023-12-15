@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/otp.css";
+import Navbar from "../components/Navbar";
 const OTP = () => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -55,50 +56,7 @@ const OTP = () => {
   };
   return (
     <div>
-      <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
-        <img src={"clinic-logo.png"} width="100" />
-        <a href="/" class="navbar-brand p-0">
-          <h1 class="m-0 text-primary">
-            <i class="fa fa-tooth me-2"></i>El7a2ni
-          </h1>
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarCollapse"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-          <div class="navbar-nav ms-auto py-0">
-            <a href="/" class="nav-item nav-link active">
-              Home
-            </a>
-            <a href="/about" class="nav-item nav-link">
-              About
-            </a>
-            <a href="/service" class="nav-item nav-link">
-              Service
-            </a>
-
-            <a href="/contact" class="nav-item nav-link">
-              Contact
-            </a>
-          </div>
-          <button
-            type="button"
-            class="btn text-dark"
-            data-bs-toggle="modal"
-            data-bs-target="#searchModal"
-          >
-            <i class="fa fa-search"></i>
-          </button>
-          <a href="" class="btn btn-primary py-2 px-4 ms-3">
-            Appointment
-          </a>
-        </div>
-      </nav>
+      <Navbar />
       <div className="login-cover">
         <div className="cover-color">
           <div className="otp-card">

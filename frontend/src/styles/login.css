@@ -51,7 +51,7 @@
   background-color: white;
   margin-left: 35%;
   /*margin-right: 100px;*/
-  margin-top: 10%;
+  transform: translateY(50%);
   margin-bottom: auto;
   padding-bottom: 50px;
   padding-left: 20px;

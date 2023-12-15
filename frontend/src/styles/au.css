@@ -9,12 +9,17 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(9, 30, 62, 0.85); /* Adjust the color and transparency as needed */
+  background: rgba(
+    9,
+    30,
+    62,
+    0.85
+  ); /* Adjust the color and transparency as needed */
   z-index: 1;
 }
 
 .xy-cover {
-  background: url('../../public/carousel-2.jpg') repeat center center fixed ;
+  background: url("../../public/carousel-2.jpg") repeat center center fixed;
   background-size: cover;
   position: absolute;
   margin: 0;
@@ -25,11 +30,10 @@
 
 /* Rest of your existing styles */
 
-
 a {
-  -webkit-transition: .3s all ease;
-  -o-transition: .3s all ease;
-  transition: .3s all ease;
+  -webkit-transition: 0.3s all ease;
+  -o-transition: 0.3s all ease;
+  transition: 0.3s all ease;
 }
 
 a:hover {
@@ -51,13 +55,14 @@ a:hover {
   bottom: 0;
   opacity: 0;
   visibility: hidden;
-  -webkit-transition: .3s all ease-in-out;
-  -o-transition: .3s all ease-in-out;
-  transition: .3s all ease-in-out;
+  -webkit-transition: 0.3s all ease-in-out;
+  -o-transition: 0.3s all ease-in-out;
+  transition: 0.3s all ease-in-out;
 }
 
 .site-section {
-  padding: 2.5em 0;
+  padding: 30px 20px 0px 20px;
+  border-radius: 20px;
 }
 
 .site-section-heading {
@@ -120,7 +125,7 @@ a:hover {
 /* Navbar */
 .site-logo a {
   text-transform: uppercase;
-  letter-spacing: .2em;
+  letter-spacing: 0.2em;
   font-size: 22px;
   color: #000 !important;
   font-weight: 900;
@@ -132,7 +137,8 @@ a:hover {
 /* Styles for the aboutUs component */
 
 /* Blocks */
-.site-blocks-cover.inner-page, .site-blocks-cover.inner-page .row {
+.site-blocks-cover.inner-page,
+.site-blocks-cover.inner-page .row {
   min-height: 400px;
   height: 700px;
 }
@@ -147,7 +153,7 @@ a:hover {
 
 @media (min-width: 768px) {
   .site-blocks-cover h1 {
-      font-size: 70px;
+    font-size: 70px;
   }
 }
 
@@ -170,13 +176,13 @@ a:hover {
 
 @media (min-width: 768px) {
   .site-blocks-cover.inner-page .site-block-cover-content {
-      margin-top: 30%;
+    margin-top: 30%;
   }
 }
 
 .site-block-1 .text h2 {
   color: #25262a;
-  letter-spacing: .05em;
+  letter-spacing: 0.05em;
   font-size: 18px;
 }
 
@@ -204,40 +210,49 @@ a:hover {
 }
 
 .background-image {
-  background-size:cover;
-  position:absolute;
+  background-size: cover;
+  position: absolute;
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 300%; 
+  height: 300%;
   opacity: 1;
 }
 
-
 /* Other styles for the aboutUs component can be added here */
 .patient-cover {
-  background: url('../../public/carousel-1.jpg') repeat center center fixed ;
-  background-size:cover;
-  position:absolute;
+  background: url("../../public/carousel-1.jpg") repeat center center fixed;
+  background-size: cover;
+  position: absolute;
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 300%; 
+  height: 300%;
   opacity: 1;
 }
 
 .background-image-color {
-  background: rgba(9, 30, 62, 0.85); /* Adjust the color and transparency as needed */
-  background-size: cover ;
+  background: rgba(
+    9,
+    30,
+    62,
+    0.85
+  ); /* Adjust the color and transparency as needed */
+  background-size: cover;
   width: 100%;
-  height: 100%; 
+  height: 100%;
   z-index: 1;
 }
 .cover-color {
-  background: rgba(9, 30, 62, 0.85); /* Adjust the color and transparency as needed */
-  background-size: cover ;
+  background: rgba(
+    9,
+    30,
+    62,
+    0.85
+  ); /* Adjust the color and transparency as needed */
+  background-size: cover;
   width: 100%;
-  height: 100%; 
+  height: 100%;
   z-index: 1;
 }
 /* fade.css */
@@ -286,8 +301,6 @@ a:hover {
     transform: translateY(0);
   }
 }
-
-
 
 /* Define forward animation */
 /* Define slide animation */

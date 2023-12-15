@@ -13,7 +13,8 @@ import bgImage from "../styles/carousel-1.jpg";
 import heroImage from "../styles/doctor-background.jpg";
 import "../styles/au.css";
 import { CSSTransition } from "react-transition-group";
-
+import Navbar from "../components/Navbar";
+import Footer from "../components/footer";
 const AboutUs = () => {
   const [showMissionCard, setShowMissionCard] = useState(false);
   const [showTrustedCompanyCard, setShowTrustedCompanyCard] = useState(false);
@@ -71,54 +72,10 @@ const AboutUs = () => {
   }, []);
 
   return (
-    <div className="site-wrap">
+    <div>
+      <Navbar />
       <div className="login-cover">
         <div className="cover-color">
-          <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
-            <img src={"clinic-logo.png"} width="100" />
-            <a href="/" class="navbar-brand p-0">
-              <h1 class="m-0 text-primary">
-                <i class="fa fa-tooth me-2"></i>El7a2ni
-              </h1>
-            </a>
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-bs-toggle="collapse"
-              data-bs-target="#navbarCollapse"
-            >
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-              <div class="navbar-nav ms-auto py-0">
-                <a href="/" class="nav-item nav-link active">
-                  Home
-                </a>
-                <a href="/about" class="nav-item nav-link">
-                  About
-                </a>
-                <a href="/service" class="nav-item nav-link">
-                  Service
-                </a>
-
-                <a href="/contact" class="nav-item nav-link">
-                  Contact
-                </a>
-              </div>
-              <button
-                type="button"
-                class="btn text-dark"
-                data-bs-toggle="modal"
-                data-bs-target="#searchModal"
-              >
-                <i class="fa fa-search"></i>
-              </button>
-              <a href="" class="btn btn-primary py-2 px-4 ms-3">
-                Appointment
-              </a>
-            </div>
-          </nav>
-
           <div
             className="text-center"
             style={{
@@ -184,7 +141,7 @@ const AboutUs = () => {
                     </div>
                     <div className="col-md-6">
                       <div className="row justify-content-center">
-                        <div className="site-section-heading pt-3 mb-4">
+                        <div className="site-section-heading">
                           <h2 className="text-black">Mission</h2>
                         </div>
                         <p>
@@ -292,37 +249,6 @@ const AboutUs = () => {
                 </div>
               </div>
             </div>
-
-            <footer className="site-footer">
-              <div className="row">
-                <div className="col-md-6 col-lg-3">
-                  <div className="block-5 mb-5">
-                    <div
-                      className="container-fluid mt-5"
-                      style={{ marginLeft: "1070px" }}
-                    >
-                      {" "}
-                      {/* Adjust the margin-left as needed */}
-                      <h3 className="footer-heading mb-4">Contact Info</h3>
-                      <ul className="list-unstyled">
-                        <li className="address">
-                          <FontAwesomeIcon icon={faMapMarkerAlt} /> GUC - El
-                          Tagamoa El Khames New Cairo City - Egypt
-                        </li>
-                        <li className="phone">
-                          <FontAwesomeIcon icon={faPhone} />{" "}
-                          <a href="tel://23923929210">+1 23456789</a>
-                        </li>
-                        <li className="email">
-                          <FontAwesomeIcon icon={faEnvelope} />{" "}
-                          rebootersteam9@gmail.com
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </footer>
           </div>
         </div>
       </div>
