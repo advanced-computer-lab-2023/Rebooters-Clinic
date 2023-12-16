@@ -8,204 +8,9 @@
   height: 300%; 
   opacity: 1;
 }
-.selected-patient {
-  background-color: rgb(11, 54, 68); /* Change to your preferred color */
-}
-.patientName{
-  background-color: rgb(233, 247, 249); /* Change to your preferred color */
-
-}
-
-@keyframes fadeIn {
-0% {
-  opacity: 0;
-  transform: translateY(20px);
-}
-50% {
-  opacity: 0.5;
-  transform: translateY(10px);
-}
-100% {
-  opacity: 1;
-  transform: translateY(0);
-}
-}
-
-.patient-message,
-.other-message {
-opacity: 0; 
-animation: fadeIn 0.5s ease-in-out forwards; /* Use the animation on these elements */
-}
-
-.patient-message:nth-of-type(1) {
-animation-delay: 0.1s;
-}
-
-.patient-message:nth-of-type(2) {
-animation-delay: 0.2s;
-}
 
 
-.other-message:nth-of-type(1) {
-animation-delay: 0.3s;
-}
 
-.other-message:nth-of-type(2) {
-animation-delay: 0.4s;
-}
-
-.chats-wrapper {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  grid-gap: 30px; /* Increased gap between chat containers */
-}
-.chat-container h4 {
-  font-size: 14px; /* Adjust the font size as needed */
-}
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 350px;
-  background-color: white; /* Change the background color */
-  padding: 20px;
-  overflow-y: auto;
-  z-index: 1000;
-  color: white; /* Set text color */
-}
-.patientName {
-  color: black;
-}
-/* Style for the heading inside the sidebar */
-.sidebar h2 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  margin-left: 100px;
-  text-transform: uppercase; /* Convert text to uppercase */
-  letter-spacing: 1px; /* Add letter spacing */
-  border-bottom: 1px solid #fff; /* Add a border line under the heading */
-  padding-bottom: 10px; /* Space between heading and content */
-}
-
-/* Additional styles for text or other elements inside the sidebar */
-.sidebar p {
-  font-size: 16px;
-  line-height: 1.6;
-}
-.message-container{
-  display: flex;
-}
-.other-message{
-  background-color:rgb(233, 247, 249);
-  border-radius: 20px;
-  margin-left: 40%;
-  width:500px;
-
-}
-
-
-/* Apply styles to buttons or other interactive elements */
-.patient-message{
-  margin-left: 105%;
-  background-color:rgb(233, 247, 249);
-  border-radius: 20px;
-  
-}
-.button-container {
-  display: flex;
-}
-/* DoctorChats.css */
-/* Basic styling for chat container */
-.doctor-chats-container {
-border: 1px solid #ddd;
-padding: 20px;
-border-radius: 8px;
-margin-bottom: 20px;
-}
-
-/* Styling for the toggle button */
-.toggle-btn {
-background-color: #3498db;
-color: #fff;
-border: none;
-padding: 8px 16px;
-border-radius: 4px;
-cursor: pointer;
-margin-top: 10px;
-}
-
-.toggle-btn:hover {
-background-color: #2980b9;
-}
-
-/* Styling for 'no chats' message */
-.no-chat-message {
-font-style: italic;
-color: #777;
-}
-
-/* Chat container */
-.chat-container {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-/* DoctorChats.css */
-
-/* Basic styling for chat container */
-.doctor-chats-container {
-border: 1px solid #ddd;
-padding: 20px;
-border-radius: 8px;
-margin-bottom: 20px;
-}
-
-/* Styling for the toggle button */
-.toggle-btn {
-background-color: #3498db;
-color: #fff;
-border: none;
-padding: 8px 16px;
-border-radius: 4px;
-cursor: pointer;
-margin-top: 10px;
-}
-
-.toggle-btn:hover {
-background-color: #2980b9;
-}
-
-/* Styling for 'no chats' message */
-.no-chat-message {
-font-style: italic;
-color: #777;
-}
-
-/* Chat container */
-.chat-container {
-  border: 1px solid #ddd;
-  border-radius: 15px;
-  padding: 20px;
-  background-color: #fff;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Add more styles to other elements as needed */
-
-/* Add more styles to other elements as needed */
-
-.button-container button {
-  margin-right: 10px; 
-  height: 10px;
-  display: flex;
-  align-items: center; 
-}
-.chatP{
-margin-right:100px;  
-}
 .button-container p {
   margin-left: 10px; 
  font-size: 15px;
@@ -216,59 +21,22 @@ margin-right:100px;
      margin-top: 5px;
 }
 
-.send{
 
-  margin-left: 187%;
-  margin-top: -22% ;
-  height: 30px;
-  padding: 10px 20px; 
-  text-align: center; 
-  width: 150px;
-}
-.video{
-  margin-left:65%;
-  width:100%
-}
-.type{
-  margin-top: 20px;
-  width: 180%;
-  border-radius: 10px;
-  margin-left: 20px;
-}
-.message{
-  width:500px;
-  margin-left:20%
-}
+
 .col-md-9 {
   margin-left: 300px; 
 }
-.patientList {
-  margin-top: 50px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  max-height: 600px; 
-  font-weight: bold; 
-  overflow-y: auto; 
+
+
+.chatStyle{
+  width: 50px;
+  height: 50px;
 }
-
-.patientName {
-  padding: 28px; 
-  padding-left: 50px; 
-
-  border-bottom: 2px solid #ddd; 
-  cursor: pointer;
-
+.chat-icon {
+    position: fixed;
+    bottom: 20px; /* Adjust as needed */
+    right: 20px; /* Adjust as needed */
 }
-
-.patientName:first-child {
-  border-top: 2px solid #ddd; 
-}
-
-/* Hover effect */
-.patientName:hover {
-  background-color: #f5f5f5;
-}
-
 .doctor-cover-color {
   background: rgba(9, 30, 62, 0.85); /* Adjust the color and transparency as needed */
   background-size: cover ;

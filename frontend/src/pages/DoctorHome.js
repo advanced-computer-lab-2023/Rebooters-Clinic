@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import DoctorMyPatients from "../components/DoctorMyPatients";
 import SearchForPatient from "../components/SearchForPatient";
 import "../styles/doctor.css";
+import ChatBox from "../components/ChatBox";
+import ChatNavBar from "../components/ChatNavbar";
 //import DoctorPatients from "../components/DoctorPatients";
 import DoctorUpdateProfile from "../components/DoctorUpdateProfile";
 import DoctorMyAppointments from "../components/DoctorMyAppointments";
@@ -104,6 +106,9 @@ const DoctorHome = () => {
     setActiveTab(tab);
   };
   return (
+    <>
+    <ChatNavBar />    
+
     <div className="doctor-cover">
       <div className="doctor-cover-color">
         {doctorData && doctorData.acceptedContract ? (
@@ -463,9 +468,11 @@ const DoctorHome = () => {
             <NotificationsDoctor />
           </div>
         )}
+          {/* <ChatBox/> */}
       </div>
       <Footer />
     </div>
+    </>
   );
 };
 

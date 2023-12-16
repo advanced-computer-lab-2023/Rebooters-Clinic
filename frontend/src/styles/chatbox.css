@@ -1,0 +1,21 @@
+.chat-box {
+    position: fixed;
+    right: -200px;
+    transition: transform 0.3s ease-in-out, bottom 0.3s ease-in-out;
+  }
+  
+  .chat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .chat-box.open {
+    transform: translateY(-100%);
+  }
+  
+  .chat-icon:hover {
+    transform: scale(1.1);
+  }

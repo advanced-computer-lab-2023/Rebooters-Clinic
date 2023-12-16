@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-
+//im
 const DoctorChats = () => {
   const [chats, setChats] = useState([]);
   const [messageContents, setMessageContents] = useState({});
   const [pollingInterval, setPollingInterval] = useState(null);
-  const [showChats, setShowChats] = useState(false);
 
   const fetchChats = async () => {
     try {
@@ -69,26 +68,19 @@ const DoctorChats = () => {
     <div className="card doctor-chats-container">
       <h2 className="card-header">
         All Chats{" "}
-        <div>
-          <button
-            className="btn btn-secondary toggle-btn"
-            onClick={() => setShowChats(!showChats)}
-          >
-            Toggle Chats
-          </button>
-        </div>
+       
       </h2>
-      {showChats && chats.length === 0 ? (
+      { chats.length === 0 ? (
         <p className="no-chat-message">There are no chats</p>
         ) : (
           <div className="chats-wrapper">
-          {showChats &&
+          {
             chats
               // .filter((chat) => chat.patient === "false")
               .map((chat) => (
                 /*!chat.patient &&(*/
                 <div key={chat._id} className="chat-container">
-                <h4>Chat ID: {chat._id}</h4>
+                <h4 style={{fontSize:'10px'}}>Chat ID: {chat._id}</h4>
                   <div>
                     {chat.messages.length > 0 &&
                       chat.messages.map((message, index) => (

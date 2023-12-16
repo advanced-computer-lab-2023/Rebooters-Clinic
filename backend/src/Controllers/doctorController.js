@@ -1074,7 +1074,6 @@ const viewAllChats = async (req, res) => {
 
 const startNewChat = async (req, res) => {
   try {
-    const PharmacistUsername = req.body.pharmacist;
 
     const doctorUsername = req.cookies.username;
     const { messageContent } = req.body;
@@ -1087,7 +1086,7 @@ const startNewChat = async (req, res) => {
 
     const newChat = new Chat({
       doctor: doctorUsername,
-      pharmacist: PharmacistUsername,
+      pharmacist: '',
       messages: [
         {
           username: doctorUsername,
