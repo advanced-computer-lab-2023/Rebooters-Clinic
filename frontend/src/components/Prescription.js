@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import { saveAs } from 'file-saver';
 import { Viewer, Document, Page, Text, View, PDFDownloadLink } from '@react-pdf-viewer/core';
 import jsPDF from 'jspdf';
+import { Nav } from "react-bootstrap";
+
 
 function Prescription() {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -11,6 +13,7 @@ function Prescription() {
   const [filterMessage, setFilterMessage] = useState("");
   const [medicines, setMedicines] = useState([]);
   const [subTotal, setsubTotal] = useState(0);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const [prescriptionDetails, setPrescriptionDetails] = useState(null);
   const [filterParams, setFilterParams] = useState({
@@ -248,6 +251,29 @@ function Prescription() {
   
   }
 }
+const addPrescriptionToCart = async (prescriptionID) => {
+  try {
+      const response = await fetch('/api/patient/addPrescriptionToCart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prescriptionID }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      setErrorMessage(errorData.error);
+    } else {
+      // Success handling, e.g., redirect or show a success message
+      setErrorMessage('');
+      const externalLink = 'http://localhost:3000/patient';
+      window.location.href = externalLink;
+    }
+  } catch (error) {
+    console.error(error);
+    setErrorMessage('An error occurred while processing the prescription.');
+  }
+};
 return (
   <div className="card">
     <h2>Prescriptions:</h2>
@@ -365,12 +391,12 @@ return (
           <button onClick={handleDownloadPDF}>
             Download PDF
           </button>
-          <select id="payMethod" className="form-select me-2">
+          {/* <select id="payMethod" className="form-select me-2">
             <option value="wallet">wallet</option>
             <option value="credit card">credit card</option>
-          </select>
-          <button onClick={() => pay(prescriptionDetails, selectedPrescription)}>
-            Pay
+          </select> */}
+          <button onClick={() => addPrescriptionToCart(prescriptionDetails._id)} className="btn btn-primary">
+            Add Prescription Medicines to cart (This will Redirect you to our Pharmacy System)
           </button>
         </div>
       </div>

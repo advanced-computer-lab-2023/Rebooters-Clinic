@@ -128,6 +128,11 @@ const PatientSchema = new Schema({
         type: Number,
         required: true,
       },
+      image: {
+        data: Buffer,
+        contentType: String,
+        filename: String,
+      },
     },
   ],
 orders: [

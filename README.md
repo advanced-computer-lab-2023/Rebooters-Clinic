@@ -8,25 +8,99 @@ and ordering medication that was prescribed.
 ## Motivation
 This project's purpose was initially, mainly for academic purposes. We learnt a ton of information on how to use MERN Stack which is an abbreviation for Mongodb, Express.js, React.js, Node.js. React and JavaScript being probably the most used framework for frontend and backend Web/App development made this project very fruitful. However, while developing the project, the team was motivated to design this project as if it were to be a real, usable website for people one day. We tried enhancing the UI/UX as much as possible to make the user want to recommend this website to other people.
 ## Build Status
-This project is supposedly built to have no bugs/errors however, in terms of speed, you can definitely tell the project is running using free database servers. This causes the speed at which database fetches important data slower than we would like. This sometimes causes run-time errors as the website is trying to use an object that it fetched from the database, but due to the slow-fetch from the database it causes an error.
-Additionally, it might not be considered a bug, but it is worth noting you can not sign in on 2 different accounts from the same browser application eg: Chrome, what will happen is that it will sign you out of the previous account and focus on the freshly signed in account.
+-   The project is currently still under development by Rebooters.
+-   The database server is slow due to free service.
+-  Unit tests are not yet made for faster automated testing (The team uses postman for a more interactive testing experience).
+- The system as a whole could be a bit more responsive in a more modern way instead of just flashing messages to the user.
 
 ## Code Style
-Standard coding conventions.
+- Standard coding conventions.
+- For variables, the naming convention is to always start with a lowercase letter and then capitalize the first letter of every subsequent word.
+- For functions, same as variables, the naming convention is to always start with a lowercase letter and then capitalize the first letter of every subsequent word.
+- All related functions of a certain user are all coded in one file.
+- All related routes of a certain user are all coded in one file.
+- We prefered the inline styling to be kept at minimum.
 ## Screenshots
+#### Home
+![image](screenshots/home.png)
+#### About Us 
+![image](screenshots/about.png)
+#### About Us (Continued)
+![image](screenshots/about2.png)
+#### OTP
+![image](screenshots/OTP.png)
+#### Login
+![image](screenshots/login.png)
+#### Doctor
+![image](screenshots/doctor.png)
+#### Doctor Chat
+![image](screenshots/doctor-chat.png)
+#### Doctor Patients
+![image](screenshots/doctor-patients.png)
+#### Patient
+![image](screenshots/patient.png)
+#### Patient Appointments
+![image](screenshots/patient-appointments.png)
+#### Admin Dashboard
+![image](screenshots/admin.png)
+#### Admin User Management
+![image](screenshots/admin-user-management.png)
 
 ## Tech/Framework Used
-MERN Stack
-
-**Client:** React, Bootstrap
-
-**Server:** Node, Express, Mongodb
+-   [React](https://reactjs.org/)
+-   [Node.js](https://nodejs.org/en/)
+-   [Express](https://expressjs.com/)
+-   [MongoDB](https://www.mongodb.com/)
+-   [Mongoose](https://mongoosejs.com/)
+-   [Git](https://git-scm.com/)
+-   [NodeMailer](https://nodemailer.com/about/)
+-   [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+-   [Postman](https://www.postman.com/)
+-   [VSCode](https://code.visualstudio.com/)
+-   [Bootstrap](https://getbootstrap.com/)
 
 
 ## Features
+### The system serves different type of users (Guest, Admin, Pharmacist & Patient)
 
-- Intuitive UI/UX
-- Cross Platform
+#### As an Admin I can 
+
+- Add other admins to the system
+- Manage patients/doctors on the system (View/Remove)
+- View all patients on the system
+- View Doctor requests to join the system
+
+#### As a Patient I can 
+
+- View Doctor list
+- Reserve an appointment with a doctor
+- View my prescriptions
+- View my health records
+- Add a family member account
+- Subscribe to a health package for me/family
+- View upcoming/past/cancelled appointments
+- Pay for a prescription with wallet/card
+- Pay for an appointment with wallet/card
+- Chat with Doctor
+
+#### As a Doctor I can 
+
+- View My Patients list
+- Reschedule appointments
+- Cancel Appointments
+- Add/Edit/Remove Prescriptions
+- Add Health Records
+- Add my available time slots
+- Chat with pharmacist
+- Chat with patient
+
+#### As  Guest I can 
+
+- Sign up as a Patient
+- Sign up to request to become a Doctor
+- Login with an already made account
+- Use the forget-password protocol when needed
+- Read the about-us/contact pages of the website
 ## Usage/Examples
 #### Code Examples from the guestController.js
 ```javascript

@@ -1124,12 +1124,12 @@ const makeAppointment = async (req, res) => {
     // Save the notification in the database
     await appointmentNotification.save();
 
-    const prescription = new Prescription({
-      patientName: patient.username,
-      doctorName: doctorUsername,
-      date: combinedDateTime,
-    });
-    await prescription.save();
+    // const prescription = new Prescription({
+    //   patientName: patient.username,
+    //   doctorName: doctorUsername,
+    //   date: combinedDateTime,
+    // });
+    // await prescription.save();
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -1898,6 +1898,52 @@ const hideNotification = async (req, res) => {
 };
 
 
+const addPrescriptionToCart = async (req, res) => {
+  try {
+    const patientUsername = req.cookies.username; 
+    const {prescriptionID} = req.body;
+
+    const patient = await Patient.findOne({ username: patientUsername });
+    if (!patient) {
+      return res.status(404).json({ error: "Patient not found." });
+    }
+
+    const prescription = await Prescription.findOne({ _id: prescriptionID }); 
+    if (!prescription) {
+      return res.status(404).json({ error: "Prescription not found." });
+    }
+    for (const medicationInfo of prescription.medicationInfo) {
+      const medicineName  = medicationInfo.medicine;
+      const medicineObject = await medicineModel.findOne({ name: medicineName });
+      if (!medicineObject) {
+        return res.status(404).json({ error: `Medicine not found for name: ${medicineName}.` });
+      }
+      if (medicineObject.quantity > 0 && medicineObject.Archive == false) {
+        let cartItem = {
+          medicine: medicineObject._id,
+          name: medicineObject.name,
+          price: medicineObject.price,
+          quantity: 1,
+          image: {
+            data: medicineObject.image.data,
+            contentType: medicineObject.image.contentType,
+            filename: medicineObject.image.filename,
+          },
+          
+        };
+        patient.cart.push(cartItem);
+        await patient.save();
+      }
+    }
+    return res.status(200).json({ message: "Prescription added to cart" });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing the payment." });
+  }
+};
+
 module.exports = {
   payWithWallet,
   viewMedicines,
@@ -1945,5 +1991,6 @@ module.exports = {
   createZoomMeetingNotification,
   getPatientNotifications,
   viewProfile,
-  hideNotification
+  hideNotification,
+  addPrescriptionToCart
 };
