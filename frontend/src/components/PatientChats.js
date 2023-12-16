@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Toast, ToastContainer } from 'react-bootstrap';
-
+import moment from 'moment'
+import "../styles/patientdoctor.css";
 
 
 const PatientChats = () => {
@@ -44,7 +45,7 @@ const PatientChats = () => {
       });
       if (response.ok) {
         const json = await response.json();
-        setChats(json);
+        setChats(json.filter(chat=>chat.doctor==selectedDoctor));
       }
     } catch (error) {
       console.error("Error fetching chats:", error);
@@ -62,25 +63,26 @@ const PatientChats = () => {
       if (response.ok) {
         const json = await response.json();
         setDoctors(json.doctors);
-        if (json.doctors.length > 0) {
-          setSelectedDoctor(json.doctors[0]);
-        }
+        
       }
     } catch (error) {
       console.error("Error fetching linked doctors:", error);
     }
   };
-
   useEffect(() => {
+    // Fetch doctors and chats on component mount
     fetchChats();
     fetchDoctors();
 
+    // Poll for new messages every 2 seconds
     const pollingInterval = setInterval(fetchChats, 2000);
 
+    // Clean up the interval when the component unmounts
     return () => {
       clearInterval(pollingInterval);
     };
-  }, []);
+  }, [selectedDoctor]);
+  
 
   const startVideoChatWithDoctor = async (doctorUsername) => {
     try {
@@ -186,118 +188,83 @@ const PatientChats = () => {
       console.error("Error deleting chat:", error);
     }
   };
-
+  function showANDchat(patient){
+    setSelectedDoctor(patient)
+    fetchChats()
+  
+  }
   return (
     <div className="container">
       <div className="card">
-        <h2 style={{ marginLeft: "20px" }}>My Chats</h2>
         {/* Existing Chats */}
-        <div>
-          {chats.map(
-            (chat) =>
-              !chat.closed && (
-                <div key={chat._id} className="card mb-3">
-                  <div
-                    className="card-header d-flex justify-content-between align-items-center"
-                    onClick={() => toggleChat(chat._id)}
-                    style={{ cursor: "pointer" }}
-                  >
-                    <h5 className="card-title">{chat.doctor}</h5>
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={() => deleteChatWithDoctor(chat._id)}
-                      aria-label="Close"
-                    ></button>
-                  </div>
-                  {/* Check if the chat is expanded before rendering content */}
-                  {expandedChats.includes(chat._id) && (
-                    <>
-                      <div className="card-body">
-                        {chat.messages &&
-                          chat.messages.map((message, index) => (
-                            <div key={index}>
-                              <strong>{message.userType}: </strong>{" "}
-                              {message.content}
-                              <span style={{ marginLeft: "10px", color: "gray" }}>
-                                {new Date(message.timestamp).toLocaleString()}
-                              </span>
-                            </div>
-                          ))}
-                      </div>
-                      <div className="card-footer">
-                        {errorMessage && (
-                          <p style={{ color: "red" }}>{errorMessage}</p>
-                        )}
-                        <div className="input-group mb-3">
-                          <textarea
-                            className="form-control"
-                            placeholder="Type your message here..."
-                            rows="1"
-                            value={messageContents[chat._id] || ""}
-                            onChange={(e) =>
-                              setMessageContents({
-                                ...messageContents,
-                                [chat._id]: e.target.value,
-                              })
-                            }
-                          ></textarea>
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => continueChatWithDoctor(chat._id)}
-                          >
-                            Send
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )
-          )}
-        </div>
-  
         {/* Start a New Chat */}
         <div>
-          <h3 style={{ marginLeft: "20px" }}> Start a New Chat </h3>
+          <h3 style={{ marginLeft: "50px",  fontSize :"20px"}}> Start a New Chat </h3>
           {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
           <div className="input-group mb-3">
             {doctors.length > 0 && (
               <select
-                className="form-select"
-                value={selectedDoctor}
-                onChange={(e) => setSelectedDoctor(e.target.value)}
-              >
-                {doctors.map((doctor) => (
-                  <option key={doctor} value={doctor}>
-                    {doctor}
-                  </option>
-                ))}
-              </select>
+              className="form-select"
+              value={selectedDoctor}
+              onChange={(e) => showANDchat(e.target.value)}
+            >
+              {doctors.map((doctor, index) => (
+                <option key={index} value={doctor}>
+                  {doctor}
+                </option>
+              ))}
+            </select>
+            
             )}
-            <textarea
-              className="form-control"
-              placeholder="Type your message here..."
-              rows="1"
-              value={newChatContent}
-              onChange={(e) => setNewChatContent(e.target.value)}
-            ></textarea>
-            <button
-              className="btn btn-primary me-2"
-              onClick={startNewChatWithDoctor}
-            >
-              Start Chat
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() => startVideoChatWithDoctor(selectedDoctor)}
-            >
-              Start Video Chat
-            </button>
+           
           </div>
         </div>
+       {/* Assuming `chats` is an array of chat objects */}
+{/* Assuming `chats` is an array of chat objects */}
+{chats.map((chat) => (
+  // Ensure each chat object has a `messages` array
+  chat.messages && chat.messages.map((message, index) => (
+    <div key={index} className={`message ${message.userType === 'patient' ? 'doctor-message-box' : 'patient-message-box'}`}>
+      <div>
+        <strong>{message.userType === 'patient' ? 'Me' : selectedDoctor}:</strong><br />
+        {message.content}
       </div>
-  
+      <span className="text-muted timestamp">
+        {moment(message.timestamp).format('MMM DD, YYYY h:mm A')}
+      </span>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {/* Check if it's the last message or a message from another user */}
+      {index !== chat.messages.length - 1 && message.userType !== chat.messages[index + 1].userType && (
+        <div className="message-spacing"></div>
+      )}
+    </div>
+  ))
+))}
+
+        { selectedDoctor && <div>
+          {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+         
+          <textarea
+            rows="1"
+            cols="25"
+            placeholder="Type your message here..."
+            value={newChatContent}
+            className='type'
+            onChange={(e) => setNewChatContent(e.target.value)}
+          ></textarea>
+          <br />
+          <button className='btn btn-primary send' onClick={() =>startNewChatWithDoctor(selectedDoctor)}>
+           SEND   
+                    </button>
+          <button className='btn btn-success video' onClick={() => startVideoChatWithDoctor(selectedDoctor)}>
+            Start Video Chat
+          </button>
+
+
+        </div>
+}
+      </div>
+      
       {/* Toast */}
       <div style={{ position: 'relative' }}>
       <ToastContainer position="absolute" style={{ top: '10px', right: '10px' }}  className="p-3">
