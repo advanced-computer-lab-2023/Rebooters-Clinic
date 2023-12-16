@@ -169,7 +169,7 @@ const DoctorSendsToPharm = () => {
                       {/* <button className='btn btn-primary small-button' onClick={() => continueChat(chat._id)}>
     Send
   </button> */}
-                      {/* <textarea
+                      {<textarea
                         rows="1"
                         cols="25"
                         placeholder="Type your message here..."
@@ -177,9 +177,9 @@ const DoctorSendsToPharm = () => {
                         onChange={(e) =>
                           setMessageContents({ ...messageContents, [chat._id]: e.target.value })
                         }
-                      ></textarea> */}
+                      ></textarea> }
                       <br />
-                      {/* <button className='btn btn-primary' onClick={() => continueChat(chat._id)}>
+                      <button className='btn btn-primary' onClick={() => continueChat(chat._id)}>
                         Send
                       </button>
                       <button
@@ -188,7 +188,7 @@ const DoctorSendsToPharm = () => {
                         onClick={() => deleteChat(chat._id)}
                       >
                         Close Chat
-                      </button> */}
+                      </button> 
                     </div>
                 
                 </div>
@@ -202,9 +202,7 @@ const DoctorSendsToPharm = () => {
             <br />
             <br />
             */}
-          </div>
-          )}
-           <textarea
+                       <textarea
               rows="1"
               cols="25"
               placeholder="Type your message here..."
@@ -214,6 +212,9 @@ const DoctorSendsToPharm = () => {
            <button className='btn btn-primary' onClick={startNewChat}>
               Start Chat
             </button>
+          </div>
+          )}
+
         </div>
       </div>
     </div>
