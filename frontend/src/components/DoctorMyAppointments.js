@@ -455,8 +455,8 @@ const DoctorMyAppointments = () => {
       )}
 
       {showRescheduleAppointment && (
-        <div className="modal-overlay">
-          <div className="card">
+        <div className="modal-overlay" >
+          <div className="card" style={{alignItems:'center'}}  >
             <div className="">
               <label htmlFor="followUpDatetime">
                 Choose new date and time:
@@ -472,20 +472,27 @@ const DoctorMyAppointments = () => {
               <p>Appointment rescheduled successfully!</p>
             ) : (
               <>
-                <button
-                  className="btn btn-danger"
+              <div className="" >
+
+              <button
+                  className="btn btn-primary"
                   onClick={handleRescheduleAppointment}
                 >
                   Reschedule
                 </button>
+              </div>
+
               </>
             )}
+            <div className="">
             <button
-              className="btn btn-danger"
+              className="btn btn-secondary"
               onClick={handleCloseRescheduleAppointment}
             >
               Close
             </button>
+            </div>
+
           </div>
         </div>
       )}
@@ -729,7 +736,7 @@ const DoctorMyAppointments = () => {
                         >
                           Add Health Record
                         </button>
-                        {appointment.status == "Completed" && (
+                        {appointment.status === "Completed" && (
                           <button
                             className="btn btn-primary"
                             onClick={(e) => {
@@ -819,7 +826,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
-                    {appointment.status == "Completed" && (
+                    {appointment.status === "Completed" && (
                       <button
                         className="btn btn-primary"
                         onClick={(e) => {
@@ -909,7 +916,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
-                    {appointment.status == "Completed" && (
+                    {appointment.status === "Completed" && (
                       <button
                         className="btn btn-primary"
                         onClick={(e) => {
@@ -998,7 +1005,7 @@ const DoctorMyAppointments = () => {
                     >
                       Add Health Record
                     </button>
-                    {appointment.status == "Completed" && (
+                    {appointment.status === "Completed" && (
                       <button
                         className="btn btn-primary"
                         onClick={(e) => {
@@ -1086,7 +1093,7 @@ const DoctorMyAppointments = () => {
                         >
                           Add Health Record
                         </button>
-                        {appointment.status == "Completed" && (
+                        {appointment.status === "Completed" && (
                           <button
                             className="btn btn-primary"
                             onClick={(e) => {
