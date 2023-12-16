@@ -4,7 +4,7 @@ import ChatNavBarPatient from './ChatNavBarPatient';
 import '../styles/chatbox.css'; // Import the CSS file for styling
 import chatIcon from '../styles/chatIcon.png'; // Import your chat icon image
 //im
-function ChatBox() {
+function ChatBoxPatient() {
     const [showChatNavbar, setShowChatNavbar] = useState(false);
     const [bottomPosition, setBottomPosition] = useState(20);
 
@@ -38,10 +38,10 @@ function ChatBox() {
           className="chat-icon"
           onClick={handleChatButtonClick}
         />
-<ChatNavbar showChatNavbar={showChatNavbar} onHide={() => setShowChatNavbar(false)} />
+<ChatNavBarPatient showChatNavbar={showChatNavbar} onHide={() => setShowChatNavbar(false)} />
 
       </div>
     );
   }
 
-  export default ChatBox;
+  export default ChatBoxPatient;

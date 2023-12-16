@@ -21,7 +21,7 @@ import PatientsHealthPackages from "../components/PatientsHealthPackages";
 import PatientProfile from "../components/PatientProfile";
 import Footer from "../components/footer";
 import ChatNavBarPatient from "../components/ChatNavBarPatient";
-import ChatBox from "../components/ChatBox";
+import ChatBoxPatient from "../components/ChatBoxPatient";
 
 //import CombinedPatientAppointments from "../components/CombinedPatientAppointments";
 
@@ -86,9 +86,6 @@ const PatientHome = () => {
 
   return (
     <>
-    <ChatNavBarPatient />  
-    <ChatBox />  
-
     <div className="patient-cover">
       <div className="cover-color">
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
@@ -379,6 +376,8 @@ const PatientHome = () => {
           )}
         </div>
       </div>
+      <ChatBoxPatient />  
+
       <Footer />
     </div>
     </>

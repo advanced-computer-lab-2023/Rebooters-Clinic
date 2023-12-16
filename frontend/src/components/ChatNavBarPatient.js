@@ -8,7 +8,7 @@ import Offcanvas from 'react-bootstrap/Offcanvas';
 
 import PatientChats from './PatientChats';
 
-function ChatNavbar() {
+function ChatNavbar(props) {
   const [showOffcanvas, setShowOffcanvas] = useState(false);
 
   const [showHistoryChats, setShowHistoryChats] = useState(false);
@@ -46,11 +46,11 @@ function ChatNavbar() {
         </button>
         <Navbar.Brand href="#">Chats</Navbar.Brand>
         <Offcanvas
-          show={showOffcanvas}
-          onHide={() => setShowOffcanvas(false)}
-          placement="end"
-          aria-labelledby="offcanvasNavbarLabel"
-        >
+            show={props.showChatNavbar}
+            onHide={props.onHide}
+              placement="end"
+            aria-labelledby="offcanvasNavbarLabel"
+          >
           <Offcanvas.Header closeButton>
             <Offcanvas.Title id="offcanvasNavbarLabel">Choose Your Chat</Offcanvas.Title>
           </Offcanvas.Header>
