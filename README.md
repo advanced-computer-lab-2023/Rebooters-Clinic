@@ -1024,6 +1024,15 @@ POST /api/patient/hideNotification
 GET /api/patient/viewProfile
 ```
 
+#### Add prescription medicines to cart
+
+```http
+POST /api/patient/addPrescriptionToCart
+```
+| Parameter               | Type   | Description                                    |
+| :---------------------- | :----- | :--------------------------------------------- |
+| `prescriptionID `     | `string` | **Required**. Prescription ID|
+
 ### Doctor API
 
 **Note**: All the following routes requires the doctor to be logged in. Upon logging in the doctor username gets stored in the cookies to be used in each route.
@@ -1567,9 +1576,8 @@ GET /api/administrator/viewAllAdmins
 ## Running Tests
 
 To run tests to make sure the routes are working fine, download [Postman](https://www.postman.com/downloads/) software for free.
-
-//screen shots of postman?
-
+Lets quickly give directions on how to use postman. Simply you choose whether your request is a GET/POST/DELETE/PUT/ETC.. and then you paste the correct route you want to test (Check API Reference). Then if your request needs parameters, you will click on "Body" and choose the "JSON" Text style, and add your parameters as seen in the screenshot "username" and "password". Make sure your backend is running and Then you click send and observe the output at the bottom of the screen.
+![image](screenshots/postman.png)
 
 ## How to Use?
 Open git bash/ or any terminal in a directory of your choice and do: 
@@ -1619,5 +1627,6 @@ Full credit goes to [NetNinja](https://www.youtube.com/@NetNinja) youtube channe
 ## License
 
 Apache 2.0 license 
+MIT license
 
 
