@@ -454,6 +454,7 @@ const PatientFamilyAppointments = () => {
             value={customStatus}
             onChange={(e) => setCustomStatus(e.target.value)}
           >
+            <option value="">Choose Status</option>
             <option value="Completed">Completed</option>
             <option value="Upcoming">Upcoming</option>
             <option value="Rescheduled">Rescheduled</option>

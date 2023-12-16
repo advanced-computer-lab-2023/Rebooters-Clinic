@@ -3,16 +3,16 @@ import React, { useState, useEffect } from 'react';
 const FollowUpRequests = () => {
   const [followUpRequests, setFollowUpRequests] = useState([]);
 
+  const fetchFollowUpRequests = async () => {
+    try {
+      const response = await fetch('/api/doctor/getDoctorFollowUpRequests');
+      const data = await response.json();
+      setFollowUpRequests(data.followUpRequests);
+    } catch (error) {
+      console.error('Error fetching follow-up requests:', error);
+    }
+  };
   useEffect(() => {
-    const fetchFollowUpRequests = async () => {
-      try {
-        const response = await fetch('/api/doctor/getDoctorFollowUpRequests');
-        const data = await response.json();
-        setFollowUpRequests(data.followUpRequests);
-      } catch (error) {
-        console.error('Error fetching follow-up requests:', error);
-      }
-    };
 
     fetchFollowUpRequests();
   }, []); // Run once on component mount
@@ -32,6 +32,7 @@ const FollowUpRequests = () => {
           i === index ? { ...request, accepted: true } : request
         )
       );
+      fetchFollowUpRequests();
     } catch (error) {
       console.error('Error accepting follow-up request:', error);
     }
@@ -52,6 +53,7 @@ const FollowUpRequests = () => {
           i === index ? { ...request, revoked: true } : request
         )
       );
+      fetchFollowUpRequests();
     } catch (error) {
       console.error('Error revoking follow-up request:', error);
     }
@@ -78,7 +80,7 @@ const FollowUpRequests = () => {
               <td>{new Date(request.FollowUpRequest.preferredDate).toLocaleString()}</td>
               <td>{request.FollowUpRequest.status}</td>
               <td>
-                {!request.accepted && !request.revoked && (
+                {request.FollowUpRequest.status !== "Accepted" && request.FollowUpRequest.status !== "Revoked" && (
                   <>
                     <button className='btn btn-primary' onClick={() => handleAccept(request.datetime, index)}>Accept</button>
                     <button className='btn btn-danger' onClick={() => handleRevoke(request.datetime, index)}>Revoke</button>

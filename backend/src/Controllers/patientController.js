@@ -1411,9 +1411,10 @@ const rescheduleAppointment = async (req, res) => {
 const requestFollowUp = async (req, res) => {
   try {
     const { reason, preferredDate, datetime } = req.body;
+    const status = "Pending";
     await Appointment.updateOne(
       { datetime },
-      { $set: { FollowUpRequest: { reason, preferredDate } } }
+      { $set: { FollowUpRequest: { reason, preferredDate,status } } }
     );
 
     res.status(200).json({ message: "Request successfully made" });

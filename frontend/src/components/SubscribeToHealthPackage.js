@@ -254,7 +254,7 @@ const SubscribeToHealthPackage = () => {
         <Col>
           <Button
             onClick={handleSubscribeAndPay}
-            variant="outline-secondary" // Set to the default gray color of Bootstrap
+            // variant="outline-secondary" // Set to the default gray color of Bootstrap
           >
             Subscribe and Pay
           </Button>

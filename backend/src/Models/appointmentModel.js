@@ -31,16 +31,23 @@ const appointmentSchema = new Schema({
     default: 'Unpaid',
     
   },
-  FollowUpRequest:{
-    reason: String,
-    preferredDate: String,
+  FollowUpRequest: {
+    reason: {
+      type: String,
+      default: "", 
+    },
+    preferredDate: {
+      type: String,
+      default: "", 
+    },
     status: {
       type: String,
       enum: ['Pending', 'Accepted', 'Revoked'],
       default: 'Pending',
     },
-  }
+  },
 });
+
 
 const Appointment = mongoose.model('Appointment', appointmentSchema);
 module.exports = Appointment;
