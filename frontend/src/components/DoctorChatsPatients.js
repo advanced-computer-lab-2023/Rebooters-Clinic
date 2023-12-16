@@ -41,7 +41,7 @@ const DoctorChatsPatients = () => {
       });
       if (response.ok) {
         const json = await response.json();
-        setChats(json.filter(chat=>chat.patient===chatingWith));
+        setChats(json.filter(chat=>chat.patient==chatingWith));
 
       }
     } catch (error) {
@@ -189,7 +189,10 @@ function showANDchat(patient){
 
 return (
   <>
-  <p>choose a patient to chat with :</p>
+
+   <div className="card dc ">
+    <div className="doctor-chat-text">
+    <p>choose a patient:</p>
  <div>
  {patients.length > 0 && (
 <div>
@@ -207,11 +210,8 @@ return (
 )}
 
    </div>
-  
-   <div className="card dc ">
-    <div className="doctor-chat-text">
 {chatingWith && chats.map((chat) => (
-  !chat.closed && (
+   (
 
     <div key={chat._id} className="mb-4">
     <div className="card-body chat-body">
@@ -224,8 +224,9 @@ return (
 
           >
                                 <div >
-
-            <strong>{message.userType}: </strong> <br></br>{message.content}
+                                <strong>{message.userType === 'patient' ? selectedPatient : 'Me'}:</strong>
+          
+        <br></br>{message.content}
             </div>
 
             <span className="text-muted timestamp">

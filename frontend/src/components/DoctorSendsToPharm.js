@@ -157,8 +157,10 @@ const DoctorSendsToPharm = () => {
                     {chat.messages && chat.messages.map((message, index) => (
                       <div key={index}>
                   
-                        <strong>{message.userType}: </strong> {message.content}
-                        <span style={{ marginLeft: '10px', color: 'gray' }}>
+                  <strong>{message.userType === 'pharmacist' ? 'pharmacist' : 'Me'}:</strong><br />
+                  {message.content}
+<br></br>
+                        <span style={{ marginLeft: '0px', color: 'gray' }}>
                           {new Date(message.timestamp).toLocaleString()}
                         </span>
                       </div>

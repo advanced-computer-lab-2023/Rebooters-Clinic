@@ -8,10 +8,11 @@ function ChatBox() {
     const [bottomPosition, setBottomPosition] = useState(20);
 
 
-    const handleChatButtonClick = () => {
-      setShowChatNavbar(!showChatNavbar);
-
+    const handleChatButtonClick = (e) => {
+      e.stopPropagation();
+      setShowChatNavbar((prevShowChatNavbar) => !prevShowChatNavbar);
     };
+    
 
     useEffect(() => {
       const handleScroll = () => {
@@ -29,14 +30,15 @@ function ChatBox() {
 
 
     return (
+
       <div className={`chat-box ${showChatNavbar ? 'open' : ''}`} style={{ bottom: `${bottomPosition}px` }}>
+
         <img
           src={chatIcon}
           alt="Chat Icon"
           className="chat-icon"
           onClick={handleChatButtonClick}
         />
-
         {showChatNavbar && <ChatNavbar />}
       </div>
     );

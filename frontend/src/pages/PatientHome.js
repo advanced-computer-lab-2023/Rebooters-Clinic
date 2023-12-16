@@ -20,6 +20,9 @@ import FamilyMembers from "../components/FamilyMembers";
 import PatientsHealthPackages from "../components/PatientsHealthPackages";
 import PatientProfile from "../components/PatientProfile";
 import Footer from "../components/footer";
+import ChatNavBarPatient from "../components/ChatNavBarPatient";
+import ChatBox from "../components/ChatBox";
+
 //import CombinedPatientAppointments from "../components/CombinedPatientAppointments";
 
 const PatientHome = () => {
@@ -82,6 +85,10 @@ const PatientHome = () => {
   };
 
   return (
+    <>
+    <ChatNavBarPatient />  
+    <ChatBox />  
+
     <div className="patient-cover">
       <div className="cover-color">
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow-sm px-5 py-3 py-lg-0">
@@ -258,19 +265,7 @@ const PatientHome = () => {
                   View Doctors/Reserve
                 </button>
               </li>
-              <li
-                className={`nav-item ${activeTab === "chat" ? "active" : ""}`}
-              >
-                <button
-                  style={{
-                    color: activeTab === "chat" ? "var(--primary)" : "inherit",
-                  }}
-                  className="nav-link btn btn-link"
-                  onClick={() => handleTabClick("chat")}
-                >
-                  Chat
-                </button>
-              </li>
+              
               <li
                 className={`nav-item ${
                   activeTab === "notifications" ? "active" : ""
@@ -376,11 +371,7 @@ const PatientHome = () => {
               <SubscribeToHealthPackage />
             </div>
           )}
-          {activeTab === "chat" && (
-            <div className="mt-4">
-              <PatientChats />
-            </div>
-          )}
+         
           {activeTab === "notifications" && (
             <div className="mt-4">
               <NotificationsPatient />
@@ -390,6 +381,7 @@ const PatientHome = () => {
       </div>
       <Footer />
     </div>
+    </>
   );
 };
 
